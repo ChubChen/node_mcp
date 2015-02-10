@@ -1,0 +1,112 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/select.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,calendar,calendar/assets/base.css",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar){
+
+                var S_Date = S.Date;
+                new Calendar('#startDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#startDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                new Calendar('#endDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#endDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#list', {});
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+                var getCondition = function(){
+                     var cond = {};
+                     var gameCode = Node.one('#gameCode').val();
+                     if(gameCode && gameCode.length > 0){
+                           cond.gameCode = gameCode;
+                     }
+                     return cond;
+                 };
+                var getAddition = function(){
+                    var add = {};
+                    add.startDate = Node.one('#startDate').val();
+                    add.endDate = Node.one('#endDate').val();
+                    return add;
+                };
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    CurSite.redirectTo(null, "sale_day.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&add=" + add);
+                };
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+
+                var err = Node.one('#err').val();
+                if(err && err.length > 0){
+                  alert(err);
+                }
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            input(type='hidden', id="err", value=err)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 彩种:
+                        td
+                            select(id="gameCode")
+                                option(value="") 所有
+                                - each val in game
+                                    if(val.id == cond.gameCode)
+                                        option(value=val.id, selected="true")=val.name
+                                    else
+                                        option(value=val.id)=val.name
+                    tr
+                        td 时间:
+                        td(colspan=3)
+                            input(type="text" id="startDate" value=add.startDate)
+                            span 至
+                            input(type="text" id="endDate"   value=add.endDate)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td 彩种
+                                td 销量
+                                td 销量金额
+                                td 中奖
+                                td 中奖金额
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.gameCode
+                                    td=val.salenum
+                                    td=val.saleamount/100
+                                    td=val.prizenum
+                                    td=val.prizeamount/100
+
+            .clearfix(style="margin-top:8px")
+                #manu

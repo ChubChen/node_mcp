@@ -1,0 +1,138 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/select.css')
+        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,overlay",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, O){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+
+                    var type = Node.one('#type').val();
+                    if(type && type.length > 0){
+                       cond.type = type;
+                    }
+
+                    var customerId = Node.one('#customerId').val();
+                    if(customerId && customerId.length > 0){
+                        cond.id = customerId;
+                    }
+                    return cond;
+                };
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    CurSite.redirectTo(null, "customer_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "customer_detail.html?id=" + tId;
+                        var pop=Util.getOverlay('用户详情',url,500,350,item);
+                        var dialog = new O.Dialog(pop);
+                        dialog.show();
+                    });
+                });
+
+                Node.all("input.print").each(function(item){
+                     item.on("click", function(){
+                          var tId = Node.one(this).attr("tId");
+                          var url = "relation_list.html?customerId=" + tId;
+                          var pop=Util.getOverlay('出票转发',url,800,350,item);
+                          var dialog = new O.Dialog(pop);
+                          dialog.show();
+                     });
+                });
+
+                Node.all("input.account").each(function(item){
+                      item.on("click", function(){
+                          var tId = Node.one(this).attr("tId");
+                          var cond = {customerId:tId};
+                          cond = encodeURIComponent(Json.stringify(cond));
+                          var url = "moneylog_list.html?cond=" + cond;
+                          var pop=Util.getOverlay('资金流水',url,800,350,item);
+                          var dialog = new O.Dialog(pop);
+                          dialog.show();
+                      });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+
+                Node.one("#add").on("click", function(){
+                    var url = "customer_add.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 类型:
+                        td
+                            select(id="type")
+                                option(value="") 所有
+                                - each val in userType
+                                    if(val.id == cond.type)
+                                        option(value=val.id, selected="true")=val.des
+                                    else
+                                        option(value=val.id)=val.des
+                        td 用户名:
+                        td
+                            input(type="text" id="customerId" value=cond.id)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+                    input(type="button", id="add", value="新增")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td 用户名
+                                td 名称
+                                td 余额(元)
+                                td 密码
+                                td 类型
+                                td 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.id
+                                    td=val.name
+                                    td=val.balance/100.00
+                                    td=val.password
+                                    td=val.type.des
+                                    td
+                                        input(type="button", value="资金流水", class="account", tId=val.id)
+                                        input(type="button", value="详情", class="detail", tId=val.id)
+                                        input(type="button", value="出票转发", class="print", tId=val.id)
+            .clearfix(style="margin-top:8px")
+                #manu

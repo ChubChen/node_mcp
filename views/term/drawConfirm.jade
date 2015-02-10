@@ -1,0 +1,102 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window,vs-grid-table",
+                function(S, Io, Node, Json, VsDataSelect, VsWindow, VsGridTable){
+
+                var table = new VsGridTable('#rst', {});
+
+                var getData = function(){
+                    var data = {};
+                    data.wNum = Node.one("#wNum").html();
+                    return data;
+                };
+
+                var getCond = function()
+                {
+                    var termId = Node.one("#termId").val();
+                    return {id:termId};
+                };
+
+                var checkParam = function(data){
+                    if(data.wNum.length == 0)
+                    {
+                        alert("开奖号码不能为空");
+                        return false;
+                    }
+                    return true;
+                };
+
+                //绑定事件
+                Node.all("input.modifygg").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var cond = {id:tId};
+
+                        var data = {};
+                        data.bonus = parseInt(Node.one("#" + tId + "_bonus").val())*100;
+                        data.count = parseInt(Node.one("#" + tId + "_count").val());
+
+                        var bodyNode = {cond:cond, data:{$set:data}};
+                        CurSite.sendDigest(Io, Json, "AD13", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    });
+                });
+
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    if(checkParam(data))
+                    {
+                        var tId = Node.one("#termId").val();
+                        var bodyNode = {termId:tId};
+                        CurSite.sendDigest(Io, Json, "AD10", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    }
+                });
+
+                Node.one("#lastStep").on("click", function(){
+                    var id = Node.one("#termId").val();
+                    var url = "term_draw.html?id=" + id;
+                    CurSite.redirectTo(null, url);
+                });
+
+            });
+    body
+        input(id="termId", type="hidden", value=term.id)
+        #tWin.container
+        .bodyAdminDiv
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") 游戏*:
+                .vs_grid_plain(style="margin-left:8px;")=term.game.name
+                .vs_grid_plain(style="width:100px;text-align:right;") 期次*:
+                .vs_grid_plain(style="width:100px;margin-left:8px;")=term.code
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") 奖池:
+                .vs_grid_plain(style="width:100px;margin-left:8px;")=term.pool
+                .vs_grid_plain(style="width:100px;text-align:right;") 开奖号码:
+                .vs_grid_plain(id="wNum", style="width:200px;margin-left:8px;")=term.wNum
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") 奖级明细:
+                .vs_grid_plain(style="margin-left:8px;")
+                    #rst.container
+                        table
+                            thead
+                                tr
+                                    td(w="66") 名称
+                                    td(w="86") 奖金(元)
+                                    td(w="76") 注数
+                            tbody
+                                - each val in rst
+                                    tr
+                                        td=val.name
+                                        td=val.bonus/100
+                                        td=val.count
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="上一步", id="lastStep")
+                    input(type="button", value="开奖", id="success")

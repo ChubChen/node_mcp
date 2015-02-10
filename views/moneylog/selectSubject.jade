@@ -1,0 +1,80 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            var check;
+            KISSY.use("io,node,json,vs-grid-table,vs-pagebar,vs-round-input,vs-window,vs-items",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow, VsItems){
+
+                var items = new VsItems("#tItems", {});
+
+                //记录已经选择的项
+                var selectStr = Node.one("#select").val();
+                var selectData = CurSite.decryptUrl(selectStr, Json);
+                for(var key in selectData)
+                {
+                    items.add(selectData[key]);
+                }
+
+                var table = new VsGridTable('#subjects', {selectEvent:function(data){
+                    if(data[0].length < 9)
+                    {
+                        return;
+                    }
+                    items.add({id:data[0], name:data[4]});
+                }});
+
+                check = function(cb)
+                {
+                    var data = items.getData();
+                    cb(null, data);
+                };
+            });
+    body
+        input(type='hidden', id="select", value=select)
+        .bodyAdminDiv
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                #tItems.container
+            .clearfix(style="margin-top:8px")
+                #subjects.container(style="width:423px;")
+                    table
+                        thead
+                            tr
+                                td(w="0") 代码
+                                td(w="120") 角色
+                                td(w="120") 账户
+                                td(w="120") 收入/支出
+                                td(w="120") 科目
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.id
+                                    td=val.name + '(' + val.code + ')'
+                                    td
+                                    td
+                                    td
+                                        - each ac in val.accounts
+                                            tr
+                                                td=val.id + ac.id
+                                                td
+                                                td=ac.name+ '(' + ac.code + ')'
+                                                td
+                                                td
+                                                    - each tp in ac.types
+                                                        tr
+                                                            td=val.id + ac.id + tp.id
+                                                            td
+                                                            td
+                                                            td=tp.name+ '(' + tp.code + ')'
+                                                            td
+                                                                - each st in tp.subjects
+                                                                    tr
+                                                                        td=val.id + ac.id + tp.id + st.id
+                                                                        td
+                                                                        td
+                                                                        td
+                                                                        td=st.name+ '(' + st.code + ')'
+            .clearfix(style="margin-top:8px")
+                #bar.vs_grid_plain(style="width:600px;")

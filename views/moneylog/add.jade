@@ -1,0 +1,118 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window", function(S, Io, Node, Json, VsDataSelect, VsWindow){
+
+                var subject = new VsDataSelect("#subject", {width:200, click:function(self){
+                    var data = self.getData();
+                    var select = CurSite.encryptUrl(data, Json);
+                    var url = "moneylog_selectSubject.html?time=" + new Date().getTime() + "&select=" + select;
+                    var win = new VsWindow("#tWin", {title:"选择科目", width:600, height:480, url:url, controlBt:[
+                        {name:'选择', check:true, cb:function(err, data){
+                            if(!data || data.length != 1)
+                            {
+                                alert("请选择一个科目");
+                                return false;
+                            }
+                            else
+                            {
+                                self.setData(data[0]);
+                                return true;
+                            }
+                        }}
+                    ]});
+                }});
+
+                var entity = new VsDataSelect("#entity", {width:200, click:function(self){
+                    var subject_data = subject.getData();
+                    if(subject_data.length == 0)
+                    {
+                        alert("请先选择一个用户");
+                        return;
+                    }
+                    else
+                    {
+                        var subject_id = subject_data[0].id;
+                        var url, title;
+                        var data = self.getData();
+                        var select = CurSite.encryptUrl(data, Json);
+                        title = "选择彩民";
+                        url = "customer_select.html?time=" + new Date().getTime() + "&select=" + select;
+                        var win = new VsWindow("#tWin", {title:title, width:600, height:480, url:url, controlBt:[
+                            {name:'选择', check:true, cb:function(err, data){
+                                if(!data || data.length != 1)
+                                {
+                                    alert("请选择一个用户");
+                                    return false;
+                                }
+                                else
+                                {
+                                    self.setData(data[0]);
+                                    return true;
+                                }
+                            }}
+                        ]});
+                    }
+                }});
+                var customerId = Node.one("#customerId").val();
+                entity.setData({id:customerId, name:customerId});
+
+                var getData = function(){
+                    var data = {};
+                    data.orderId = Node.one("#orderId").val();
+                    data.amount = parseInt(Node.one("#amount").val());
+                    data.subjectId = subject.getData()[0].id;
+                    data.entityId = entity.getData()[0].id;
+                    return data;
+                };
+
+                var checkParam = function(data){
+                    return true;
+                };
+
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    if(checkParam(data))
+                    {
+                        var bodyNode = data;
+                        CurSite.sendDigest(Io, Json, "AD07", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    }
+                });
+
+                Node.one("#backToList").on("click", function(){
+                    var cond = {customerId:customerId};
+                    cond = encodeURIComponent(Json.stringify(cond));
+                    var url = "moneylog_list.html?cond=" + cond;
+                    CurSite.redirectTo(null, url);
+                });
+
+            });
+    body
+        .bodyAdminDiv
+            input(id="customerId", type="hidden", value=customerId)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 科目*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    #subject.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 实体*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    #entity.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 金额(分)*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="amount", type="text", value='0')
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 订单号*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="orderId", type="text", value='')
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="添加", id="success")
+                    input(type="button", value="返回列表", id="backToList")

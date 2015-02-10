@@ -1,0 +1,141 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#terms', {});
+                var pageBar = new VsPagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode && gameCode.length > 0)
+                    {
+                        cond.gameCode = gameCode;
+                    }
+                    var termCode = Node.one('#termCode').val();
+                    if(termCode && termCode.length > 0)
+                    {
+                        cond.code = termCode;
+                    }
+                    return cond;
+                };
+
+                var getSort = function()
+                {
+                    return {_id:-1};
+                }
+
+                var toPage = function(index){
+                    console.log(index);
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var sort = encodeURIComponent(Json.stringify(getSort()));
+                    CurSite.redirectTo(null, "term_msgList.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "term_msgDetail.html?id=" + tId;
+                        var win = new VsWindow("#tWin", {title:"期次详情", width:500, height:400, url:url, controlBt:[
+                            {name:'关闭', cb:null}
+                        ]});
+                    });
+                });
+
+                //重新执行
+                Node.all("input.retry").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var bodyNode = {};
+                        bodyNode.cond = {_id:tId};
+                        bodyNode.data = {$set:{status:1000}};
+                        CurSite.sendDigest(Io, Json, "AD18", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur);
+                });
+
+                Node.one("#add").on("click", function(){
+                    var url = "term_msgList.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="padding-top:6px;margin-left:12px;") 游戏:
+                .vs_grid_plain(style="padding-top:4px;")
+                    select(id="gameCode")
+                        option(value="") 所有
+                        - each val in game
+                            if(val.id == cond.gameCode)
+                                option(value=val.id, selected="true")=val.name
+                            else
+                                option(value=val.id)=val.name
+                .vs_grid_plain(style="padding-top:6px;margin-left:12px;") 期次:
+                .vs_grid_plain(style="padding-top:4px;")
+                    input(id="termCode", type="text", value=cond.code)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td(w="100") 游戏
+                                td(w="100") 期次
+                                td(w="100") 期次状态
+                                td(w="120") 开奖号码
+                                td(w="100") 需处理总数
+                                td(w="100") 完成数
+                                td(w="100") 消息类型
+                                td(w="100") 子消息数
+                                td(w="100") 子消息完成数
+                                td(w="176") 创建时间
+                                td(w="176") 完成时间
+                                td(w="100") 消息状态
+                                td(w="176") 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.game.name
+                                    td=val.code
+                                    td=val.status.des
+                                    td=val.wNum
+                                    td=val.total
+                                    td=val.finished
+                                    td=val.msg.type.des
+                                    td=val.msg.subCount
+                                    td=val.msg.finishCount
+                                    td=val.msg.createTime
+                                    td=val.msg.finishTime
+                                    td=val.msg.status.des
+                                    td
+                                        input(type="button", value="重新执行", class="retry", tId=val.msg._id)
+            // input(type="button", value="详情", class="detail", tId=val._id)
+            .clearfix(style="margin-top:8px")
+                #manu

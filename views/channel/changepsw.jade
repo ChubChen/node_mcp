@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+    head
+        <link rel="stylesheet" href="js/css/dpl/base-min.css" />
+        <link rel="stylesheet" href="js/css/dpl/forms-min.css"  />
+        <link rel="stylesheet" href="js/button/assets/dpl-min.css">
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json", function(S, Io, Node, Json){
+               Node.one("#submit").on("click", function(){
+                  var oldPwd=Node.one("#old_pwd").val();
+                  var newPwd=Node.one("#new_pwd").val();
+                  var againPwd=Node.one("#again_pwd").val();
+                  if(newPwd!=againPwd){
+                      alert("两次输入密码不一致！");
+                      return;
+                  }
+                  var body={password:oldPwd,newPassword:newPwd};
+                  CurSite.sendDigest(Io, Json, "AD19", null, body, function(err, backBodyNode){
+
+                      if(backBodyNode.repCode == '0000')
+                      {
+                            alert("修改成功");
+                      }else{
+                            alert(backBodyNode.description);
+                      }
+                  });
+               })
+            });
+    body
+        table(   border="0" cellspacing="0" cellpadding="0" )
+            tr
+                td(width="25%" align="left") 当前密码:
+                td
+                    input(type="text"  id='old_pwd')
+            tr
+                td(align="left") 新密码:
+                td
+                    input(type='password'  id='new_pwd')
+            tr
+                td(align="left") 确认密码:
+                td
+                    input(type='password'  id='again_pwd')
+            tr
+                td(colspan="2" align="center")
+                    input(id='submit' type="button" value="确认" class="btn" )

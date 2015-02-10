@@ -1,4 +1,1 @@
-## node_mcp
-
-彩票平台
-
+mcp implementations in nodejs.

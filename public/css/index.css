@@ -1,0 +1,57 @@
+
+
+.main{ width:1024px; margin:0 auto;}
+.header{
+    height:80px;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#26c1ed), to(#03a2ce));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#26c1ed,endColorstr=#03a2cef,grandientType=0);
+    background:-moz-linear-gradient(top,#26c1ed,#03a2ce);
+}
+.logo{ width:300px;float:left; font-size:16px; font-weight:bold;}
+.logo img,.Tel-phone img,.TopIfo img{ vertical-align:middle; margin-left:5px;}
+.logo span,.Tel-phone span{ color:#FFF; line-height:85px; padding-left:10px;}
+.Tel-phone{ width:168px;float:right; font-size:16px; font-weight:bold;}
+.TopIfo
+{
+    padding:3px;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#26c1ed), to(#03a2ce));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#26c1ed,endColorstr=#03a2cef,grandientType=0);
+    background:-moz-linear-gradient(top,#26c1ed,#03a2ce);
+    border:1px solid #03a2ce;
+    font-size:12px;color:#FFF;
+}
+.TopIfo span{ color:#ffee5f; padding-left:5px;}
+.content{ margin-top:5px;}
+.sidebar{ width:154px; background:#FFF;float:left;}
+.sidebar ul li a{ display:block;width:140px; height:34px; text-align:center; border:1px solid #cccccc; margin:8px 5px; line-height:34px; color:#0086c2; font-size:12px;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#ebebeb));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff,endColorstr=#ebebeb,grandientType=0);
+    background:-moz-linear-gradient(top,#ffffff,#ebebeb);
+    border-radius:2px;
+}
+.mainifo{ width:840px;background:#FFF; padding:12px; height:343px;}
+.sidebar ul{ margin-top:15px;}
+.sidebar ul li a:hover{ color:#FFF;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#26c1ed), to(#03a2ce));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#26c1ed,endColorstr=#03a2cef,grandientType=0);
+    background:-moz-linear-gradient(top,#26c1ed,#03a2ce);
+    border:1px solid #03a2ce;
+}
+.tab{ border:1px solid #03a2ce; width:400px; margin:15px;}
+.tab tr td{ height:30px; text-align:center; line-height:30px; color:#333; font-size:12px;}
+.tab thead tr{ border-bottom:1px dashed #68d1ee;}
+.messges{width:90%;margin:15px;line-height:25px;}
+.messges span{ color:#666; font-size:14px;}
+.messges p{ font-size:12px;color:#666; line-height:25px;}
+.TopIfo a{ color:#ffee5f;}
+.foot{
+    padding:3px;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#26c1ed), to(#03a2ce));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#26c1ed,endColorstr=#03a2cef,grandientType=0);
+    background:-moz-linear-gradient(top,#26c1ed,#03a2ce);
+    border:1px solid #03a2ce;
+    font-size:12px;color:#FFF;
+    text-align:center;
+    margin-top:5px;
+}
+

@@ -1,0 +1,101 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='js/css/dpl/base.css')
+        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,overlay",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar,O){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    return cond;
+                }
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    CurSite.redirectTo(null, "game_control.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                Node.all("input.grade").each(function(item){
+                     item.on("click", function(){
+                         var tId = Node.one(this).attr("tId");
+                         var cond = {gameCode:tId};
+                         cond = encodeURIComponent(Json.stringify(cond));
+                         var url = "gamegrade_list.html?cond=" + cond;
+                         var pop=Util.getOverlay('奖级查询',url,800,300,item);
+                         var dialog = new O.Dialog(pop);
+                         dialog.show();
+                     });
+                });
+
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var buttonValue=Node.one(this).val();
+                        var gameName=Node.one(this).attr("gameName");
+                        if(!confirm("确认要  "+buttonValue+"《"+gameName+"》 吗？")){
+                             return;
+                        }
+                        var tId = Node.one(this).attr("tId");
+                        var tValue = parseInt(Node.one(this).attr("tValue"));
+                        var cond = {_id:tId};
+                        cond.gamePermission = tValue;
+                        var bodyNode = {cond:cond};
+                        CurSite.sendDigest(Io, Json, "AD20", null, bodyNode, function(err, backBodyNode){
+                                if(err){
+                                  alert("操作失败！");
+                                }else{
+                                  alert(backBodyNode.description);
+                                  CurSite.redirectTo(null, "game_control.html");
+                                }
+                        });
+                    });
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td(w="76") 游戏名称
+                                td(w="76") 游戏代码
+                                td(w="126") 当前状态
+                                td(w="126") 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.game.name
+                                    td=val._id
+                                    td=val.on_off
+                                    td
+                                        -if(val.gamePermission==1000)
+                                            input(type="button", value="关闭", class="detail", tId=val._id , tValue=val.gamePermission , gameName=val.game.name)
+                                        -else
+                                            input(type="button", value="开启", class="detail", tId=val._id , tValue=val.gamePermission , gameName=val.game.name)
+                                        input(type="button", value="奖级查询", class="grade", tId=val._id)
+            .clearfix(style="margin-top:8px")
+                #manu

@@ -1,0 +1,81 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json", function(S, Io, Node, Json){
+                var checkParam = function(data){
+                    return true;
+                };
+
+                Node.one("#fixStBt").on("click", function(){
+                    var customerId = Node.one("#customerId").val();
+                    var cond = {_id:customerId};
+                    var fixSt = Node.one("#fixSt").val();
+                    var data = {fixSt:fixSt};
+                    var bodyNode = {cond:cond, data:{$set:data}};
+                    CurSite.sendDigest(Io, Json, "AD06", null, bodyNode, function(err, backBodyNode){
+                        alert(backBodyNode.description);
+                    });
+                });
+
+                Node.one("#urlBt").on("click", function(){
+                    var customerId = Node.one("#customerId").val();
+                    var cond = {_id:customerId};
+                    var notifyIp = Node.one("#notifyIp").val();
+                    var notifyPort = parseInt(Node.one("#notifyPort").val());
+                    var notifyPath = Node.one("#notifyPath").val();
+                    var notifyKey = Node.one("#notifyKey").val();
+                    var digestType = parseInt(Node.one("#digestType").val());
+                    var data = {notifyIp:notifyIp, notifyPort:notifyPort, notifyPath:notifyPath,
+                    notifyKey:notifyKey, digestType:digestType};
+                    var bodyNode = {cond:cond, data:{$set:data}};
+                    CurSite.sendDigest(Io, Json, "AD11", null, bodyNode, function(err, backBodyNode){
+                        alert(backBodyNode.description);
+                    });
+                });
+
+            });
+    body(style="overflow-y: auto;")
+        input(id="customerId", type="hidden", value=customer.id)
+        #tWin.container
+        .bodyAdminDiv
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 密码:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="password", type="text", value=customer.password)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 交易密钥:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="fixSt", type="text", value=customer.fixSt)
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="fixStBt", type="button", value="修改")
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 通知密钥:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="notifyKey", type="text", value=customer.notifyKey)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 通知地址:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="notifyIp", type="text", value=customer.notifyIp)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 端口:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="notifyPort", type="text", value=customer.notifyPort)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 路径:
+                .vs_grid_plain(style="margin-left:8px;")
+                    textarea(id="notifyPath", cols="25", rows="6")=customer.notifyPath
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 加密方式:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="digestType")
+                        - each val in digestType
+                            if(val.id == customer.digestType)
+                                option(value=val.id, selected="true")=val.des
+                            else
+                                option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="urlBt", type="button", value="修改")

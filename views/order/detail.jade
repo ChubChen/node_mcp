@@ -1,0 +1,36 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window", function(S, Io, Node, Json, VsDataSelect, VsWindow){
+
+                var getData = function(){
+                    var data = {};
+                    return data;
+                };
+
+                var getCond = function()
+                {
+                    return {};
+                };
+
+                var checkParam = function(data){
+                    return true;
+                };
+
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    if(checkParam(data))
+                    {
+                        /*var bodyNode = {cond:getCond(), data:{$set:data}};
+                        CurSite.sendDigest(Io, Json, "AD05", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });*/
+                    }
+                });
+            });
+    body
+        input(id="entityId", type="hidden")
+        #tWin.container
+        .bodyAdminDiv

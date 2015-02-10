@@ -1,0 +1,41 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        link(rel='stylesheet', type='text/css', href='./js/tree/assets/dpl-min.css')
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-tree", function(S, Io, Node, Json, VsDataTree){
+                var getChildren = function(id, cb)
+                {
+
+                    var bodyNode = {cond:{parent:id}};
+                    CurSite.sendDigest(Io, Json, "AD02", null, bodyNode, function(err, backBodyNode){
+                        cb(err, backBodyNode.rst);
+                    });
+                };
+
+                var selectionChange = function(src, target)
+                {
+                    if(target.url.length > 0)
+                    {
+                        parent.document.getElementById("mainFrame").src = target.url + "?frameId=mainFrame";
+                    }
+                };
+
+                var bodyNode = {cond:{parent:''}};
+                CurSite.sendDigest(Io, Json, "AD02", null, bodyNode, function(err, backBodyNode){
+                    if(backBodyNode.repCode == '0000')
+                    {
+                        var tree = new VsDataTree("#ppList", {data:backBodyNode.rst, getChildren:getChildren,
+                        selectionChange:selectionChange
+                        });
+                    }
+                    else
+                    {
+                        alert(backBodyNode.description);
+                    }
+                });
+            });
+    body
+        .bodyAdminDiv
+            #ppList.container(style="margin-left:5px;margin-top:10px;width:190px;border-top: 1px solid #CDC8CF")

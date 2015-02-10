@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        link(rel='stylesheet', type='text/css', href='./css/index.css')
+        script(type='text/javascript').
+                KISSY.use("io,node,json", function(S, Io, Node, Json){
+                    Node.one("#bye").on("click", function(){
+                        CurSite.setCookie("userId", "name", -1);
+                        window.parent.location.href="sys_adminLogin.html";
+                    });
+                });
+    body
+        .header
+            .logo
+                img(src='img/logo.png')
+                span 无纸化彩票渠道管理平台
+            .Tel-phone
+                img(src='img/tel-cion.png')
+                span 400-700-1898
+        //.clear
+        .TopIfo
+            p
+                img(src='img/user.png')
+                a(href='javascript:void(0)' id='bye') &nbsp;&nbsp;安全退出
+                                                                                                                                                                         

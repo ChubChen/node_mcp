@@ -1,0 +1,173 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,O){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode && gameCode.length > 0)
+                    {
+                        cond.gameCode = gameCode;
+                    }
+                    var termCode = Node.one('#termCode').val();
+                    if(termCode && termCode.length > 0)
+                    {
+                        cond.code = termCode;
+                    }
+                    return cond;
+                };
+
+                var getAddition = function()
+                {
+                    var add = {};
+                    add.startTermStatus = parseInt(Node.one('#startTermStatus').val());
+                    add.endTermStatus = parseInt(Node.one('#endTermStatus').val());
+                    return add;
+                }
+
+                var getSort = function()
+                {
+                    return {id:-1};
+                }
+
+                var toPage = function(index){
+                    console.log(index);
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var sort = encodeURIComponent(Json.stringify(getSort()));
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    CurSite.redirectTo(null, "term_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort + "&add=" + add);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "term_detail.html?id=" + tId;
+                        var pop=Util.getOverlay('期次详情',url,500,300,item);
+                        var dialog = new O.Dialog(pop);
+                        dialog.show();
+                    });
+                });
+
+                //开奖
+                Node.all("input.draw").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "term_draw.html?id=" + tId;
+                        var pop=Util.getOverlay('期次开奖',url,600,300,item);
+                        var dialog = new O.Dialog(pop);
+                        dialog.show();
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur);
+                });
+
+               Node.all("a.processes").each(function(item){
+                    item.on("click", function(){
+                         var code = Node.one(this).attr("tid");
+                         var gameCode = Node.one(this).attr("tgame");
+                         var cond = {code:code,gameCode:gameCode};
+                         cond = encodeURIComponent(Json.stringify(cond));
+                         var url = "term_msgList.html?cond=" + cond;
+                         CurSite.redirectTo(null, url);
+
+                    });
+               });
+
+                Node.one("#add").on("click", function(){
+                    var url = "term_add.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 彩种:
+                        td
+                            select(id="gameCode")
+                                option(value="") 所有
+                                - each val in game
+                                    if(val.id == cond.gameCode)
+                                        option(value=val.id, selected="true")=val.name
+                                    else
+                                        option(value=val.id)=val.name
+                        td 期次:
+                        td
+                            input(id="termCode", type="text", value=cond.code)
+                    tr
+                        td 状态范围:
+                        td
+                            select(id="startTermStatus")
+                                  option(value="-1") 未选择
+                                  - each val in termStatus
+                                      if(val.id == add.startTermStatus)
+                                          option(value=val.id, selected="true")=val.des
+                                      else
+                                          option(value=val.id)=val.des
+                        td(align="center") ~
+                        td
+                            select(id="endTermStatus")
+                                option(value="-1") 未选择
+                                - each val in termStatus
+                                    if(val.id == add.endTermStatus)
+                                        option(value=val.id, selected="true")=val.des
+                                    else
+                                        option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+                    input(type="button", id="add", value="新增")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td 游戏
+                                td 期次
+                                td 下一期
+                                td 状态
+                                td 开售时间
+                                td 停售时间
+                                td 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.game.name
+                                    td=val.code
+                                    td=val.nextCode
+                                    td
+                                        a(style='text-decoration:underline' tid=val.code tgame=val.gameCode href='javascript:void(0)' class='processes')=val.status.des
+                                    td=val.openTime
+                                    td=val.closeTime
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val.id)
+                                        if val.status.id == termStatusObj.WAITING_DRAW_NUMBER
+                                            input(type="button", value="开奖", class="draw", tId=val.id)
+            .clearfix(style="margin-top:8px")
+                #manu

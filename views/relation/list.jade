@@ -1,0 +1,89 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#rst', {});
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode && gameCode.length > 0){
+                        cond.gameCode = gameCode;
+                    }
+                    var customerId = Node.one('#customerId').val();
+                    if(customerId && customerId.length > 0){
+                        cond.customerId = customerId;
+                    }
+                    var relayTo = Node.one('#relayTo').val();
+                    if(relayTo && relayTo.length > 0){
+                        cond.relayTo = relayTo;
+                    }
+                    return cond;
+                };
+
+                var toPage = function(index){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    CurSite.redirectTo(null, "relation_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "relation_detail.html?id=" + tId;
+                        CurSite.redirectTo(null, url);
+                    });
+                });
+
+                Node.one("#add").on("click", function(){
+                    var customerId = Node.one("#customerId").val();
+
+                    var url = "relation_add.html?time=" + new Date().getTime()+"&customerId="+customerId;
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            input(type='hidden', id="customerId", value=cond.customerId)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="add", value="新增")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td 用户
+                                td 游戏
+                                td 出票
+                                td 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.customerId
+                                    td=val.game.name
+                                    td=val.relayTo
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val._id)
+            .clearfix(style="margin-top:8px")
+                #manu

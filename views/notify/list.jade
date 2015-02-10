@@ -1,0 +1,84 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-pagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#rst', {});
+                var pageBar = new VsPagebar('#bar', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    return cond;
+                };
+
+                var toPage = function(index){
+                    console.log(index);
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    console.log(cond);
+                    CurSite.redirectTo(null, "notify_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "notify_detail.html?id=" + tId;
+                        var win = new VsWindow("#tWin", {title:"消息详情", width:500, height:400, url:url, controlBt:[
+                            {name:'关闭', cb:null}
+                        ]});
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                #rst.container
+                    table
+                        thead
+                            tr
+                                td(w="76") id
+                                td(w="76") 用户
+                                td(w="76") 类型
+                                td(w="76") 状态
+                                td(w="176") 内容
+                                td(w="176") 创建时间
+                                td(w="176") 地址
+                                td(w="176") 取走时间
+                                td(w="134") 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val._id
+                                    td=val.customerId
+                                    td=val.type.des
+                                    td=val.status.des
+                                    td=val.des
+                                    td=val.createTime
+                                    td=val.url
+                                    td=val.takeTime
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val._id)
+            .clearfix(style="margin-top:8px")
+                #bar.vs_grid_plain(style="width:600px;")

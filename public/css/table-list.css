@@ -1,0 +1,20 @@
+.tab-list{ width:99%;  border-top:1px solid #036cb4; border-left:1px solid #036cb4; color: #000 ;}
+.tab tr td{ font-size:12px; text-align:center; border-right:1px solid #036cb4; border-bottom:1px solid #036cb4;line-height:35px;}
+.tab thead tr td{ color: #333;}
+.tab tbody tr:hover{ background:#eee; color:#036cb4;}
+
+
+#manu{padding:3px;margin:3px; font-size:12px;}
+#manu a{border:#3168B9 1px solid;padding:2px 5px;margin:2px;color:#036cb4;text-decoration:none;cursor: pointer;}
+#manu a:hover{border:#999 1px solid;color:#666;}
+#manu a:active{border:#999 1px solid;color:#666;}
+#manu .current{border:#036cb4 1px solid;padding:2px 5px;font-weight:bold;margin:2px;color:#fff;background-color:#036cb4;}
+#manu .disabled{border:#AFAFAF 1px solid;padding:2px 5px;margin:2px;color:#919191;}
+
+
+#select_table td{padding:5px;}
+
+#info_table {width:100%;font-size:13px}
+#info_table thead tr td{text-align:center;}
+#info_table tbody tr td{padding:2px;text-align:center;}
+#info_table  tbody tr:hover{ background:#eee; color:#036cb4;}

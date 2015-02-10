@@ -1,0 +1,90 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window", function(S, Io, Node, Json, VsDataSelect, VsWindow){
+
+
+                var getData = function(){
+                    var data = {};
+                    data.gameCode = Node.one("#gameCode").val();
+                    data.code = parseInt(Node.one("#code").val());
+                    data.nextCode = parseInt(Node.one("#nextCode").val());
+                    data.openTime = Node.one("#openTime").val();
+                    data.closeTime = Node.one("#closeTime").val();
+                    data.status = parseInt(Node.one("#status").val());
+                    data.pool = parseInt(Node.one("#pool").val());
+                    return data;
+                };
+
+                var getCond = function()
+                {
+                    var termId = Node.one("#termId").val();
+                    return {id:termId};
+                };
+
+                var checkParam = function(data){
+                    if(data.code.length == 0)
+                    {
+                        alert("请输入代码");
+                        return false;
+                    }
+                    return true;
+                };
+
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    if(checkParam(data))
+                    {
+                        var bodyNode = {cond:getCond(), data:{$set:data}};
+                        CurSite.sendDigest(Io, Json, "AD05", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    }
+                });
+            });
+    body
+        input(id="termId", type="hidden", value=term.id)
+        input(id="gameCode", type="hidden", value=term.gameCode)
+        #tWin.container
+        .bodyAdminDiv
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 游戏*:
+                .vs_grid_plain(style="margin-left:8px;")=term.game.name
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 期次*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="code", type="text", value=term.code)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 下一期:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="nextCode", type="text", value=term.nextCode)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 奖池:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="pool", type="text" value=term.pool)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 开售时间*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="openTime", type="text", value=term.openTime)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 停售时间*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="closeTime", type="text", value=term.closeTime)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 状态*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="status")
+                        - each val in termStatus
+                            if(val.id == term.status)
+                                option(value=val.id, selected="true")=val.des
+                            else
+                                option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 开奖号码:
+                .vs_grid_plain(style="margin-left:8px;")=term.wNum
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="修改", id="success")

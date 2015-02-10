@@ -1,0 +1,106 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,O){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var customerId = Node.one('#customerId').val();
+                    if(customerId && customerId.length > 0){
+                         cond.customerId = customerId;
+                    }
+                    var outerId = Node.one('#outerId').val();
+                    if(outerId && outerId.length > 0){
+                         cond.outerId = outerId;
+                    }
+                    return cond;
+                };
+
+                var getSort = function()
+                {
+                    return {id:-1};
+                }
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var sort = encodeURIComponent(Json.stringify(getSort()));
+                    CurSite.redirectTo(null, "order_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort);
+                };
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "order_detail.html?id=" + tId;
+                        var pop=Util.getOverlay('订单详情',url,600,300,item);
+                        var dialog = new O.Dialog(pop);
+                        dialog.show();
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 用户名:
+                        td
+                            input(type="text" id="customerId" value=cond.customerId)
+                        td 订单外部ID:
+                        td
+                            input(type="text" id="outerId"   value=cond.outerId)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td id
+                                td 用户
+                                td 外部id
+                                td 金额
+                                td 成功金额
+                                td 创建时间
+                                td 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.id
+                                    td=val.customerId
+                                    td=val.outerId
+                                    td=val.amount/100 + '(元)'
+                                    td=val.trueAmount/100 + '(元)'
+                                    td=val.createTime
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val.id)
+            .clearfix(style="margin-top:8px")
+                #manu

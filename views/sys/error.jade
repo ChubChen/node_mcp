@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+
+                KISSY.use("io,node,json", function(S, Io, Node, Json){
+                    var des = Node.one('#des').val();
+                    alert(des);
+                    var url = Node.one('#url').val();
+                    if(url && url.length > 0){
+                       window.parent.parent.location.href = url;
+                    }else{
+                       window.parent.parent.location.href = "sys_channelLogin.html";
+                    }
+
+                });
+
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="url", value=url)
+            input(type='hidden', id="des", value=description)

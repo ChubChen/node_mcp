@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/index.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json", function(S, Io, Node, Json){
+                Node.one("#bye").on("click", function(){
+                  window.parent.location.href="sys_channelLogin.html";
+                  CurSite.setCookie("userId", "name", -1);
+                });
+            });
+
+    body
+         .sidebar
+             ul
+              for book in rst
+                 li
+                    a(href=book.url target='mainFrame')=book.name
+              end
+                 li
+                    a(href='javascript:void(0)'  id='bye') 退出登录

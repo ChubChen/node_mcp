@@ -1,0 +1,176 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,O){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var status = parseInt(Node.one("#status").val());
+                    if(status > -1)
+                    {
+                        cond.status = status;
+                    }
+                    var printStatus = parseInt(Node.one("#printStatus").val());
+                    if(printStatus > -1)
+                    {
+                        cond.printStatus = printStatus;
+                    }
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode && gameCode.length > 0)
+                    {
+                        cond.gameCode = gameCode;
+                    }
+                    var termCode = Node.one('#termCode').val();
+                    if(termCode && termCode.length > 0)
+                    {
+                        cond.termCode = termCode;
+                    }
+                    var outerId = Node.one('#outerId').val();
+                    if(outerId && outerId.length > 0)
+                    {
+                        cond.outerId = outerId;
+                    }
+
+
+                    return cond;
+                };
+
+                var getSort = function()
+                {
+                    return {id:-1};
+                }
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var sort = encodeURIComponent(Json.stringify(getSort()));
+                    CurSite.redirectTo(null, "ticket_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "ticket_detail.html?id=" + tId;
+                        var pop=Util.getOverlay('票据详情',url,600,480,item);
+                        var dialog = new O.Dialog(pop);
+                        dialog.show();
+                    });
+                });
+
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 彩种:
+                        td
+                            select(id="gameCode")
+                                option(value="") 所有
+                                - each val in game
+                                    if(val.id == cond.gameCode)
+                                        option(value=val.id, selected="true")=val.name
+                                    else
+                                        option(value=val.id)=val.name
+                        td 期次:
+                        td
+                            input(id="termCode", type="text", value=cond.termCode)
+                        td 状态:
+                        td
+                            select(id="status")
+                                option(value="-1") 所有
+                                - each val in ticketStatus
+                                    if(val.id == cond.status)
+                                        option(value=val.id, selected="true")=val.des
+                                    else
+                                        option(value=val.id)=val.des
+                        td 出票状态:
+                        td
+                            select(id="printStatus")
+                                option(value="-1") 所有
+                                - each val in ticketPrintStatus
+                                    if(val.id == cond.printStatus)
+                                        option(value=val.id, selected="true")=val.des
+                                    else
+                                        option(value=val.id)=val.des
+                    tr
+                        td 外部ID:
+                        td
+                            input(id="outerId", type="text", value=cond.outerId)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td id
+                                td 外部id
+                                td 用户
+                                td 游戏
+                                td 期次
+                                td 结算期次
+                                td 金额
+                                td 税前奖金
+                                td 税后奖金
+                                td 创建时间
+                                td 审计时间
+                                td 状态
+                                td 出票状态
+                                td 省份
+                                td 实体票序列
+                                td 终端机
+                                td 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.id
+                                    td=val.outerId
+                                    td=val.customerId
+                                    td=val.gameCode
+                                    td=val.termCode
+                                    td=val.auditTermCode
+                                    td=val.amount/100 + '(元)'
+                                    td=val.bonusBeforeTax/100 + '(元)'
+                                    td=val.bonus/100 + '(元)'
+                                    td=val.createTime
+                                    td=val.auditTime
+                                    td=val.status.des
+                                    td=val.printStatus.des
+                                    td=val.province
+                                    td=val.seq
+                                    td=val.terminal
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val.id)
+            .clearfix(style="margin-top:8px")
+                #manu

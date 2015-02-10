@@ -1,0 +1,136 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/index-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/select.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-onepagebar,kg/droplist/2.0.1/index",
+                function(S, Io, Node, Json, VsOnePagebar,DropList){
+                DOM = S.DOM;
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var typeId = Node.one('#typeId').val();
+                    if(typeId && typeId.length > 0){
+                        cond.typeId = typeId;
+                    }
+                    var subjectId = Node.one('#subjectId').val();
+                    if(subjectId && subjectId.length > 0){
+                        cond.subjectId = subjectId;
+                    }
+                    return cond;
+                };
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                      limit=20;
+                      skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    CurSite.redirectTo(null, "sale_money.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+                var dealCatList = function (catList,arg1,arg2){
+                    if(arg1 && arg1.length > 0){
+                        for(var i = 0;i < catList.length;i++){
+                            var arg1Obj = catList[i];
+                            if(arg1Obj.catId.length > 0&&arg1Obj.catId == arg1){
+                                arg1Obj.isDefault = true;
+                                dealCatList(arg1Obj.subCat,arg2,null);
+                            }
+                        }
+                    }
+                    return catList;
+                };
+                                                  //绑定事件
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+
+                var selectDate=Node.one("#selectdate").val();
+                var catList = JSON.parse(selectDate);
+                var typeId = Node.one('#typeId').val();
+                var subjectId = Node.one('#subjectId').val();
+                catList = dealCatList(catList,typeId,subjectId);
+                var arrayData = DropList.multiple({
+                    dropListCls: "style-1",              // 样式风格
+                    insertion: "#mul1",                  // 显示节点
+                    dataSource: catList,                 // 数据源 Array -> Json
+                    paramSubcat: "subCat",               // 子选项的属性名 Array -> Json
+                    paramText: "catName",                // 作为选项显示内容的属性名 String
+                    paramValue: "catId",                 // 作为值的属性名  String OR Number
+                    isDefault: "isDefault",              // 默认值参数 boolean
+                    mulSelect: false,                    // 单选(默认) OR 多选
+                    subConfig: [{
+                        placeholder: "请选择一级科目..."
+                    },{
+                        placeholder: "请选择二级科目..."
+                    }]
+                });
+
+                arrayData.on("change", function(ev){
+                    var data = ev.data;
+                        for (var i = 0; i < data.length; i++) {
+                            if(i==0){
+                                Node.one("#typeId").val(data[i].value);
+                                if(data.length==1){
+                                   Node.one("#subjectId").val("");
+                                   break;
+                                }
+                            }else{
+                                Node.one("#subjectId").val(data[i].value);
+                            }
+                        };
+                 });
+                });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            input(type='hidden', id="typeId", value=cond.typeId)
+            input(type='hidden', id="subjectId", value=cond.subjectId)
+            input(type='hidden', id="selectdate", value=selectValues)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                fieldset(id="selected")
+                    .control(id="mul1")
+                        span(class="log")
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td 用户
+                                td 科目
+                                td 操作前
+                                td 操作后
+                                td 金额
+                                td 订单号
+                                td 创建时间
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.customerId
+                                    td=val.subject.name
+                                    td=val.stateBefore/100
+                                    td=val.stateAfter/100
+                                    td=val.amount/100
+                                    td=val.orderId
+                                    td=val.createTime
+            .clearfix(style="margin-top:8px")
+                #manu
+                                  

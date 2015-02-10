@@ -1,0 +1,8 @@
+body{ background:url(../img/background_1.jpg) no-repeat; background-position:top; font-size:14px;}
+.loginwrap{ width:460px; margin:0 auto;}
+.loginbox{width:460px; height:230px; position:relative; top:300px;}
+.Textbox,.check{ height:25px; width:300px; text-align:left;}
+.tab{ margin:0 auto;}
+.tab tr td{ height:40px;  line-height:35px; padding-left:5px;}
+.btn{ width:95px; height:34px; background:url(../img/btn-login_1.png) no-repeat; border:0; cursor:pointer;}
+.back{ border:1px solid #030; position: absolute; z-index:2; height:190px;}

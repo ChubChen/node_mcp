@@ -1,0 +1,45 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-pagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow){
+
+                var table = new VsGridTable('#rst', {});
+
+                //绑定事件
+                Node.all("input.delete").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var bodyNode = {cond:{name:tId}};
+                        CurSite.sendDigest(Io, Json, "AD14", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    });
+                });
+
+                Node.one("#backToList").on("click", function(){
+                    var url = "mongo_index.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="返回列表", id="backToList")
+            .clearfix(style="margin-top:8px")
+                #rst.container(style="width:423px;")
+                    table
+                        thead
+                            tr
+                                td(w="180") 表名
+                                td(w="134") 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.name
+                                    td
+                                        input(type="button", value="删除", class="delete", tId=val.name)

@@ -1,0 +1,182 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/index-min.css')
+        link(rel='stylesheet', type='text/css', href='./css/select.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-onepagebar,kg/droplist/2.0.1/index,calendar,calendar/assets/base.css",
+                function(S, Io, Node, Json, VsOnePagebar,DropList,Calendar){
+                var S_Date = S.Date;
+                new Calendar('#startDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#startDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                new Calendar('#endDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#endDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+                var getCondition = function(){
+                   var cond = {};
+                   var typeId = Node.one('#typeId').val();
+                   if(typeId && typeId.length > 0){
+                      cond.typeId = typeId;
+                    }
+                   var subjectId = Node.one('#subjectId').val();
+                   if(subjectId && subjectId.length > 0){
+                       cond.subjectId = subjectId;
+                   }
+                   var customerId = Node.one('#customerId').val();
+                   if(customerId && customerId.length > 0){
+                       cond.customerId = customerId;
+                   }
+                   return cond;
+                 };
+                var getAddition = function(){
+                    var add = {};
+                    add.startDate = Node.one('#startDate').val();
+                    add.endDate = Node.one('#endDate').val();
+                    return add;
+                };
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                     }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    CurSite.redirectTo(null, "moneylog_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&add=" + add);
+                };
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+                Node.one("#add").on("click", function(){
+                    var customerId = Node.one("#customerId").val();
+                    var url = "moneylog_add.html?time=" + new Date().getTime()+"&customerId="+customerId;
+                    CurSite.redirectTo(null, url);
+                });
+
+                var dealCatList = function (catList,arg1,arg2){
+                    if(arg1 && arg1.length > 0){
+                        for(var i = 0;i < catList.length;i++){
+                            var arg1Obj = catList[i];
+                                if(arg1Obj.catId.length > 0&&arg1Obj.catId == arg1){
+                                     arg1Obj.isDefault = true;
+                                     dealCatList(arg1Obj.subCat,arg2,null);
+                                }
+                        }
+                    }
+                    return catList;
+                }
+                var selectDate=Node.one("#selectdate").val();
+                var catList = JSON.parse(selectDate);
+                var typeId = Node.one('#typeId').val();
+                var subjectId = Node.one('#subjectId').val();
+
+                catList = dealCatList(catList,typeId,subjectId);
+                var arrayData = DropList.multiple({
+                    dropListCls: "style-1",              // 样式风格
+                    insertion: "#mul1",                  // 显示节点
+                    dataSource: catList,                 // 数据源 Array -> Json
+                    paramSubcat: "subCat",               // 子选项的属性名 Array -> Json
+                    paramText: "catName",                // 作为选项显示内容的属性名 String
+                    paramValue: "catId",                 // 作为值的属性名  String OR Number
+                    isDefault: "isDefault",              // 默认值参数 boolean
+                    mulSelect: false,                    // 单选(默认) OR 多选
+                    subConfig: [{
+                        placeholder: "请选择一级科目..."
+                    },{
+                        placeholder: "请选择二级科目..."
+                    }]
+                });
+
+                arrayData.on("change", function(ev){
+                    var data = ev.data;
+                        for (var i = 0; i < data.length; i++) {
+                            if(i==0){
+                                Node.one("#typeId").val(data[i].value);
+                                if(data.length==1){
+                                   Node.one("#subjectId").val("");
+                                   break;
+                                }
+                            }else{
+                                Node.one("#subjectId").val(data[i].value);
+                            }
+                        };
+                 });
+                var err = Node.one('#err').val();
+                if(err && err.length > 0){
+                  alert(err);
+                }
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            input(type='hidden', id="err", value=err)
+            input(type='hidden', id="typeId", value=cond.typeId)
+            input(type='hidden', id="subjectId", value=cond.subjectId)
+            input(type='hidden', id="selectdate", value=selectValues)
+
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                fieldset(id="selected")
+                    table(id="select_table")
+                        tr
+                            td 时间:
+                            td(colspan=3)
+                                input(type="text" id="startDate" value=add.startDate)
+                                span 至
+                                input(type="text" id="endDate"   value=add.endDate)
+                            td 用户:
+                            td
+                                input(type="text" id="customerId" value=cond.customerId)
+                        tr
+                            td(colspan=5)
+                                .control(id="mul1" style="padding-left:25px")
+                                    span(class="log")
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+                    input(type="button", id="add", value="新增")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td(w="80") 用户
+                                td(w="80") 科目
+                                td(w="120") 操作前
+                                td(w="120") 操作后
+                                td(w="100") 金额
+                                td(w="240") 订单号
+                                td(w="160") 创建时间
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.customerId
+                                    td=val.subject.name
+                                    td=val.stateBefore/100
+                                    td=val.stateAfter/100
+                                    td=val.amount/100
+                                    td=val.orderId
+                                    td=val.createTime
+            .clearfix(style="margin-top:8px")
+                #audit 收入总计:&nbsp;
+                    font(color="red")=inAmount/100
+                    |(元)&nbsp;,&nbsp;&nbsp;&nbsp;&nbsp;支出总计:&nbsp;
+                    font(color="red")=outAmount/100
+                    |(元)&nbsp;.
+            .clearfix(style="margin-top:8px")
+                #manu

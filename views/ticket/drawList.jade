@@ -1,0 +1,114 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-pagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow){
+                var termCodeInput = new VsRoundInput("#termCode", {});
+
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#rst', {});
+                var pageBar = new VsPagebar('#bar', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode)
+                    {
+                        cond.gameCode = gameCode;
+                    }
+                    var termCode = termCodeInput.getData();
+                    if(termCode.length > 0)
+                    {
+                        cond.termCode = termCode;
+                    }
+                    var sep = Node.one("#sep").val();
+                    cond.sep = sep;
+                    return cond;
+                };
+
+                var toPage = function(index){
+                    console.log(index);
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    console.log(cond);
+                    CurSite.redirectTo(null, "ticket_drawList.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "ticket_drawDetail.html?id=" + tId;
+                        var win = new VsWindow("#tWin", {title:"详情", width:500, height:400, url:url, controlBt:[
+                            {name:'关闭', cb:null}
+                        ]});
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur);
+                });
+
+                Node.one("#add").on("click", function(){
+                    var url = "ticket_drawAdd.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="padding-top:6px;margin-left:12px;") 游戏:
+                .vs_grid_plain(style="padding-top:4px;")
+                    select(id="gameCode")
+                        - each val in games
+                            if(val.id == cond.gameCode)
+                                option(value=val.id, selected="true")=val.name
+                            else
+                                option(value=val.id)=val.name
+                .vs_grid_plain(style="padding-top:6px;margin-left:12px;") 期次:
+                #termCode.vs_grid_plain(initValue=cond.termCode)
+                .vs_grid_plain(style="padding-top:6px;margin-left:12px;") 分块:
+                .vs_grid_plain(style="padding-top:4px;")
+                    select(id="sep")
+                        - each val in seps
+                            if(val.id == cond.sep)
+                                option(value=val.id, selected="true")=val.des
+                            else
+                                option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                #rst.container
+                    table
+                        thead
+                            tr
+                                td(w="100") id
+                                td(w="76") 游戏
+                                td(w="76") 期次
+                                td(w="76") 金额
+                                td(w="134") 操作
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val._id
+                                    td=val.gameCode
+                                    td=val.termCode
+                                    td=val.amount/100 + '(元)'
+                                    td
+                                        input(type="button", value="详情", class="detail", tId=val.id)
+            .clearfix(style="margin-top:8px")
+                #bar.vs_grid_plain(style="width:600px;")

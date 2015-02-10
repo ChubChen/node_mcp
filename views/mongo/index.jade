@@ -1,0 +1,31 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-pagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsPagebar, VsRoundInput, VsWindow){
+
+                Node.one("#listTables").on("click", function(){
+                    var url = "mongo_listTables.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+
+                Node.one("#listMsgTables").on("click", function(){
+                    var url = "mongo_listMsgTables.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+
+                Node.one("#clearCheckDoc").on("click", function(){
+                    var url = "mongo_clearCheckDoc.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        .bodyAdminDiv
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="clearCheckDoc", value="清空算奖队列")
+                    input(type="button", id="listTables", value="mg,查看所有表")
+                    input(type="button", id="listMsgTables", value="mg_msg,查看所有表")

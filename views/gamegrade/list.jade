@@ -1,0 +1,96 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow){
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var table = new VsGridTable('#rst', {});
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+                    var gameCode = Node.one('#gameCode').val();
+                    if(gameCode && gameCode.length > 0)
+                    {
+                        cond.gameCode = gameCode;
+                    }
+                    var termCode = Node.one('#termCode').val();
+                    if(termCode && termCode.length > 0)
+                    {
+                        cond.termCode = termCode;
+                    }
+                    return cond;
+                };
+
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    CurSite.redirectTo(null, "gamegrade_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                };
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 游戏:
+                        td
+                            select(id="gameCode")
+                                option(value="") 所有
+                                - each val in game
+                                    if(val.id == cond.gameCode)
+                                        option(value=val.id, selected="true")=val.name
+                                    else
+                                        option(value=val.id)=val.name
+                        td 期次:
+                        td
+                            input(id="termCode", type="text", value=cond.termCode)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td(w="100") 游戏
+                                td(w="76") 期次
+                                td(w="76") 代码
+                                td(w="76") 名称
+                                td(w="76") 奖金
+                                td(w="76") 注数
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.gameCode
+                                    td=val.termCode
+                                    td=val.level
+                                    td=val.name
+                                    td=val.bonus/100 + '(元)'
+                                    td=val.count
+            .clearfix(style="margin-top:8px")
+                #manu

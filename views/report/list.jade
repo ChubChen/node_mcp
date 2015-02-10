@@ -1,0 +1,144 @@
+doctype html
+html(lang="en")
+    head
+        link(rel='stylesheet', type='text/css', href='./css/table-list.css')
+        link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,calendar,calendar/assets/base.css",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar){
+
+                var S_Date = S.Date;
+                new Calendar('#startDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                    Node.one('#startDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                new Calendar('#endDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                    Node.one('#endDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                var count = parseInt(Node.one('#count').val());
+                var skip = parseInt(Node.one('#skip').val());
+                var limit = parseInt(Node.one('#limit').val());
+                var cur = parseInt(skip/limit) + 1;
+                var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
+                    toPage(index,false);
+                }});
+
+                var getCondition = function()
+                {
+                    var cond = {};
+
+                    var termCode = Node.one('#termCode').val();
+                    if(termCode && termCode.length > 0){
+                        cond.termCode = termCode;
+                    }
+
+                    var customerId = Node.one('#customerId').val();
+                    if(customerId && customerId.length > 0){
+                        cond.customerId = customerId;
+                    }
+
+                    return cond;
+                };
+
+                var getAddition = function(){
+                    var add = {};
+                    add.startDate = Node.one('#startDate').val();
+                    add.endDate = Node.one('#endDate').val();
+                    return add;
+                };
+
+                var getSort = function()
+                {
+                    return {id:-1};
+                }
+                var toPage = function(index,control){
+                    var limit = parseInt(Node.one('#limit').val());
+                    var skip = (index - 1)*limit;
+
+                    if(control){
+                        limit=20;
+                        skip=0;
+                    }
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    var sort = encodeURIComponent(Json.stringify(getSort()));
+
+                    CurSite.redirectTo(null, 'report_list.html?' + 'skip=' + skip + '&limit=' + limit + '&cond=' + cond + '&sort=' + sort + '&add=' + add);
+                };
+                //绑定事件
+                Node.all("input.detail").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var url = "report_detail.html?id=" + tId;
+                        CurSite.redirectTo(null, url);
+                    });
+                });
+
+                Node.one("#search").on("click", function(){
+                    toPage(cur,true);
+                });
+            });
+    body
+        .bodyAdminDiv
+            input(type='hidden', id="count", value=count)
+            input(type='hidden', id="skip", value=skip)
+            input(type='hidden', id="limit", value=limit)
+            #tWin.container
+            .clearfix(style="margin-top:8px")
+            fieldset(id="selected")
+                table(id="select_table")
+                    tr
+                        td 期次:
+                        td
+                            input(type="text" id="termCode" value=cond.termCode)
+                        td 用户名:
+                        td
+                            input(type="text" id="customerId" value=cond.customerId)
+                    tr
+                        td 时间:
+                        td(colspan=3)
+                            input(type="text" id="startDate" value=add.startDate)
+                            span 至
+                            input(type="text" id="endDate"   value=add.endDate)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="search", value="查询")
+            .clearfix(style="margin-top:8px")
+                .tab-list
+                    table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
+                        thead
+                            tr
+                                td id
+                                td 游戏
+                                td 期次
+                                td 用户
+                                td 类型
+                                td 成功数目
+                                td 成功金额
+                                td 失败数目
+                                td 失败金额
+                                td 中奖数目
+                                td 中奖购买金额
+                                td 税后奖金
+                                td 税前奖金
+                                td 创建时间
+                        tbody
+                            - each val in rst
+                                tr
+                                    td=val.id
+                                    td=val.gameCode
+                                    td=val.termCode
+                                    td=val.customerId
+                                    td=val.type.des
+                                    td=val.saleCount
+                                    td=val.saleAmount/100
+                                    td=val.failCount
+                                    td=val.failAmount/100
+                                    td=val.hitCount
+                                    td=val.hitAmount/100
+                                    td=val.bonus/100
+                                    td=val.bonusBeforeTax/100
+                                    td=val.createTime
+            .clearfix(style="margin-top:8px")
+                #manu
