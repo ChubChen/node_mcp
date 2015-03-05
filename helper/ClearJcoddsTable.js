@@ -29,7 +29,7 @@ var initTerm = function()
         {
             var table = dc.main.get("jcodds");
             var jcodds = {gameCode:"T51", matchCode:"201501010102",  matchName:"中国Vs日本", pType:"02",
-                oddsCode:"1@3.50;2@1.00;3@2.45", oddsInfo:"",oddsName:"", version:1};
+                oddsCode:"cn02", oddsInfo:"1.45|2.45|3.00",oddsName:"", version:1};
             jcodds.id = jcodds.gameCode+"_"+jcodds.matchCode+"_"+jcodds.pType;
             table.save(jcodds, [], function(err, data){
                 cb(err);
