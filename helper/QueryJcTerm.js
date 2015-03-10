@@ -15,7 +15,7 @@ var data = {
     'i_format': 'json',
     'i_callback':'getData',
     //'poolcode[]':'hhad',
-    'poolcode[]':'hhad',
+    'poolcode[]':'had',
     '_':new Date().getTime()
 };
 
@@ -52,9 +52,7 @@ var req = http.request(options, function (res) {
                 for(var key in data){
                     termArray.push(data[key]);
                 }
-
                 var Termtable = dc.main.get("term");
-
                 async.each(termArray, function (term, callback) {
                     var dateStr = moment(term.date, "YYYY-MM-DD");
                     var code = dateStr.format("YYYYMMDD").valueOf()+ dateStr.weekday()+ term.num.substr(term.num.length-3);
