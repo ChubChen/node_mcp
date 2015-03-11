@@ -14,6 +14,7 @@ filterValue=`ps -ef|grep Filter.js|grep -v grep|awk '{print $2}'`
 adminValue=`ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
 gatewayValue=`ps -ef|grep Gateway.js|grep -v grep|awk '{print $2}'`
 notifyValue=`ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
+jcTermCorn=`ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
 if [ $# -eq 0 ]; then
         usage
         exit 1
@@ -32,6 +33,10 @@ case $OPT in
              nohup node Admin.js  target=$PROCESSID > /data/mcplog/admin.log 2>&1 &
              echo "Start Admin.js success"
          fi
+         if [ ${#jcTermCorn} -eq 0 ]; then
+             nohup node JcTermCorn.js  target=$PROCESSID > /data/mcplog/jcTermCorn.log 2>&1 &
+             echo "Start JcTermCorn.js success"
+         fi
          if [ ${#gatewayValue} -eq 0 ]; then
              nohup node Gateway.js target=$PROCESSID gtPort=9090 > /data/mcplog/gateway9090.log 2>&1 &
              nohup node Gateway.js target=$PROCESSID gtPort=9091 > /data/mcplog/gateway9091.log 2>&1 &
@@ -43,6 +48,7 @@ case $OPT in
          if [ ${#filterValue} -ne 0 -a ${#adminValue} -ne 0 -a ${#gatewayValue} -ne 0 ]; then
             echo "No bootable projects"
          fi
+
 
         ;;
         stop|Stop) echo "Stopping.....$PROCESSID"
@@ -58,6 +64,10 @@ case $OPT in
                  kill -9  `ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
                  echo "Stop Notify.js success"
                fi
+               if [ ${#jcTermCorn} -ne 0 ];  then
+                  kill -9  `ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
+                  echo "Stop JcTermCorn.js success"
+               fi
                if [ ${#gatewayValue} -ne 0 ];  then
                   kill -9  `ps -ef|grep Gateway.js|grep -v grep|awk '{print $2}'`
                   echo "Stop Gateway.js success"
@@ -68,10 +78,15 @@ case $OPT in
                  kill -9  `ps -ef|grep Filter.js|grep -v grep|awk '{print $2}'`
                fi
                nohup node Filter.js target=$PROCESSID > /data/mcplog/filter.log 2>&1 &
-                if [ ${#notifyValue} -ne 0 ];  then
+               if [ ${#notifyValue} -ne 0 ];  then
                  kill -9  `ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
                fi
                nohup node Notify.js target=$PROCESSID > /data/mcplog/notify.log 2>&1 &
+               if [ ${#jcTermCorn} -ne 0 ];  then
+                  kill -9  `ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
+               fi
+               nohup node JcTermCorn.js target=$PROCESSID > /data/mcplog/jcTermCorn.log 2>&1 &
+
                if [ ${#adminValue} -ne 0 ];  then
                  kill -9  `ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
                fi
