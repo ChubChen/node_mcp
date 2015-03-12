@@ -150,33 +150,34 @@ JcTermCorn.prototype.handle = function(err , Object){
                 }
             });
         },
-        //更新赔率
+        //删除历史赔率
         function(rstOddsArray, cb){
             var jcoddsTable = dc.mg.get("jcodds");
+            jcoddsTable.drop(function(err,data){
+                 cb(null, rstOddsArray);
+            });
+
+        },
+        function(rstOddsArray, cb){
             async.eachSeries(rstOddsArray, function (odds, callback) {
-                jcoddsTable.findAndRemove({"_id": odds._id}, {}, [], function(err, data){
-                    if(err){
-                        log.error(err);
-                        callback(err);
-                    }else{
-                        jcoddsTable.save(odds, function(err, data){
-                             callback(null);
-                        });
-                    }
+                var jcoddsTable = dc.mg.get("jcodds");
+                jcoddsTable.save(odds, function(err, data){
+                        log.info(odds)
+                       callback(null);
                 })
             }, function (err) {
-                  cb(err);
+                cb(err);
             });
         }
     ],function (err, result) {
-        log.info(err);
+        log.error(err);
         log.info("update JcTerm");
     });
 };
 
 JcTermCorn.prototype.job = function () {
     var self = this
-    var corn = new CronJob('*/5 * * * *', function () {
+    var corn = new CronJob('*/10 * * * * *', function () {
         var data = {
             'i_format': 'json',
             'poolcode[0]':'hhad', //让球胜平负
