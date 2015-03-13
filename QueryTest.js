@@ -36,7 +36,7 @@ QueryTest.prototype.query = function(cmd, bodyNode, cb)
 QueryTest.prototype.queryCQ01 = function()
 {
     var self = this;
-    var bodyNode = {cond:{gameCode:{$in:['T05']}}, sort:{}, skip:0, limit:20};
+    var bodyNode = {cond:{gameCode:{$in:['T51']}}, sort:{}, skip:120, limit:20};
     log.info(bodyNode);
     self.query("CQ01", bodyNode, function(err, backMsgNode){
         if(err)
