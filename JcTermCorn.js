@@ -177,7 +177,7 @@ JcTermCorn.prototype.handle = function(err , Object){
 
 JcTermCorn.prototype.job = function () {
     var self = this
-    var corn = new CronJob('*/10 * * * * *', function () {
+    var corn = new CronJob('*/5 * * * *', function () {
         var data = {
             'i_format': 'json',
             'poolcode[0]':'hhad', //让球胜平负

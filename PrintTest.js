@@ -20,8 +20,8 @@ var PrintTest = function(){
     var self = this;
     self.userId = 'C0001';
     self.userType = "CHANNEL";
-    self.key = 'cad6011f5f174a359d9a36e06aada07e';
-    self.digestType = "3des";
+    self.key = '123456';
+    self.digestType = "md5";
 };
 
 PrintTest.prototype.print = function(cmd, bodyNode, cb)
