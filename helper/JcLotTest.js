@@ -7,11 +7,11 @@ var digestUtil = esut.digestUtil;
 
 var LotTest = function(){
     var self = this;
-    self.userId = 'Q0001';
+    self.userId = 'Q0002';
     self.userType = "CHANNEL";
-    self.key = 'cad6011f5f174a359d9a36e06aada07e';
+    self.key = '24680';
     self.cmd = 'CT03';
-    self.digestType = "3des";
+    self.digestType = "md5";
 };
 
 LotTest.prototype.lot = function(bodyNode, cb)
@@ -24,7 +24,7 @@ LotTest.prototype.lotT51 = function(cb){
 
     var self = this;
     var bodyNode = {};
-    var orderNode = {outerId:digestUtil.createUUID(), amount:200};
+    var orderNode = {outerId:digestUtil.createUUID(), amount:1600};
   /*  var ticketsNode = [
         {
             gameCode:'T51', pType:'06', bType:'21', amount:200,
@@ -41,9 +41,44 @@ LotTest.prototype.lotT51 = function(cb){
     ];*/
     var ticketsNode = [
         {
-            gameCode:'T51', pType:'02', bType:'11', amount:200,
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201501010101|1@2.00'
+            number:'02|201503161002|1@2.00;02|201503161001|3@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|3@2.00;02|201503161003|0@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|3@2.00;02|201503161003|1@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|1@2.00;02|201503161003|1@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|3@2.00;02|201503161003|3@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|0@2.00;02|201503161003|0@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|3@2.00;02|201503161003|0@2.00'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503161002|1@2.00;02|201503161003|0@2.00'
         }
     ]
     orderNode.tickets = ticketsNode;
