@@ -14,6 +14,7 @@ var msgType = cons.msgType;
 var ticketPrintQueenStatus = cons.ticketPrintQueenStatus;
 var ticketPrintStatus = cons.ticketPrintStatus;
 var termStatus = cons.termStatus;
+var gameType = cons.gameType;
 
 
 var PrintTest = function(){
@@ -101,9 +102,30 @@ PrintTest.prototype.printUtilEmpty = function()
                     }
                     var rst = [];
                     async.each(tickets, function(ticket, callback) {
-                        rst[rst.length] = {id:ticket.id,
-                            status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
-                        seq:digestUtil.createUUID(), terminal:'123456', rNumber:ticket.number};
+                        var gameData = game.getInfo(ticket.gameCode);
+                        if(gameData.type == gameType.Jingcai){
+                            var temp  = ticket.number.split(";");
+                            var array = new Array();
+                            for(var i =0 ; i<temp.length ; temp++){
+                                var match = temp[i].split("|");
+                                var result = match[2].split(",");
+                                var tempArray = new Array();
+                                for(var j = 0; j < result.length ; j ++){
+                                    result[i] += "@" + Math.round(Math.random()*10);
+                                    tempArray.push(result[i]);
+                                }
+
+                                array.push(match[0]+"|"+match[i]+"|"+tempArray.join(","));
+                            }
+                            var rnumber = array.join(";");
+                            rst[rst.length] = {id:ticket.id,
+                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
+                                seq:digestUtil.createUUID(), terminal:'123456', rNumber:rnumber};
+                        }else{
+                            rst[rst.length] = {id:ticket.id,
+                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
+                                seq:digestUtil.createUUID(), terminal:'123456', rNumber:ticket.number};
+                        }
                         callback();
                     }, function(err){
                         cb(err, rst);
