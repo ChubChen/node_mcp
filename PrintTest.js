@@ -16,6 +16,10 @@ var ticketPrintStatus = cons.ticketPrintStatus;
 var termStatus = cons.termStatus;
 var gameType = cons.gameType;
 
+var config = require('mcp_config');
+var game = config.game;
+
+
 
 var PrintTest = function(){
     var self = this;
@@ -109,13 +113,12 @@ PrintTest.prototype.printUtilEmpty = function()
                             for(var i =0 ; i<temp.length ; temp++){
                                 var match = temp[i].split("|");
                                 var result = match[2].split(",");
-                                var tempArray = new Array();
                                 for(var j = 0; j < result.length ; j ++){
-                                    result[i] += "@" + Math.round(Math.random()*10);
-                                    tempArray.push(result[i]);
+                                    if(result[j].indexOf("@") < 0){
+                                        temp[i] += "@" + (Math.random()*10).toFixed(2);
+                                    }
                                 }
-
-                                array.push(match[0]+"|"+match[i]+"|"+tempArray.join(","));
+                                array.push(temp[i]);
                             }
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
