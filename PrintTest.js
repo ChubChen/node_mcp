@@ -2,6 +2,8 @@ var async = require('async');
 var CronJob = require("cron").CronJob;
 
 var platInterUtil = require('mcp_util').platInterUtil;
+var moment = require("moment");
+
 var esut = require("easy_util");
 var log = esut.log;
 var digestUtil = esut.digestUtil;
@@ -133,11 +135,11 @@ PrintTest.prototype.printUtilEmpty = function()
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
                                 status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
-                                seq:digestUtil.createUUID(), terminal:'123456', rNumber:rnumber};
+                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:rnumber};
                         }else{
                             rst[rst.length] = {id:ticket.id,
                                 status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
-                                seq:digestUtil.createUUID(), terminal:'123456', rNumber:ticket.number};
+                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:ticket.number};
                         }
                         callback();
                     }, function(err){
