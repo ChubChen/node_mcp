@@ -123,8 +123,10 @@ PrintTest.prototype.printUtilEmpty = function()
                                     }
                                     tempArray.push(tempstr);
                                 }
+                                log.info(tempArray);
                                 array.push(match[0]+"|"+match[1]+"|"+tempArray.join(","));
                             }
+                            log.info(array);
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
                                 status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
