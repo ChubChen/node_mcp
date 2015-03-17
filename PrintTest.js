@@ -112,12 +112,12 @@ PrintTest.prototype.printUtilEmpty = function()
                             log.info(temp);
                             log.info(temp.length);
                             var array = new Array();
-                            for(var i =0 ; i< temp.length ; temp++){
+                            for(var i =0 ; i< temp.length ; i++){
                                 log.info(temp[i]);
                                 var match = temp[i].split("|");
                                 var result = match[2].split(",");
                                 var tempArray = new Array();
-                                for(var j = 0; j < result.length ; j ++){
+                                for(var j = 0; j < result.length ; j++){
                                     var tempstr = "";
                                     if(result[j].indexOf("@") < 0){
                                         tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
