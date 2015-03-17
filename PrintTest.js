@@ -115,10 +115,13 @@ PrintTest.prototype.printUtilEmpty = function()
                                 var result = match[2].split(",");
                                 var tempArray = new Array();
                                 for(var j = 0; j < result.length ; j ++){
+                                    var tempstr = "";
                                     if(result[j].indexOf("@") < 0){
-                                        result[i] += "@" + (Math.random()*10).toFixed(2);
+                                        tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
+                                    }else{
+                                        tempstr = result[j];
                                     }
-                                    tempArray.push(result[i]);
+                                    tempArray.push(tempstr);
                                 }
                                 array.push(match[0]+"|"+match[1]+"|"+tempArray.join(","));
                             }
