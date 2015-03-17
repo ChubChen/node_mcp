@@ -23,7 +23,7 @@ var game = config.game;
 
 var PrintTest = function(){
     var self = this;
-    self.userId = 'C0001';
+    self.userId = 'C0002';
     self.userType = "CHANNEL";
     self.key = '123456';
     self.digestType = "md5";
