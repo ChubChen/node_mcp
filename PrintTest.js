@@ -113,12 +113,14 @@ PrintTest.prototype.printUtilEmpty = function()
                             for(var i =0 ; i<temp.length ; temp++){
                                 var match = temp[i].split("|");
                                 var result = match[2].split(",");
+                                var tempArray = new Array();
                                 for(var j = 0; j < result.length ; j ++){
                                     if(result[j].indexOf("@") < 0){
-                                        temp[i] += "@" + (Math.random()*10).toFixed(2);
+                                        result[i] += "@" + (Math.random()*10).toFixed(2);
                                     }
+                                    tempArray.push(result[i]);
                                 }
-                                array.push(temp[i]);
+                                array.push(match[0]+"|"+match[i]+"|"+tempArray.join(","));
                             }
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
