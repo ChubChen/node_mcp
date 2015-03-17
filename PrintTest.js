@@ -109,8 +109,11 @@ PrintTest.prototype.printUtilEmpty = function()
                         var gameData = game.getInfo(ticket.gameCode);
                         if(gameData.type == gameType.Jingcai){
                             var temp  = ticket.number.split(";");
+                            log.info(temp);
+                            log.info(temp.length);
                             var array = new Array();
-                            for(var i =0 ; i<temp.length ; temp++){
+                            for(var i =0 ; i< temp.length ; temp++){
+                                log.info(temp[i]);
                                 var match = temp[i].split("|");
                                 var result = match[2].split(",");
                                 var tempArray = new Array();
