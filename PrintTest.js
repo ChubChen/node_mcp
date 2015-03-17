@@ -120,7 +120,7 @@ PrintTest.prototype.printUtilEmpty = function()
                                     }
                                     tempArray.push(result[i]);
                                 }
-                                array.push(match[0]+"|"+match[i]+"|"+tempArray.join(","));
+                                array.push(match[0]+"|"+match[1]+"|"+tempArray.join(","));
                             }
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
