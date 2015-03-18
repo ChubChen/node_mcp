@@ -6,7 +6,7 @@ var log = esut.log;
 
 var moment = require("moment");
 
-var initTerm = function()
+var initTermT05 = function()
 {
     async.waterfall([
         function(cb){
@@ -17,29 +17,36 @@ var initTerm = function()
         function(cb)
         {
             var table = dc.main.get("term");
-            var startDate = 20150101;
-            var endDate = 20150119;
+            var startDate = 20150318;
+            var endDate = 20150318;
             var gameCode = 'T05';
             var rst = [];
             for(var curDate = startDate; curDate <= endDate; curDate++)
             {
-                var startTimeStamp = moment(curDate + "000000", "YYYYMMDDHHmmss").valueOf();
-                var gap = 60*60*1000;
-                for(var i = 1; i < 25; i++)
+                var startTimeStamp = moment(curDate + "085000", "YYYYMMDDHHmmss").valueOf();
+                var gap = 10*60*1000;
+                for(var i = 1; i <=85; i++)
                 {
                     var start = startTimeStamp + (i - 1)*gap;
                     var end = startTimeStamp + i*gap;
                     var code = (curDate*100 + i) + "";
+                    code=code.substr(2);
                     var nextCode = "";
-                    if(i == 24)
+                    if(i == 1)
                     {
-                        nextCode += ((curDate+1)*100 + 1) + "";
+                        nextCode += (curDate*100 + i + 1) + "";
+                        start = moment( curDate - 1+"23:00:00", "YYYYMMDDHHmmss").valueOf();
                     }
                     else
                     {
                         nextCode += (curDate*100 + i + 1) + "";
                     }
-                    var term = {gameCode:gameCode, code:code, nextCode:nextCode,
+                    if(i==85){
+                        nextCode = ((curDate+1)*100 + 1) + "";
+                    }
+
+
+                    var term = {gameCode:gameCode, code:code, nextCode:nextCode.substr(2),
                         openTime:start, closeTime:end,
                         status:constants.termStatus.NOT_ON_SALE, wNum:""};
                     term.id = term.gameCode + "_" + term.code;
@@ -118,5 +125,5 @@ var initTermF04 = function()
     });
 };
 
-initTermF04();
+initTermT05();
 
