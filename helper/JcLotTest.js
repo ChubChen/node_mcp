@@ -7,9 +7,9 @@ var digestUtil = esut.digestUtil;
 
 var LotTest = function(){
     var self = this;
-    self.userId = 'Q0002';
+    self.userId = 'Q0001';
     self.userType = "CHANNEL";
-    self.key = '24680';
+    self.key = '135790';
     self.cmd = 'CT03';
     self.digestType = "md5";
 };
@@ -24,7 +24,7 @@ LotTest.prototype.lotT51 = function(cb){
 
     var self = this;
     var bodyNode = {};
-    var orderNode = {outerId:digestUtil.createUUID(), amount:1600};
+    var orderNode = {outerId:digestUtil.createUUID(), amount:400};
   /*  var ticketsNode = [
         {
             gameCode:'T51', pType:'06', bType:'21', amount:200,
@@ -40,40 +40,40 @@ LotTest.prototype.lotT51 = function(cb){
         }
     ];*/
     var ticketsNode = [
+        /*{
+            gameCode:'T51', pType:'02', bType:'11', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503183001|1,2,3'
+        },
+        {
+            gameCode:'T51', pType:'02', bType:'11', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503183002|3'
+        },*/
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183001|1,2,3;02|201503183002|3'
+            number:'02|201503183001|3;02|201503183003|1'
         },
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|3;02|201503183003|0'
+            number:'02|201503183001|1;02|201503183003|1'
         },
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|3;02|201503183003|1'
+            number:'02|201503183001|3;02|201503183003|3'
         },
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|1;02|201503183003|1'
+            number:'02|201503183002|0,1;02|201503183003|0'
         },
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|3;02|201503183003|3'
-        },
-        {
-            gameCode:'T51', pType:'02', bType:'21', amount:200,
-            multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|0;02|201503183003|0'
-        },
-        {
-            gameCode:'T51', pType:'02', bType:'21', amount:200,
-            multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503183002|3;02|201503183003|0'
+            number:'02|201503183002|3,0;02|201503183003|0'
         },
         {
             gameCode:'T51', pType:'02', bType:'21', amount:200,
@@ -98,7 +98,7 @@ LotTest.prototype.lotT51 = function(cb){
 var lotTest = new LotTest();
 var count = 0;
 async.whilst(
-    function() { return count < 1},
+    function() { return count < 20},
     function(whileCb) {
         lotTest.lotT51(function(){
             count++;
