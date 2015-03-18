@@ -11,6 +11,7 @@ usage()
 OPT=$1
 PROCESSID=$2
 pidValue=`ps -ef|grep Scheduler.js|grep -v grep|awk '{print $2}'`
+fileClient=`ps -ef|grep TermFileClient.js|grep -v grep|awk '{print $2}'`
 if [ $# -eq 0 ]; then
         usage
         exit 1
@@ -19,6 +20,7 @@ case $OPT in
         start|Start) echo "Starting.....$PROCESSID"
              nohup node Scheduler.js target=$PROCESSID  > /data/mcplog/scheduler.log 2>&1 &
              nohup node Scheduler.js target=$PROCESSID  > /data/mcplog/scheduler1.log 2>&1 &
+             nohup node TermFileClient.js target=$PROCESSID  > /data/mcplog/termFileClient.log 2>&1 &
              echo "Start Scheduler.js success"
         ;;
         stop|Stop) echo "Stopping.....$PROCESSID"
@@ -28,13 +30,24 @@ case $OPT in
                else
                  echo "You cannot repeat stop"
                fi
+               if [ ${#fileClient} -ne 0 ];  then
+                 kill -9  `ps -ef|grep Scheduler.js|grep -v grep|awk '{print $2}'`
+                 echo "Stop TermFileClient.js success"
+               else
+                 echo "You cannot repeat stop"
+               fi
         ;;
         restart|reStart) echo "ReStarting.....$PROCESSID"
                if [ ${#pidValue} -ne 0 ];  then
                  kill -9  `ps -ef|grep Scheduler.js|grep -v grep|awk '{print $2}'`
                fi
+               if [ ${#fileClient} -ne 0 ];  then
+                 kill -9  `ps -ef|grep TermFileClient.js|grep -v grep|awk '{print $2}'`
+               fi
              nohup node Scheduler.js target=$PROCESSID  > /data/mcplog/scheduler.log 2>&1 &
              nohup node Scheduler.js target=$PROCESSID  > /data/mcplog/scheduler1.log 2>&1 &
+             nohup node TermFileClient.js target=$PROCESSID  > /data/mcplog/termFileClient.log 2>&1 &
+
              echo "ReStart success"
         ;;
         *)usage
