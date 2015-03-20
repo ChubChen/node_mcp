@@ -94,7 +94,13 @@ JcTermCorn.prototype.handle = function(err , Object){
             for(var key in Object.data){
                 var data = Object.data[key];
                 var beginDate = moment(data.b_date, "YYYY-MM-DD");
-                var code = beginDate.format("YYYYMMDD").valueOf() + beginDate.weekday() + data.num.substr(data.num.length-3);
+                var week = '';
+                if(beginDate.weekday() == '0'){
+                    week = '7';
+                }else{
+                    week = beginDate.weekday();
+                }
+                var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
                 var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
                 var closeTime = data.date + " "+ data.time;
                 var status = termStatus.ON_SALE;
