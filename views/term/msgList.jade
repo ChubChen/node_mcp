@@ -73,6 +73,11 @@ html(lang="en")
                 Node.one("#search").on("click", function(){
                     toPage(cur);
                 });
+                Node.one("#backup").on("click", function(){
+                alert("123");
+                    var url = "term_list.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
 
                 Node.one("#add").on("click", function(){
                     var url = "term_msgList.html?time=" + new Date().getTime();
@@ -101,6 +106,7 @@ html(lang="en")
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
+                    input(type="button", id="backup", value="返回列表")
             .clearfix(style="margin-top:8px")
                 .tab-list
                     table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")

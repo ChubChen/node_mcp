@@ -77,7 +77,7 @@ QueryTest.prototype.queryCQ02 = function()
 QueryTest.prototype.queryCQ03 = function()
 {
     var self = this;
-    var bodyNode = {cond:{gameCode:'T51',id:"704"}, sort:{}, skip:0, limit:20};
+    var bodyNode = {cond:{outerId:{"$in":["186581"]}}, sort:{}, skip:0, limit:20};
     self.query("CQ03", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -119,6 +119,26 @@ QueryTest.prototype.queryCQ05 = function()
     var self = this;
     var bodyNode = {cond:{gameCode:'T06', termCode:'2014001'}, sort:{}, skip:0, limit:20};
     self.query("CQ05", bodyNode, function(err, backMsgNode){
+        if(err)
+        {
+            log.info('err:' + err);
+        }
+        else
+        {
+            log.info('back:');
+            log.info(backMsgNode);
+        }
+    });
+}
+
+/**
+ * 期次查询
+ */
+QueryTest.prototype.queryCQ06 = function()
+{
+    var self = this;
+    var bodyNode = {cond:{}, sort:{}, skip:0, limit:20};
+    self.query("CQ06", bodyNode, function(err, backMsgNode){
         if(err)
         {
             log.info('err:' + err);
