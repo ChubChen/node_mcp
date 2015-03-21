@@ -1,0 +1,94 @@
+doctype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window", function(S, Io, Node, Json, VsDataSelect, VsWindow){
+                var getData = function(){
+                    var data = {};
+                    data.id = Node.one("#ticketId").val();
+                    data.rNumber = Node.one("#rNumber").val();
+                    data.province = Node.one("#province").val();
+                    data.seq = Node.one("#seq").val();
+                    data.terminal = Node.one("#terminal").val();
+                    data.printStatus = parseInt(Node.one("#ticketPrintStatus").val());
+                    data.printQueenStatus = parseInt(Node.one("#ticketPrintQueenStatus").val());
+                    return data;
+                };
+
+                var getCond = function()
+                {
+                    var id = Node.one("#ticketId").val();
+                    return {"_id":id};
+                };
+
+                var checkParam = function(data){
+                    if(data.printStatus == 1300)
+                    {
+                       if(data.rNumber == '' || data.rNumber == null){
+                            alert("输入错误");
+                            return false;
+                       }
+                    }
+                    return true;
+                };
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    if(checkParam(data))
+                    {
+                        var bodyNode = {cond:getCond(), data:{$set:data}};
+                        CurSite.sendDigest(Io, Json, "AD05", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    }
+                });
+            });
+    body
+        input(id="ticketId", type="hidden", value=ticket._id)
+        #tWin.container
+        .bodyAdminDiv
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 游戏*:
+                .vs_grid_plain(style="margin-left:8px;")=ticket.game.name
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") Number:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="number", type="text", value=ticket.number)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 省份:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="province", type="text", value=ticket.province)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 序列号:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="seq", type="text", value=ticket.seq)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 终端级:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="terminal", type="text", value=ticket.terminal)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") rNumber:
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(id="rNumber", type="text", value=ticket.rNumber)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 出票队列状态*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="ticketPrintQueenStatus")
+                        - each val in ticketPrintQueenStatus
+                            if(val.id == ticket.printQueenStatus)
+                                option(value=val.id, selected="true")=val.des
+                            else
+                                option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 出票状态*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="ticketPrintStatus")
+                        - each val in ticketPrintStatus
+                            if(val.id == ticket.printStatus)
+                                option(value=val.id, selected="true")=val.des
+                            else
+                                option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="修改", id="success")
