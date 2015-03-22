@@ -61,20 +61,49 @@ JcDrawNumberQuery.prototype.get=function(options, cb){
                     resutArray.push(endResult);
                     resutArray.push(rangQiu);
                     var mathCode = "";
+                    var today = moment();
                     if(cnWeek == "周一"){
-                        mathCode = moment().weekday(1).format("YYYYMMDD")+"1"+code;
+                        var resultDay = moment().isoWeekday(1);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周二"){
-                        mathCode = moment().weekday(2).format("YYYYMMDD")+"2"+code;
+                        var resultDay = moment().isoWeekday(2);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周三"){
-                        mathCode = moment().weekday(3).format("YYYYMMDD")+"3"+code;
+                        var resultDay = moment().isoWeekday(3);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周四"){
-                        mathCode = moment().weekday(4).format("YYYYMMDD")+"4"+code;
+                        var resultDay = moment().isoWeekday(4);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周五"){
-                        mathCode = moment().weekday(5).format("YYYYMMDD")+"5"+code;
+                        var resultDay = moment().isoWeekday(5);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周六"){
-                        mathCode = moment().weekday(6).format("YYYYMMDD")+"6"+code;
+                        var resultDay = moment().isoWeekday(6);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else {
-                        mathCode = moment().weekday(0).format("YYYYMMDD")+"7"+code;
+                        var resultDay = moment().isoWeekday(7);
+                        if(resultDay > today){
+                            resultDay = resultDay.subtract(7);
+                        }
+                        mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }
                     mathResult.push({termCode:mathCode,wNum:resutArray.join(",")});
                 }
@@ -110,7 +139,7 @@ JcDrawNumberQuery.prototype.handle=function(matchArray){
                             if(err){
                                 cb(err);
                             }else{
-                                if( data.status > termStatus.PREEND && data.status < termStatus.DRAW){
+                                if( data != null  &&  data.status > termStatus.PREEND && data.status < termStatus.DRAW){
                                     log.info("更新开奖结果");
                                     log.info({id:data.id, wNum: math.wNum});
                                     var fromTerm = {id:data.id, wNum: math.wNum};
