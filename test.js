@@ -12,7 +12,6 @@ var test = function () {
             var tticket = dc.main.get("tticket");
             var customer = tticket.find({status:1000,printStatus:1300,customerId:"Q0002"}, {}, []);
             customer.toArray(function(err ,data){
-                console.log(data);
                 if(data){
                     async.eachSeries(data, function (row, callback) {
                         if(row.rNumber){
@@ -23,7 +22,7 @@ var test = function () {
                                     if(iter.indexOf('@') > 0  && iter.substr(peilv.indexOf('@')).length >2  ){
                                         cll(null);
                                     }else{
-                                        console.log(row);
+                                        console.log(row.id);
                                         cll(null);
 
                                     }
@@ -39,7 +38,7 @@ var test = function () {
             });
         }
     ], function (err) {
-        cb(err)
+        cb(err);
     })
 
 }
