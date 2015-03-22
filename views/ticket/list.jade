@@ -77,6 +77,16 @@ html(lang="en")
                     });
                 });
 
+                Node.all("input.chuli").each(function(item) {
+                     item.on("click", function(){
+                         var tId = Node.one(this).attr("tId");
+                         var url = "print_detail.html?id=" + tId;
+                         var pop=Util.getOverlay('人工处理',url,600,480,item);
+                         var dialog = new O.Dialog(pop);
+                         dialog.show();
+                     });
+                });
+
 
                 Node.one("#search").on("click", function(){
                     toPage(cur,true);
@@ -172,5 +182,7 @@ html(lang="en")
                                     td=val.terminal
                                     td
                                         input(type="button", value="详情", class="detail", tId=val.id)
+                                        if val.printStatus.id == 1100
+                                                input(type="button", value="处理", class="chuli", tId=val.id)
             .clearfix(style="margin-top:8px")
                 #manu

@@ -1,6 +1,7 @@
 doctype html
 html(lang="en")
     head
+        meta(http-equiv="refresh" content="5")
         link(rel='stylesheet', type='text/css', href='./css/table-list.css')
         link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
         include ../includes/script.jade
@@ -34,13 +35,6 @@ html(lang="en")
 
                 Node.one("#search").on("click", function(){
                     toPage(cur);
-                });
-                Node.all("input.detail").each(function(item) {
-                    item.on("click", function(){
-                        var tId = Node.one(this).attr("tId");
-                        var url = "print_detail.html?id=" + tId;
-                        CurSite.redirectTo(null, url);
-                    });
                 });
             });
     body
@@ -99,7 +93,6 @@ html(lang="en")
                                 td 玩法
                                 td 投注方式
                                 td 号码
-                                td 操作
                         tbody
                             - each val in rst
                                 tr
@@ -115,7 +108,5 @@ html(lang="en")
                                     td=val.playType.name
                                     td=val.betType.name
                                     td=val.number
-                                    td
-                                        input(type="button", value="人工处理", class="detail", tId=val._id)
                     .clearfix(style="margin-top:8px")
                          #manu
