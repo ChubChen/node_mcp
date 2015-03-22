@@ -17,10 +17,10 @@ var test = function () {
                     async.eachSeries(data, function (row, callback) {
                         if(row.rNumber){
                             var math = row.rNumber.split(";");
-                            async.eachSeries(data, function (mathcode ,call) {
-                                var peilv = data.split("|")[2].split(",");
-                                async.eachSeries(peilv, function (peilv, cll) {
-                                    if(peilv.indexOf('@') > 0  && peilv.substr(peilv.indexOf('@')).length >2  ){
+                            async.eachSeries(math, function (mathcode ,call) {
+                                var peilv = mathcode.split("|")[2].split(",");
+                                async.eachSeries(peilv, function (iter, cll) {
+                                    if(iter.indexOf('@') > 0  && iter.substr(peilv.indexOf('@')).length >2  ){
                                         cll(null);
                                     }else{
                                         console.log(row);
