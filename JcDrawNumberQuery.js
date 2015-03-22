@@ -139,7 +139,8 @@ JcDrawNumberQuery.prototype.handle=function(matchArray){
                             if(err){
                                 cb(err);
                             }else{
-                                if( data != null  &&  data.status > termStatus.PREEND && data.status < termStatus.DRAW){
+                                log.info(data);
+                                if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
                                     log.info("更新开奖结果");
                                     log.info({id:data.id, wNum: math.wNum});
                                     var fromTerm = {id:data.id, wNum: math.wNum};
