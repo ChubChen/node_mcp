@@ -10,7 +10,7 @@ var test = function () {
         },
         function (cb) {
             var tticket = dc.main.get("tticket");
-            var customer = tticket.find({status:1000,printStatus:1300}, {}, []);
+            var customer = tticket.find({status:1000,printStatus:1300,customerId:"Q0002"}, {}, []);
             customer.toArray(function(err ,data){
                 console.log(data);
                 if(data){
@@ -20,7 +20,7 @@ var test = function () {
                             async.eachSeries(data, function (mathcode ,call) {
                                 var peilv = data.split("|")[2].split(",");
                                 async.eachSeries(peilv, function (peilv, cll) {
-                                    if(peilv.indexOf('@') && peilv.substr(peilv.indexOf('@')).length >2  ){
+                                    if(peilv.indexOf('@') > 0  && peilv.substr(peilv.indexOf('@')).length >2  ){
                                         cll(null);
                                     }else{
                                         console.log(row);
