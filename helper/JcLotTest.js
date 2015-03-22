@@ -98,7 +98,7 @@ LotTest.prototype.lotT51 = function(cb){
 var lotTest = new LotTest();
 var count = 0;
 async.whilst(
-    function() { return count < 100},
+    function() { return count < 1},
     function(whileCb) {
         lotTest.lotT51(function(){
             count++;
