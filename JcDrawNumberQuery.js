@@ -65,43 +65,43 @@ JcDrawNumberQuery.prototype.get=function(options, cb){
                     if(cnWeek == "周一"){
                         var resultDay = moment().isoWeekday(1);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                           resultDay == resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周二"){
                         var resultDay = moment().isoWeekday(2);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周三"){
                         var resultDay = moment().isoWeekday(3);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周四"){
                         var resultDay = moment().isoWeekday(4);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周五"){
                         var resultDay = moment().isoWeekday(5);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else if(cnWeek == "周六"){
                         var resultDay = moment().isoWeekday(6);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }else {
                         var resultDay = moment().isoWeekday(7);
                         if(resultDay > today){
-                            resultDay = resultDay.subtract(7);
+                            resultDay = resultDay.subtract(7,'day');
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }
