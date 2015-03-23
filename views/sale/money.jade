@@ -7,13 +7,20 @@ html(lang="en")
         link(rel='stylesheet', type='text/css', href='./css/select.css')
         include ../includes/script.jade
         script(type='text/javascript').
-            KISSY.use("io,node,json,vs-onepagebar,kg/droplist/2.0.1/index",
-                function(S, Io, Node, Json, VsOnePagebar,DropList){
+            KISSY.use("io,node,json,vs-onepagebar,kg/droplist/2.0.1/index,calendar,calendar/assets/base.css",
+                function(S, Io, Node, Json, VsOnePagebar,DropList,Calendar){
+                var S_Date = S.Date;
                 DOM = S.DOM;
                 var count = parseInt(Node.one('#count').val());
                 var skip = parseInt(Node.one('#skip').val());
                 var limit = parseInt(Node.one('#limit').val());
                 var cur = parseInt(skip/limit) + 1;
+                new Calendar('#startDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#startDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                new Calendar('#endDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                      Node.one('#endDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
                 var pageBar = new VsOnePagebar('#manu', {count:count, limit:limit, cur:cur, toPage:function(index){
                     toPage(index,false);
                 }});
@@ -30,6 +37,12 @@ html(lang="en")
                     }
                     return cond;
                 };
+                var getAddition = function(){
+                    var add = {};
+                    add.startDate = Node.one('#startDate').val();
+                    add.endDate = Node.one('#endDate').val();
+                    return add;
+                };
                 var toPage = function(index,control){
                     var limit = parseInt(Node.one('#limit').val());
                     var skip = (index - 1)*limit;
@@ -38,7 +51,8 @@ html(lang="en")
                       skip=0;
                     }
                     var cond = encodeURIComponent(Json.stringify(getCondition()));
-                    CurSite.redirectTo(null, "sale_money.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond);
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    CurSite.redirectTo(null, "sale_money.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond +"&add=" +add);
                 };
                 var dealCatList = function (catList,arg1,arg2){
                     if(arg1 && arg1.length > 0){
@@ -101,11 +115,22 @@ html(lang="en")
             input(type='hidden', id="typeId", value=cond.typeId)
             input(type='hidden', id="subjectId", value=cond.subjectId)
             input(type='hidden', id="selectdate", value=selectValues)
+
             #tWin.container
             .clearfix(style="margin-top:8px")
                 fieldset(id="selected")
-                    .control(id="mul1")
-                        span(class="log")
+                    table(id="select_table")
+                        tr
+                            td 时间:
+                            td(colspan=3)
+                                input(type="text" id="startDate" value=add.startDate)
+                                span 至
+                                input(type="text" id="endDate"   value=add.endDate)
+                        tr
+                            td(colspan=4)
+                        .control(id="mul1" style="padding-left:25px")
+                            span(class="log")
+
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
@@ -132,5 +157,11 @@ html(lang="en")
                                     td=val.orderId
                                     td=val.createTime
             .clearfix(style="margin-top:8px")
+                #audit 收入总计:&nbsp;
+                    font(color="red")=inAmount/100
+                    | (元)&nbsp;,&nbsp;&nbsp;&nbsp;&nbsp;支出总计:&nbsp;
+                    font(color="red")=outAmount/100
+                    | (元)&nbsp;.
+                .clearfix(style="margin-top:8px")
                 #manu
                                   
