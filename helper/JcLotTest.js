@@ -51,9 +51,9 @@ LotTest.prototype.lotT51 = function(cb){
             number:'02|201503183002|3'
         },*/
         {
-            gameCode:'T51', pType:'06', bType:'21', amount:200,
+            gameCode:'T51', pType:'03', bType:'11', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201503227006|3;03|201503227007|13'
+            number:'03|201503227008|13'
         },
         /*{
             gameCode:'T51', pType:'02', bType:'21', amount:200,
