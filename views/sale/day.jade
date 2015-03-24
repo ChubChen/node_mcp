@@ -95,16 +95,21 @@ html(lang="en")
                         thead
                             tr
                                 td 彩种
-                                td 票数
+                                td 出票数
                                 td 销量金额
+                                td 退款票数
+                                td 退款金额
                                 td 中奖
                                 td 中奖金额
+
                         tbody
                             - each val in rst
                                 tr
                                     td=val.gameCode
                                     td=val.salenum
                                     td=val.saleamount/100
+                                    td=val.refundnum
+                                    td=val.refundamount/100
                                     td=val.prizenum
                                     td=val.prizeamount/100
 
