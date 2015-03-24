@@ -44,6 +44,11 @@ html(lang="en")
                     {
                         cond.outerId = outerId;
                     }
+                    var id = Node.one('#id').val();
+                    if(id && id.length > 0)
+                    {
+                        cond.id = id;
+                    }
 
 
                     return cond;
@@ -136,6 +141,9 @@ html(lang="en")
                         td 外部ID:
                         td
                             input(id="outerId", type="text", value=cond.outerId)
+                        td ID:
+                            td
+                                input(id="id", type="text", value=cond.id)
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
