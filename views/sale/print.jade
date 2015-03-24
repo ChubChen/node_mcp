@@ -9,7 +9,6 @@ html(lang="en")
         script(type='text/javascript').
             KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,button,calendar,calendar/assets/base.css",
                 function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Button,Calendar){
-
                 var S_Date = S.Date;
                 new Calendar('#startDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
                       Node.one('#startDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
@@ -70,6 +69,11 @@ html(lang="en")
                       {
                           cond.printStatus = printStatus;
                       }
+                      var prizeStatus = parseInt(Node.one("#prizeStatus").val());
+                      if(prizeStatus > -1)
+                      {
+                          cond.status = prizeStatus;
+                      }
                       var outerId = Node.one('#outerId').val();
                       if(outerId && outerId.length > 0){
                           cond.outerId = outerId;
@@ -117,6 +121,15 @@ html(lang="en")
                                            option(value=val.id, selected="true")=val.des
                                        else
                                             option(value=val.id)=val.des
+                        td 是否状态:
+                            td
+                                select(id="prizeStatus")
+                                    option(value="-1") 所有
+                                    - each val in prizeStatus
+                                        if(val.id == cond.status)
+                                            option(value=val.id, selected="true")=val.des
+                                        else
+                                            option(value=val.id)=val.des
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
@@ -147,4 +160,12 @@ html(lang="en")
                                     td=val.amount / 100.00
                                     td=val.bonus
             .clearfix(style="margin-top:8px")
+                #audit 数量:&nbsp;
+                    font(color="red")=num
+                    |  &nbsp;,&nbsp;&nbsp;金额:&nbsp;
+                    font(color="red")=amount/100
+                    | (元)&nbsp;,&nbsp;&nbsp;奖金:
+                    font(color="red")=bonus/100
+                    | (元)&nbsp;.
+                .clearfix(style="margin-top:8px")
                 #manu
