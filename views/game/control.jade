@@ -70,12 +70,20 @@ html(lang="en")
                         });
                     });
                 });
+
+                Node.one("#add").on("click", function(){
+                   var url = "game_add.html?time=" + new Date().getTime();
+                   CurSite.redirectTo(null, url);
+                });
             });
     body
         .bodyAdminDiv
             input(type='hidden', id="count", value=count)
             input(type='hidden', id="skip", value=skip)
             input(type='hidden', id="limit", value=limit)
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:423px;")
+                    input(type="button", id="add", value="增加")
             .clearfix(style="margin-top:8px")
                 .tab-list
                     table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")

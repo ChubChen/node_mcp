@@ -25,12 +25,11 @@ JcTermCorn.prototype.start = function()
                 cb(err);
             });
         },
-        //start web
         function(cb)
         {
             self.job();
             cb(null, "success");
-        }
+        },
     ], function (err, result) {
         if(err)
         {
@@ -68,20 +67,19 @@ JcTermCorn.prototype.get = function(options, cb)
     req.end();
 };
 
-JcTermCorn.prototype.handle = function(err , Object){
+JcTermCorn.prototype.handleT51 = function(Object, cb){
     async.waterfall([
         function (cb) {
-            //竞猜网上最后更新的时间
             var time = dateUtil.toDate(Object.status.last_updated).getTime();
             var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
-            jcUpdateTable.findOne({"_id": "JCUPDATETIME"}, {}, [], function (err, data) {
+            jcUpdateTable.findOne({"_id": "JCZQUPDATETIME"}, {}, [], function (err, data) {
                 if(err){
                     cb(err)
                 }else{
                     if(data && time <= data.date){
-                        cb("已经是最新的不用更新");
+                        cb("足球已经是最新的不用更新");
                     }else{
-                        jcUpdateTable.save({"_id":"JCUPDATETIME", date: time}, [] ,function(err, data){
+                        jcUpdateTable.save({"_id":"JCZQUPDATETIME", date: time}, [] ,function(err, data){
                             cb(null);
                         });
                     }
@@ -171,29 +169,123 @@ JcTermCorn.prototype.handle = function(err , Object){
             });
         }
     ],function (err, result) {
-        log.error(err);
-        log.info("update JcTerm");
+        cb(err);
+    });
+};
+
+JcTermCorn.prototype.handleT52 = function(Object, cb){
+    async.waterfall([
+        function (cb) {
+            var time = dateUtil.toDate(Object.status.last_updated).getTime();
+            var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
+            jcUpdateTable.findOne({"_id": "JCLQUPDATETIME"}, {}, [], function (err, data) {
+                if(err){
+                    cb(err)
+                }else{
+                    if(data && time <= data.date){
+                        cb("篮球已经是最新的不用更新");
+                    }else{
+                        jcUpdateTable.save({"_id":"JCLQUPDATETIME", date: time}, [] ,function(err, data){
+                            cb(null);
+                        });
+                    }
+                }
+            });
+        },
+        function(cb){
+            var rstTermArray = new Array();
+            for(var key in Object.data){
+                var data = Object.data[key];
+                var beginDate = moment(data.b_date, "YYYY-MM-DD");
+                var week = beginDate.isoWeekday();
+                var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
+                var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
+                var closeTime = data.date + " "+ data.time;
+                var status = termStatus.ON_SALE;
+                var term = {id:"T52_" + code, gameCode:"T52", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
+                rstTermArray.push(term);
+            }
+            cb(null, rstTermArray);
+        },
+        function(rstTermArray, cb){
+            var cols = {id:1, gameCode:1, code:1};
+            async.eachSeries(rstTermArray, function (term, callback) {
+                var termTable = dc.main.get("term");
+                termTable.findOne({"id": term.id}, cols, [], function(err, data){
+                    if(err){
+                        log.error(err);
+                        callback(err);
+                    }else{
+                        if(data == null || data == undefined){
+                            termTable.save(term, [], function(err , data){
+                                callback(null);
+                            })
+                        }else{
+                            callback(null);
+                        }
+                    }
+                });
+            }, function (err) {
+                cb(err);
+            });
+        }
+    ],function(err){
+        cb(err);
     });
 };
 
 JcTermCorn.prototype.job = function () {
     var self = this
-    var corn = new CronJob('*/5 * * * *', function () {
-        var data = {
-            'i_format': 'json',
-            'poolcode[0]':'hhad', //让球胜平负
-            'poolcode[1]':'had', //胜平负
-            //'poolcode[1]':'crs', //比分
-            '_':new Date().getTime()
-        };
-        var content = qs.stringify(data);
-        var options = {
-            hostname: 'i.sporttery.cn',
-            port: 80,
-            path: '/odds_calculator/get_odds?' + content,
-            method: 'GET'
-        };
-       self.get(options, self.handle);
+    var corn = new CronJob('*/5 * * * * *', function () {
+        async.waterfall([
+               function(cb){
+                   //竞猜足球的抓取
+                   var data = {
+                       'i_format': 'json',
+                       'poolcode[0]':'hhad', //让球胜平负
+                       'poolcode[1]':'had', //胜平负
+                       '_':new Date().getTime()
+                   };
+                   var content = qs.stringify(data);
+                   var options = {
+                       hostname: 'i.sporttery.cn',
+                       port: 80,
+                       path: '/odds_calculator/get_odds?' + content,
+                       method: 'GET'
+                   };
+                   self.get(options, function(err , jsonData){
+                       self.handleT51(jsonData, function(err){
+                           if(err){
+                               console.log(err);
+                           }
+                           cb(null);
+                       });
+                   });
+               },
+               function(cb){
+                   //竞猜足球的抓取
+                   var data = {
+                       'i_format': 'json',
+                       'poolcode[2]':'mnl',
+                       '_':new Date().getTime()
+                   };
+                   var content = qs.stringify(data);
+                   var options = {
+                       hostname: 'i.sporttery.cn',
+                       port: 80,
+                       path: '/odds_calculator/get_odds?' + content,
+                       method: 'GET'
+                   };
+                   self.get(options, function(err , jsonData){
+                       self.handleT52(jsonData, function(err){
+                          cb(err);
+                       });
+                   });
+               }
+        ],function(err){
+            console.log(err);
+            console.log("竞猜场次录入");
+        })
    });
     corn.start();
 };

@@ -1,0 +1,48 @@
+codetype html
+html(lang="en")
+    head
+        include ../includes/script.jade
+        script(type='text/javascript').
+            KISSY.use("io,node,json,vs-data-select,vs-window", function(S, Io, Node, Json, VsDataSelect, VsWindow){
+
+
+                var getData = function(){
+                    var data = {};
+                    data._id = Node.one("#gameCode").val();
+                    data.salePermission = parseInt(Node.one("#gameStatus").val(), 10);
+                    return data;
+                };
+
+                Node.one("#success").on("click", function(){
+                    var data = getData();
+                    var bodyNode = {game:data};
+                    CurSite.sendDigest(Io, Json, "AD22", null, bodyNode, function(err, backBodyNode){
+                        alert(backBodyNode.description);
+                    });
+                });
+
+                Node.one("#backToList").on("click", function(){
+                    var url = "game_control.html?time=" + new Date().getTime();
+                    CurSite.redirectTo(null, url);
+                });
+            });
+    body
+        #tWin.container
+        .bodyAdminDiv
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 游戏*:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="gameCode")
+                        - each val in game
+                            option(value=val.id)=val.name
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 状态:
+                .vs_grid_plain(style="margin-left:8px;")
+                    select(id="gameStatus")
+                        - each val in gameStatus
+                            option(value=val.id)=val.des
+            .clearfix(style="margin-top:8px")
+                .vs_grid_plain(style="width:100px;text-align:right;") &nbsp;
+                .vs_grid_plain(style="margin-left:8px;")
+                    input(type="button", value="添加", id="success")
+                    input(type="button", value="返回列表", id="backToList")
