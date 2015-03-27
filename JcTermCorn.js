@@ -236,7 +236,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
 
 JcTermCorn.prototype.job = function () {
     var self = this
-    var corn = new CronJob('*/5 * * * * *', function () {
+    var corn = new CronJob('*/5 * * * *', function () {
         async.waterfall([
                function(cb){
                    //竞猜足球的抓取

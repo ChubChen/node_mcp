@@ -30,7 +30,7 @@ JcDrawNumberQuery.prototype.startJob=function(){
             });
         }
     ], function (err) {
-        self.crontab = new CronJob('*/10 * * * * *', function () {
+        self.crontab = new CronJob('*/1 * * * *', function () {
            async.waterfall([
                function(cb){
                    var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
