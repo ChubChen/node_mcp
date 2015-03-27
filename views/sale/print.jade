@@ -17,6 +17,14 @@ html(lang="en")
                       Node.one('#endDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
                 });
 
+                new Calendar('#printStartDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                     Node.one('#printStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+                new Calendar('#printEndDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                     Node.one('#printEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                });
+
+
                 var count = parseInt(Node.one('#count').val());
                 var skip = parseInt(Node.one('#skip').val());
                 var limit = parseInt(Node.one('#limit').val());
@@ -46,6 +54,8 @@ html(lang="en")
                     var add = {};
                     add.startDate = Node.one('#startDate').val();
                     add.endDate = Node.one('#endDate').val();
+                    add.printStartDate = Node.one('#printStartDate').val();
+                    add.printEndDate = Node.one('#printEndDate').val();
                     return add;
                 };
 
@@ -106,6 +116,11 @@ html(lang="en")
                        td 彩票ID:
                        td
                            input(id="outerId", type="text", value=cond.outerId)
+                       td 出票时间:
+                       td
+                            input(type="text" id="printStartDate" value=add.printStartDate)
+                            span 至
+                            input(type="text" id="printEndDate"   value=add.printEndDate)
                     tr
                        td 时间:
                        td(colspan=3)
