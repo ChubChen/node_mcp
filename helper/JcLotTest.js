@@ -24,7 +24,7 @@ LotTest.prototype.lotT51 = function(cb){
 
     var self = this;
     var bodyNode = {};
-    var orderNode = {outerId:digestUtil.createUUID(), amount:200};
+    var orderNode = {outerId:digestUtil.createUUID(), amount:2800};
   /*  var ticketsNode = [
         {
             gameCode:'T51', pType:'06', bType:'21', amount:200,
@@ -51,9 +51,14 @@ LotTest.prototype.lotT51 = function(cb){
             number:'02|201503183002|3'
         },*/
         {
-            gameCode:'T51', pType:'03', bType:'11', amount:200,
+            gameCode:'T51', pType:'06', bType:'21', amount:2400,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'03|201503227008|13'
+            number:'03|201503312004|13,20,30,50;02|201503312005|3,1,0'
+        },
+        {
+            gameCode:'T51', pType:'06', bType:'31', amount:400,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'03|201503312004|13;02|201503312005|3,1;01|201503312005|3,1'
         },
         /*{
             gameCode:'T51', pType:'02', bType:'21', amount:200,
@@ -98,7 +103,7 @@ LotTest.prototype.lotT51 = function(cb){
 var lotTest = new LotTest();
 var count = 0;
 async.whilst(
-    function() { return count < 1},
+    function() { return count < 100},
     function(whileCb) {
         lotTest.lotT51(function(){
             count++;

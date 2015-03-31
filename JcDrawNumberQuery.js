@@ -30,7 +30,7 @@ JcDrawNumberQuery.prototype.startJob=function(){
             });
         }
     ], function (err) {
-        self.crontab = new CronJob('*/1 * * * *', function () {
+        self.crontab = new CronJob('*/10 * * * * *', function () {
            async.waterfall([
                function(cb){
                    var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
@@ -205,14 +205,12 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
              async.waterfall([
                  function(cb){
                      //将场次开奖结果放放入缓存
-                     jcDrawNumberCache.findOne({"_id":matchCode}, {}, [], function(err, data){
-                         if(data == null || data == undefined){
-                             jcDrawNumberCache.save(drawCahe, [], function(err, data){
-                                 cb(null);
-                             });
-                         }else{
-                             cb(null);
-                         }
+                     jcDrawNumberCache.update({"_id":matchCode}, drawCahe, [{upsert:true}], function(err, data){
+                        if(err){
+                            cb(err);
+                        }else{
+                            cb(null);
+                        }
                      });
                  },
                  //更新期次状态
@@ -224,22 +222,29 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                                 log.info(data);
                                 if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
                                     log.info("更新开奖结果");
-                                    log.info({id:data.id, wNum: math.wNum});
-                                    var fromTerm = {id:data.id, wNum: math.wNum};
-                                    termSer.draw(fromTerm, function (err, data) {
+                                    var cond = {id:data.id, version:data.version};
+                                    var fromTerm = {$set:{wNum: math.wNum, version: data.version++}};
+                                    termTable.update(cond, fromTerm, [], function(err, data){
+                                        if(err){
+                                            cb(err);
+                                        }else{
+                                            cb(data);
+                                        }
+                                    });
+                                    /*termSer.draw(fromTerm, function (err, data) {
                                         if(err){
                                             cb(err);
                                         }else{
                                             cb(err, data);
                                         }
-                                    });
+                                    });*/
                                 }else{
-                                    cb(null, null);
+                                    cb(null);
                                 }
                             }
                      });
                  },
-                 //发送期次已经开奖的消息
+                 /*//发送期次已经开奖的消息
                  function (term, cb) {
                      log.info(term)
                      if(term && term.status == termStatus.DRAW)
@@ -252,7 +257,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                      {
                          cb(null);
                      }
-                 }
+                 }*/
              ],function(err){
                   callback(err);
          });
@@ -271,11 +276,9 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
         async.waterfall([
             function(cb){
                 //将场次开奖结果放放入缓存
-                jcDrawNumberCache.findOne({"_id":matchCode}, {}, [], function(err, data){
-                    if(data == null || data == undefined){
-                        jcDrawNumberCache.save(drawCahe, [], function(err, data){
-                            cb(null);
-                        });
+                jcDrawNumberCache.update({"_id":matchCode}, drawCahe, [{upsert:true}], function(err, data){
+                    if(err){
+                        cb(err);
                     }else{
                         cb(null);
                     }
@@ -291,22 +294,31 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                         if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
                             log.info("更新开奖结果");
                             log.info({id:data.id, wNum: math.wNum});
-                            var fromTerm = {id:data.id, wNum: math.wNum};
-                            termSer.draw(fromTerm, function (err, data) {
+                            var cond = {id:data.id, version:data.version};
+                            var fromTerm = {$set:{wNum: math.wNum, version:data.version}};
+                            termTable.update(cond, fromTerm, [], function(err, data){
+                                if(err){
+                                    log.error(err);
+                                    cb(err);
+                                }else{
+                                    cb(data);
+                                }
+                            });
+                            /*termSer.draw(fromTerm, function (err, data) {
                                 if(err){
                                     log.error(err);
                                     cb(err);
                                 }else{
                                     cb(err, data);
                                 }
-                            });
+                            });*/
                         }else{
-                            cb(null, null);
+                            cb(null);
                         }
                     }
                 });
             },
-            //发送期次已经开奖的消息
+            /*//发送期次已经开奖的消息
             function (term, cb) {
                 log.info(term)
                 if(term && term.status == termStatus.DRAW)
@@ -319,7 +331,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                 {
                     cb(null);
                 }
-            }
+            }*/
         ],function(err){
             callback(err);
         });
