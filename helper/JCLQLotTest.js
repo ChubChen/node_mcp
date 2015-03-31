@@ -27,10 +27,30 @@ LotTest.prototype.lotT51 = function(cb){
     var orderNode = {outerId:digestUtil.createUUID(), amount:200};
     var ticketsNode = [
         {
-            gameCode:'T52', pType:'03', bType:'31', amount:200,
+            gameCode:'T52', pType:'05', bType:'31', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'03|201503253301|01;03|201503253302|02;03|201503253303|03'
-        }
+            number:'03|201503312301|02;02|201503312303|2;01|201503312304|1'
+        },
+      /* {
+            gameCode:'T52', pType:'01', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'01|201503312301|1;01|201503312303|2'
+        },
+        {
+            gameCode:'T52', pType:'02', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503312301|1;02|201503312303|2'
+        },
+        {
+            gameCode:'T52', pType:'04', bType:'21', amount:200,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503312301|1;02|201503312303|2'
+        }*/
+        /*{
+            gameCode:'T52', pType:'05', bType:'31', amount:600,
+            multiple:1, outerId:digestUtil.createUUID(),
+            number:'02|201503312301|2;03|201503312303|06,05,16;04|201503312304|1'
+        }*/
     ]
     orderNode.tickets = ticketsNode;
     bodyNode.order = orderNode;

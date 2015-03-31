@@ -201,11 +201,11 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
     var termTable = dc.main.get("term");
      async.each(matchArray, function(math, callback){
          var matchCode = math.termCode;
-         var drawCahe = {"_id": matchCode, drawNumber: math.wNum};
+         var drawCahe = {$set:{"_id": matchCode, drawNumber: math.wNum}};
              async.waterfall([
                  function(cb){
                      //将场次开奖结果放放入缓存
-                     jcDrawNumberCache.update({"_id":matchCode}, drawCahe, [{upsert:true}], function(err, data){
+                     jcDrawNumberCache.update({"_id":matchCode}, drawCahe, {upsert:true}, function(err, data){
                         if(err){
                             cb(err);
                         }else{
@@ -272,7 +272,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
     var termTable = dc.main.get("term");
     async.each(matchArray, function(math, callback){
         var matchCode = math.termCode;
-        var drawCahe = {"_id": matchCode, drawNumber: math.wNum};
+        var drawCahe = {$set:{"_id": matchCode, drawNumber: math.wNum}};
         async.waterfall([
             function(cb){
                 //将场次开奖结果放放入缓存
