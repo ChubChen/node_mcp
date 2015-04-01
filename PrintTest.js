@@ -134,11 +134,11 @@ PrintTest.prototype.printUtilEmpty = function()
                             log.info(array);
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
-                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
+                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',passw:123456,
                                 seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:rnumber};
                         }else{
                             rst[rst.length] = {id:ticket.id,
-                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',
+                                status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',passw:123456,
                                 seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:ticket.number};
                         }
                         callback();

@@ -27,7 +27,7 @@ LotTest.prototype.lotT51 = function(cb){
     var orderNode = {outerId:digestUtil.createUUID(), amount:200};
     var ticketsNode = [
         {
-            gameCode:'T52', pType:'05', bType:'31', amount:200,
+            gameCode:'T52', pType:'07', bType:'31', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
             number:'03|201503312301|02;02|201503312303|2;01|201503312304|1'
         },
