@@ -70,21 +70,25 @@ JcTermCorn.prototype.get = function(options, cb)
 JcTermCorn.prototype.handleT51 = function(Object, cb){
     async.waterfall([
         function (cb) {
-            var time = dateUtil.toDate(Object.status.last_updated).getTime();
-            var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
-            jcUpdateTable.findOne({"_id": "JCZQUPDATETIME"}, {}, [], function (err, data) {
-                if(err){
-                    cb(err)
-                }else{
-                    if(data && time <= data.date){
-                        cb("足球已经是最新的不用更新");
-                    }else{
-                        jcUpdateTable.save({"_id":"JCZQUPDATETIME", date: time}, [] ,function(err, data){
-                            cb(null);
-                        });
+            if(Object != undefined && Object!= null) {
+                var time = dateUtil.toDate(Object.status.last_updated).getTime();
+                var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
+                jcUpdateTable.findOne({"_id": "JCZQUPDATETIME"}, {}, [], function (err, data) {
+                    if (err) {
+                        cb(err)
+                    } else {
+                        if (data && time <= data.date) {
+                            cb("足球已经是最新的不用更新");
+                        } else {
+                            jcUpdateTable.save({"_id": "JCZQUPDATETIME", date: time}, [], function (err, data) {
+                                cb(null);
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }else{
+                cb(new Error("cuowu"));
+            }
         },
         function(cb){
             var rstTermArray = new Array();
@@ -176,6 +180,7 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
 JcTermCorn.prototype.handleT52 = function(Object, cb){
     async.waterfall([
         function (cb) {
+
             var time = dateUtil.toDate(Object.status.last_updated).getTime();
             var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
             jcUpdateTable.findOne({"_id": "JCLQUPDATETIME"}, {}, [], function (err, data) {
@@ -254,12 +259,16 @@ JcTermCorn.prototype.job = function () {
                        method: 'GET'
                    };
                    self.get(options, function(err , jsonData){
-                       self.handleT51(jsonData, function(err){
-                           if(err){
-                               console.log(err);
-                           }
-                           cb(null);
-                       });
+                       if(err){
+                           cb(err);
+                       }else{
+                           self.handleT51(jsonData, function(err){
+                               if(err){
+                                   console.log(err);
+                               }
+                               cb(null);
+                           });
+                       }
                    });
                },
                function(cb){
@@ -277,9 +286,13 @@ JcTermCorn.prototype.job = function () {
                        method: 'GET'
                    };
                    self.get(options, function(err , jsonData){
-                       self.handleT52(jsonData, function(err){
-                          cb(err);
-                       });
+                       if(err){
+                           cb(err)
+                       }else{
+                           self.handleT52(jsonData, function(err){
+                               cb(err);
+                           });
+                       }
                    });
                }
         ],function(err){

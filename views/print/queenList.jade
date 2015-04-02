@@ -36,6 +36,38 @@ html(lang="en")
                 Node.one("#search").on("click", function(){
                     toPage(cur);
                 });
+                Node.one("#repeat").on("click", function(){
+                    var bodyNode = {cond:{}, cmd: 1000};
+                    CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
+                          toPage(cur);
+                    });
+              });
+              Node.one("#allFail").on("click", function(){
+                   var bodyNode = {cond:{}, cmd: 1500};
+                   CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
+                         toPage(cur)
+                   });
+              });
+              //绑定事件
+               Node.all("input.fail").each(function(item){
+                   item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var bodyNode = {id:tId, cmd:1510};
+                        CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
+                         toPage(cur)
+                        });
+                   });
+               });
+               //绑定事件
+               Node.all("input.repeatOne").each(function(item){
+                   item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var bodyNode = {id:tId, cmd:1010};
+                        CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
+                         toPage(cur)
+                        });
+                   });
+               });
             });
     body
         .bodyAdminDiv
@@ -76,6 +108,8 @@ html(lang="en")
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="刷新")
+                    input(type="button", id="repeat", value="全部重新出票")
+                    input(type="button", id="allFail", value="全部出票失败")
             .clearfix(style="margin-top:8px")
                 .tab-list
                     table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
@@ -93,6 +127,7 @@ html(lang="en")
                                 td 玩法
                                 td 投注方式
                                 td 号码
+                                td 操作
                         tbody
                             - each val in rst
                                 tr
@@ -107,6 +142,10 @@ html(lang="en")
                                     td=val.amount/100
                                     td=val.playType.name
                                     td=val.betType.name
-                                    td=val.number
+                                    td(style="word-wrap:break-word;")=val.number
+                                    td
+                                        input(type="button", value="出票失败", class="fail", tId=val._id)
+                                        if val.printQueenStatus == 1200
+                                        input(type="button", value="重新出票", class="repeatOne", tId=val._id)
                     .clearfix(style="margin-top:8px")
                          #manu
