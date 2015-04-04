@@ -30,7 +30,7 @@ JcDrawNumberQuery.prototype.startJob=function(){
             });
         }
     ], function (err) {
-        self.crontab = new CronJob('*/10 * * * * *', function () {
+        self.crontab = new CronJob('*/10 * * * *', function () {
            async.waterfall([
                function(cb){
                    var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
@@ -221,16 +221,20 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                             }else{
                                 log.info(data);
                                 if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
-                                    log.info("更新开奖结果");
-                                    var cond = {id:data.id, version:data.version};
-                                    var fromTerm = {$set:{wNum: math.wNum, version: data.version++}};
-                                    termTable.update(cond, fromTerm, [], function(err, data){
-                                        if(err){
-                                            cb(err);
-                                        }else{
-                                            cb(data);
-                                        }
-                                    });
+                                    if(math.wNum != data.wNum) {
+                                        log.info("更新开奖结果");
+                                        var cond = {id: data.id, version: data.version};
+                                        var fromTerm = {$set: {wNum: math.wNum, version: data.version++}};
+                                        termTable.update(cond, fromTerm, [], function (err, data) {
+                                            if (err) {
+                                                cb(err);
+                                            } else {
+                                                cb(data);
+                                            }
+                                        });
+                                    }else{
+                                        cb(null);
+                                    }
                                     /*termSer.draw(fromTerm, function (err, data) {
                                         if(err){
                                             cb(err);
@@ -292,18 +296,22 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                     }else{
                         log.info(data);
                         if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
-                            log.info("更新开奖结果");
-                            log.info({id:data.id, wNum: math.wNum});
-                            var cond = {id:data.id, version:data.version};
-                            var fromTerm = {$set:{wNum: math.wNum, version:data.version}};
-                            termTable.update(cond, fromTerm, [], function(err, data){
-                                if(err){
-                                    log.error(err);
-                                    cb(err);
-                                }else{
-                                    cb(data);
-                                }
-                            });
+                            if(math.wNum == data.wNum){
+                                log.info("更新开奖结果");
+                                log.info({id:data.id, wNum: math.wNum});
+                                var cond = {id:data.id, version:data.version};
+                                var fromTerm = {$set:{wNum: math.wNum, version:data.version}};
+                                termTable.update(cond, fromTerm, [], function(err, data){
+                                    if(err){
+                                        log.error(err);
+                                        cb(err);
+                                    }else{
+                                        cb(data);
+                                    }
+                                });
+                            }else{
+                                cb(null);
+                            }
                             /*termSer.draw(fromTerm, function (err, data) {
                                 if(err){
                                     log.error(err);
