@@ -140,7 +140,7 @@ JcDrawNumberQuery.prototype.getT52=function(options, cb){
                 var math = $(this).find("td").eq(0).text();
                 var code = math.substr(math.length -3);
                 var cnWeek = math.substr(0, math.length -3);
-                var endResult = $(this).find("td").eq(5).text().replace("-",":");
+                var endResult = $(this).find("td").eq(5).text().split("-").reverse().join(":");
                 if(endResult.length > 1){
                     var mathCode = "";
                     var today = moment();

@@ -260,6 +260,7 @@ JcTermCorn.prototype.job = function () {
                    };
                    self.get(options, function(err , jsonData){
                        if(err){
+                           log.info(err);
                            cb(err);
                        }else{
                            self.handleT51(jsonData, function(err){

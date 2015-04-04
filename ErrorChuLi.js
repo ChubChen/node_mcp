@@ -1,6 +1,7 @@
 var async = require('async');
 var dc = require('mcp_db').dc;
 var jc = require("mcp_jc").jc;
+var jclq = require("mcp_jclq").jclq;
 var esut = require('easy_util');
 
 var log = esut.log;
@@ -40,96 +41,7 @@ ErrChuLi.prototype.handle = function(cb){
         function(cb){
             //第一步查找算奖错误的数据
             var tticket = dc.main.get("tticket");
-            var cond = {id:{$in:["21559",
-                "22557",
-                "22559",
-                "22570",
-                "22582",
-                "23155",
-                "23173",
-                "23174",
-                "23176",
-                "23177",
-                "23178",
-                "23182",
-                "23183",
-                "23184",
-                "23185",
-                "23236",
-                "23256",
-                "23257",
-                "23258",
-                "23265",
-                "23266",
-                "23267",
-                "23268",
-                "23272",
-                "23300",
-                "23303",
-                "23352",
-                "23428",
-                "23429",
-                "23436",
-                "23437",
-                "23457",
-                "23460",
-                "23490",
-                "23518",
-                "23519",
-                "23520",
-                "23521",
-                "23540",
-                "23544",
-                "23546",
-                "23548",
-                "23550",
-                "23589",
-                "23603",
-                "23730",
-                "23732",
-                "23733",
-                "23750",
-                "23754",
-                "23756",
-                "23800",
-                "23819",
-                "23824",
-                "23849",
-                "23902",
-                "23904",
-                "23905",
-                "23907",
-                "23917",
-                "23921",
-                "23967",
-                "24092",
-                "24098",
-                "24099",
-                "24100",
-                "24102",
-                "24103",
-                "24104",
-                "24105",
-                "24106",
-                "24143",
-                "24150",
-                "24151",
-                "24178",
-                "24179",
-                "24258",
-                "24259",
-                "24268",
-                "24285",
-                "24357",
-                "24361",
-                "24400",
-                "24452",
-                "24478",
-                "24479",
-                "24480",
-                "24514",
-                "24538",
-                "24539"]}};
+            var cond = {customerId:"Q0002", gameCode:"T52", termCode:{$lte:"201504024307"}};
             var conn = dc.mg.getConn();
             var temptable = conn.collection("errortable");
             var cursor = tticket.find(cond, {}, []);
@@ -149,7 +61,7 @@ ErrChuLi.prototype.handle = function(cb){
         },
        function(cb){
            log.info("准备算奖");
-           var check = jc.check();
+           var check = jclq.check();
            var conn = dc.mg.getConn();
            var temptable = conn.collection("errortable");
            var termTable = dc.main.get("term");
