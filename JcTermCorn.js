@@ -263,12 +263,13 @@ JcTermCorn.prototype.job = function () {
                            log.info(err);
                            cb(err);
                        }else{
-                           self.handleT51(jsonData, function(err){
-                               if(err){
-                                   console.log(err);
-                               }
-                               cb(null);
-                           });
+                           if(jsonData){
+                               self.handleT51(jsonData, function(err){
+                                   cb(err);
+                               });
+                           }else{
+                               cb(new Error("没有查询到结果"));
+                           }
                        }
                    });
                },
@@ -290,9 +291,13 @@ JcTermCorn.prototype.job = function () {
                        if(err){
                            cb(err)
                        }else{
-                           self.handleT52(jsonData, function(err){
-                               cb(err);
-                           });
+                           if(jsonData){
+                               self.handleT52(jsonData, function(err){
+                                   cb(err);
+                               });
+                           }else {
+                               cb(new Error("没有查询到结果"));
+                           }
                        }
                    });
                }
