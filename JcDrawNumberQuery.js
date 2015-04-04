@@ -296,7 +296,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                     }else{
                         log.info(data);
                         if( data != null  &&  (data.status > termStatus.PREEND || data.status < termStatus.DRAW)){
-                            if(math.wNum == data.wNum){
+                            if(math.wNum != data.wNum){
                                 log.info("更新开奖结果");
                                 log.info({id:data.id, wNum: math.wNum});
                                 var cond = {id:data.id, version:data.version};
