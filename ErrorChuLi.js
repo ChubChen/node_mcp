@@ -22,8 +22,13 @@ var ErrChuLi = function(){
                 cb(null);
             });
         },
+       /* function(cb){
+            self.handleT52(function(err){
+                cb(err);
+            });
+        },*/
         function(cb){
-            self.handle(function(err){
+            self.handleT51(function(err){
                 cb(err);
             });
         }
@@ -35,13 +40,25 @@ var ErrChuLi = function(){
 /**
  * 查找算奖错误的数据
  */
-ErrChuLi.prototype.handle = function(cb){
+ErrChuLi.prototype.handleT52 = function(cb){
     var self = this;
     async.waterfall([
         function(cb){
             //第一步查找算奖错误的数据
             var tticket = dc.main.get("tticket");
-            var cond = {customerId:"Q0002", gameCode:"T52", termCode:{$lte:"201504024307"}};
+            var cond = {id:{$in:[3506,
+                10208,
+                12198,
+                13129,
+                13130,
+                13133,
+                13420,
+                13421,
+                13422,
+                14059,
+                14937,
+                15070,
+                26919]}};
             var conn = dc.mg.getConn();
             var temptable = conn.collection("errortable");
             var cursor = tticket.find(cond, {}, []);
@@ -80,7 +97,6 @@ ErrChuLi.prototype.handle = function(cb){
                                 callbackMath(null);
                             });
                         }else{
-                            log.info("111");
                             callbackMath(null);
                         }
                     },function(err){
@@ -151,6 +167,140 @@ ErrChuLi.prototype.handle = function(cb){
     ],function(){
            log.info("8888888");
            log.info("算奖完毕");
+    })
+
+};
+
+/**
+ * 查找算奖错误的数据
+ */
+ErrChuLi.prototype.handleT51 = function(cb){
+    var self = this;
+    async.waterfall([
+        function(cb){
+            //第一步查找算奖错误的数据
+            var tticket = dc.main.get("tticket");
+            var cond = {id:{$in:[3506,
+                10208,
+                12198,
+                13129,
+                13130,
+                13133,
+                13420,
+                13421,
+                13422,
+                14059,
+                14937,
+                15070,
+                26919]}};
+            var conn = dc.mg.getConn();
+            var temptable = conn.collection("errortable");
+            var cursor = tticket.find(cond, {}, []);
+            cursor.toArray(function(err, data){
+                async.eachSeries(data, function(ticket, callback){
+                    ticket._id = ticket.id
+                    delete  ticket.id;
+                    temptable.save(ticket, [], function(err ,data) {
+                        log.info("save ");
+                        callback(null);
+                    });
+                },function(err){
+                    log.info(err);
+                    cb(err);
+                });
+            });
+        },
+        function(cb){
+            log.info("准备算奖");
+            var check = jc.check();
+            var conn = dc.mg.getConn();
+            var temptable = conn.collection("errortable");
+            var termTable = dc.main.get("term");
+            var cacheObj = {};
+            var cursor = temptable.find({},{},[]);
+            cursor.toArray(function (err, data) {
+                async.eachSeries(data, function(ticket, callback){
+                    var matchArray = ticket.rNumber.split(";");
+                    async.eachSeries(matchArray , function(match , callbackMath){
+                        var termCode = match.split("|")[1];
+                        if(cacheObj[termCode] == undefined || cacheObj[termCode] == null)
+                        {
+                            termTable.findOne({"id":ticket.gameCode + "_" + termCode},{wNum:1, status:1},[],function(err, result){
+                                cacheObj[termCode] = {code:termCode, number:result.wNum};
+                                check.setDrawNumber({code:termCode, number:result.wNum});
+                                callbackMath(null);
+                            });
+                        }else{
+                            callbackMath(null);
+                        }
+                    },function(err){
+                        callback(null);
+                    });
+                },function(err){
+                    cb(err, check);
+                });
+            });
+        },function(check, cb){
+            log.info("算奖");
+            var table = dc.mg.getConn().collection("errortable");
+            var hasNext = true;
+            var hitTable = dc.main.get("hitticket");
+            async.whilst(
+                function () { return hasNext;},
+                function (callback) {
+                    table.findAndRemove({}, {}, [], function(err, ticket){
+                        if(err)
+                        {
+                            callback(err);
+                            return;
+                        }
+                        if(ticket)
+                        {
+                            log.info(ticket);
+                            var name = 'count';
+                            var number = ticket.rNumber;
+                            var bonusInfo = check[name]({number: number, bType:ticket.bType});
+                            //保存中獎或者未中獎通知
+                            self.sendMsg(ticket, bonusInfo, function(err){
+                                if(err)
+                                {
+                                    callback(err);
+                                    return;
+                                }
+                                if(ticket.bonus > 0) {
+                                    var hitTicket = {
+                                        id: ticket.id,
+                                        outerId: ticket.outerId,
+                                        bonus: ticket.bonus,
+                                        bonusDetail: ticket.bonusDetail,
+                                        bonusBeforeTax: ticket.bonusBeforeTax,
+                                        auditTermCode: ticket.auditTermCode,
+                                        dNumber: ticket.dNumber,
+                                        status: ticketStatus.HIT
+                                    };
+                                    hitTable.save(hitTicket, [], function (err, data) {
+                                        callback(null);
+                                    });
+                                }else{
+                                    callback();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            hasNext = false;
+                            callback();
+                        }
+                    });
+                },
+                function (err) {
+                    cb(err);
+                }
+            );
+        }
+    ],function(){
+        log.info("8888888");
+        log.info("算奖完毕");
     })
 
 };

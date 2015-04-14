@@ -5,11 +5,11 @@ var digestUtil = esut.digestUtil;
 
 var QueryTest = function(){
     var self = this;
-    self.userId = 'Q0002';
+    self.userId = 'Q0001';
     //self.userId = 'Test_Really_001';
     self.userType = "CHANNEL";
     //self.key = '7601403d33c4443d938bbbb864c4ac05';
-    self.key = '24680';
+    self.key = '135790';
     self.digestType = "md5";
 };
 
