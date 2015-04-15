@@ -9,7 +9,7 @@ html(lang="en")
                 var getData = function(){
                     var data = {};
                     data._id = Node.one("#gameCode").val();
-                    data.salePermission = parseInt(Node.one("#gameStatus").val(), 10);
+                    data.gamePermission = parseInt(Node.one("#gameStatus").val(), 10);
                     return data;
                 };
 

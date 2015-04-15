@@ -33,7 +33,7 @@
     "v8_no_strict_aliasing": 1,
     "v8_use_snapshot": "false",
     "want_separate_host_toolset": 0,
-    "nodedir": "/home/CH/.node-gyp/0.10.33",
+    "nodedir": "/home/CH/.node-gyp/0.10.36",
     "copy_dev_lib": "true",
     "standalone_static_library": 1
   }
