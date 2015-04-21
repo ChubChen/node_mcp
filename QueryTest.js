@@ -23,6 +23,7 @@ QueryTest.prototype.query = function(cmd, bodyNode, cb)
         }
         else
         {
+            log.info("backMsg:" + JSON.stringify(backMsgNode));
             var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
             var backBodyNode = JSON.parse(backBodyStr);
             cb(null, backBodyNode);
@@ -36,7 +37,7 @@ QueryTest.prototype.query = function(cmd, bodyNode, cb)
 QueryTest.prototype.queryCQ01 = function()
 {
     var self = this;
-    var bodyNode = {cond:{gameCode:{$in:['T51']}}, sort:{}, skip:120, limit:20};
+    var bodyNode = {gameCode:"T03"};
     log.info(bodyNode);
     self.query("CQ01", bodyNode, function(err, backMsgNode){
         if(err)
@@ -77,7 +78,7 @@ QueryTest.prototype.queryCQ02 = function()
 QueryTest.prototype.queryCQ03 = function()
 {
     var self = this;
-    var bodyNode = {cond:{outerId:{"$in":["186581"]}}, sort:{}, skip:0, limit:20};
+    var bodyNode = {cond:{}, sort:{}, skip:0, limit:20};
     self.query("CQ03", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -137,7 +138,7 @@ QueryTest.prototype.queryCQ05 = function()
 QueryTest.prototype.queryCQ06 = function()
 {
     var self = this;
-    var bodyNode = {cond:{}, sort:{}, skip:0, limit:20};
+    var bodyNode = {};
     self.query("CQ06", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -152,4 +153,4 @@ QueryTest.prototype.queryCQ06 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ03();
+queryTest.queryCQ06();
