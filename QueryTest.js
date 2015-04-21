@@ -37,7 +37,7 @@ QueryTest.prototype.query = function(cmd, bodyNode, cb)
 QueryTest.prototype.queryCQ01 = function()
 {
     var self = this;
-    var bodyNode = {gameCode:"T03"};
+    var bodyNode = {gameCode:"T03", termCode:"2015002"};
     log.info(bodyNode);
     self.query("CQ01", bodyNode, function(err, backMsgNode){
         if(err)
@@ -153,4 +153,4 @@ QueryTest.prototype.queryCQ06 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ04();
+queryTest.queryCQ01();
