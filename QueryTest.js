@@ -153,4 +153,4 @@ QueryTest.prototype.queryCQ06 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ06();
+queryTest.queryCQ03();
