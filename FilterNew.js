@@ -129,6 +129,7 @@ Filter.prototype.startWeb = function()
             self.handle(message, function(backMsg){
                 try {
                     res.type('application/json;charset=utf-8');
+                    log.info("backMsg" + backMsg);
                     res.send(backMsg);
                     //res.json(backMsg);
                     log.info('worker' + cluster.worker.id + ',PID:' + process.pid );
@@ -145,6 +146,7 @@ Filter.prototype.startWeb = function()
             self.handle(message, function( backMsg){
                 try {
                     res.type('application/json;charset=utf-8');
+                    log.info("backMsg" + backMsg);
                     res.send(backMsg);
                     log.info('worker' + cluster.worker.id + ',PID:' + process.pid );
                 }
@@ -167,6 +169,7 @@ Filter.prototype.handle = function(message, cb)
 {
     var self = this;
     try {
+         log.info("message out:" + message);
         if(message == undefined){
             cb({head:{cmd:'E01'}, body:JSON.stringify(errCode.E0007)});
             return;
@@ -176,6 +179,7 @@ Filter.prototype.handle = function(message, cb)
         var bodyStr = msgNode.body;
         var start = new Date().getTime();
         cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
+            var backHeadNode = {messageId:digestUtil.createUUID()};
             var key = headNode.key;
             if(key == undefined)
             {
@@ -193,19 +197,20 @@ Filter.prototype.handle = function(message, cb)
                 bodyNode = {};
             }
             if (err) {
-                bodyNode.repCode = err.repCode;
-                bodyNode.description = err.description;
+                backHeadNode.repCode = err.repCode;
+                backHeadNode.description = err.description;
             }
             else
             {
-                bodyNode.repCode = errCode.E0000.repCode;
-                bodyNode.description = errCode.E0000.description;
+                backHeadNode.repCode = errCode.E0000.repCode;
+                backHeadNode.description = errCode.E0000.description;
             }
-            log.info(bodyNode);
-            var decodedBodyStr = digestUtil.generate(headNode, key, JSON.stringify(bodyNode));
+            backHeadNode.timestamp = headNode.timestamp;
+            backHeadNode.digestType = headNode.digestType;
+            var decodedBodyStr = digestUtil.generate(backHeadNode, key, JSON.stringify(bodyNode));
             var end = new Date().getTime();
             log.info(headNode.cmd + ":" + headNode.userId + ":" + headNode.id + ",用时:" + (end - start) + "ms");
-            cb({head: headNode, body: decodedBodyStr});
+            cb({head: backHeadNode, body: decodedBodyStr});
         });
     }
     catch (err)

@@ -1,19 +1,42 @@
 var async = require('async');
-
 var platInterUtil = require('mcp_util').platInterUtil;
 var esut = require("easy_util");
 var log = esut.log;
 var digestUtil = esut.digestUtil;
+
+var argv = process.argv;
+var kvs = {};
+var lot = "T03";
+var length = 1;
+for(var key in argv)
+{
+    if(key > 1)
+    {
+        var kv = argv[key].split("=");
+        kvs[kv[0]] = kv[1];
+    }
+}
+if(kvs.lot)
+{
+    lot = kvs.lot;
+}
+
+if(kvs.length)
+{
+    length = kvs.length;
+}
 
 var LotTest = function(){
     var self = this;
     self.userId = 'Q0001';
     //self.userId = 'wangyi';
     self.userType = "CHANNEL";
-    self.key = 'cad6011f5f174a359d9a36e06aada07e';
+    self.key = '135790';
     //self.key = 'ce7b4b00379744c781f0544440be3978';
     self.cmd = 'CT03';
-    self.digestType = "3des";
+    self.digestType = "md5";
+    self.lotGame = lot;
+    self.length = length;
 };
 
 LotTest.prototype.lot = function(bodyNode, cb)
@@ -141,6 +164,64 @@ LotTest.prototype.lotT01 = function(cb){
     });
 }
 
+LotTest.prototype.lotT03 = function(cb){
+
+    var self = this;
+    var bodyNode = {};
+    var orderNode = {outerId:digestUtil.createUUID(), amount: 25600};
+    var termCode = '2015001';
+    //[1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 63, 69, 73, 75, 75, 73, 69, 63, 55, 45, 36, 28, 21, 15, 10, 6, 3, 1];
+    //[10, 54, 96, 126, 144, 150, 144, 126, 96, 54]
+    var ticketsNode = [
+        {gameCode:'T03', termCode:termCode, bType:'00', amount:400, pType:'01',
+            multiple:1, number:'1|2|3;2|4|7', outerId:digestUtil.createUUID()},
+        {gameCode:'T03', termCode:termCode, bType:'03', amount:3600, pType:'01',
+            multiple:1, number:'01,04', outerId:digestUtil.createUUID()},
+        {gameCode:'T03', termCode:termCode, bType:'06', amount:21600, pType:'01',
+            multiple:1, number:'1,9', outerId:digestUtil.createUUID()}]
+    orderNode.tickets = ticketsNode;
+    bodyNode.order = orderNode;
+
+    self.lot(bodyNode, function(err, backMsgNode){
+        if(err){
+            log.info('err:' + err);
+        }else{
+            log.info("backMsgNode" + JSON.stringify(backMsgNode.head));
+            var decodeBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+            log.info(decodeBodyStr);
+            cb();
+        }
+    });
+}
+
+LotTest.prototype.lotT02 = function(cb){
+
+    var self = this;
+    var bodyNode = {};
+    var orderNode = {outerId:digestUtil.createUUID(), amount: 13200};
+    var termCode = '2015001';
+    var ticketsNode = [
+        {gameCode:'T02', termCode:termCode, bType:'00', amount:400, pType:'00',
+            multiple:1, number:'1|2|3|4|5|6|7;1|8|5|4|5|6|9', outerId:digestUtil.createUUID()},
+        {gameCode:'T02', termCode:termCode, bType:'01', amount:12800, pType:'00',
+            multiple:1, number:'1,5|2,6|3,5|4,7|5,8|4,6|7,8', outerId:digestUtil.createUUID()},
+        ]
+    orderNode.tickets = ticketsNode;
+    bodyNode.order = orderNode;
+
+    self.lot(bodyNode, function(err, backMsgNode){
+        if(err){
+            log.info('err:' + err);
+        }else{
+            log.info("backMsgNode");
+            var decodeBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+            log.info(decodeBodyStr);
+            cb();
+        }
+    });
+}
+
+
 LotTest.prototype.lotF02 = function(cb){
 
     var self = this;
@@ -175,17 +256,25 @@ LotTest.prototype.lotF02 = function(cb){
     });
 }
 
+LotTest.prototype.start = function(){
+    var self = this;
+    var count = 0;
+    async.whilst(
+        function() { return count < self.length},
+        function(whileCb) {
+            var method = 'lot' + self.lotGame;
+            if(self[method]){
+                self[method](function(){
+                    count++;
+                    whileCb();
+                });
+            }
+        },
+        function(err) {
+            log.info(err);
+        }
+    );
+};
 var lotTest = new LotTest();
-var count = 0;
-async.whilst(
-    function() { return count < 1},
-    function(whileCb) {
-        lotTest.lotT06(function(){
-            count++;
-            whileCb();
-        });
-    },
-    function(err) {
-        log.info(err);
-    }
-);
+lotTest.start();
+

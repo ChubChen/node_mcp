@@ -97,10 +97,17 @@ Gateway.prototype.handle = function(message, cb)
     var self = this;
     log.info(message);
     try {
+        log.info("message out:" + message);
+        if(message == undefined){
+            cb({head:{cmd:'E01'}, body:JSON.stringify(errCode.E0007)});
+            return;
+        }
         var msgNode = JSON.parse(message);
         var headNode = msgNode.head;
         var bodyStr = msgNode.body;
+        var start = new Date().getTime();
         cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
+            var backHeadNode = {messageId:digestUtil.createUUID()};
             var key = headNode.key;
             if(key == undefined)
             {
@@ -118,17 +125,21 @@ Gateway.prototype.handle = function(message, cb)
                 bodyNode = {};
             }
             if (err) {
-                bodyNode.repCode = err.repCode;
-                bodyNode.description = err.description;
+                backHeadNode.repCode = err.repCode;
+                backHeadNode.description = err.description;
             }
             else
             {
-                bodyNode.repCode = errCode.E0000.repCode;
-                bodyNode.description = errCode.E0000.description;
+                backHeadNode.repCode = errCode.E0000.repCode;
+                backHeadNode.description = errCode.E0000.description;
             }
+            backHeadNode.timestamp = headNode.timestamp;
+            backHeadNode.digestType = headNode.digestType;
             log.info(bodyNode);
-            var decodedBodyStr = digestUtil.generate(headNode, key, JSON.stringify(bodyNode));
-            cb({head: headNode, body: decodedBodyStr});
+            var decodedBodyStr = digestUtil.generate(backHeadNode, key, JSON.stringify(bodyNode));
+            var end = new Date().getTime();
+            log.info(headNode.cmd + ":" + headNode.userId + ":" + headNode.id + ",用时:" + (end - start) + "ms");
+            cb({head: backHeadNode, body: decodedBodyStr});
         });
     }
     catch (err)

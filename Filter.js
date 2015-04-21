@@ -100,6 +100,7 @@ Filter.prototype.handle = function(message, cb)
     var self = this;
     var headNode;
     try {
+        log.info("message out" + message);
         var msgNode = JSON.parse(message);
         headNode = msgNode.head;
     }
