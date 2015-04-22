@@ -16,6 +16,7 @@ var dc = require('mcp_db').dc;
 var esut = require("easy_util");
 var log = esut.log;
 var digestUtil = esut.digestUtil;
+var dateUtil = esut.dateUtil;
 
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
@@ -93,6 +94,10 @@ Filter.prototype.startWeb = function()
             cluster.fork();
         });
 
+        process.on('uncaughtException', function(err){
+            log.error("master error");
+            log.error(err.stack);
+        });
         /*//遍历每个进程监听 从进程给主进程的message消息
         Object.keys(cluster.workers).forEach(function(id) {
             cluster.workers[id].on('message', function(msg){
@@ -108,6 +113,7 @@ Filter.prototype.startWeb = function()
             log.info('[worker] '+msg);
             process.send('[worker] worker' + cluster.worker.id + ' received!');
         });*/
+
 
         //是Connect內建的middleware，设置此处可以将client提交过来的post请求放入request.body中
         app.use(express.bodyParser());
@@ -168,19 +174,24 @@ Filter.prototype.startWeb = function()
 Filter.prototype.handle = function(message, cb)
 {
     var self = this;
+    log.info("message out:" + message);
+    if(message == undefined){
+        cb({head:errCode.E0007, body:"{}"});
+        return;
+    }
     try {
-         log.info("message out:" + message);
-        if(message == undefined){
-            cb({head:{cmd:'E01'}, body:JSON.stringify(errCode.E0007)});
-            return;
-        }
         var msgNode = JSON.parse(message);
-        var headNode = msgNode.head;
-        var bodyStr = msgNode.body;
-        var start = new Date().getTime();
-        cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
+    }catch (err){
+        log.error(err);
+        cb({head: errCode.E2058, body:"{}"});
+    }
+    var headNode = msgNode.head;
+    var bodyStr = msgNode.body;
+    var start = new Date().getTime();
+    var key = headNode.key;
+    try{
+    cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
             var backHeadNode = {messageId:digestUtil.createUUID()};
-            var key = headNode.key;
             if(key == undefined)
             {
                 key = digestUtil.getEmptyKey();
@@ -216,9 +227,27 @@ Filter.prototype.handle = function(message, cb)
     catch (err)
     {
         log.error(err);
-        cb({head:{cmd:'E01'}, body:JSON.stringify(errCode.E2058)});
+        var backHeadNode = {messageId:digestUtil.createUUID()};
+        backHeadNode.repCode = errCode.E9999.repCode;
+        backHeadNode.description = errCode.E9999.description;
+        backHeadNode.timestamp = dateUtil.getCurTime();
+        backHeadNode.digestType = 'md5';
+        var decodedBodyStr = digestUtil.generate(backHeadNode, key, '{}');
+        cb({head:backHeadNode, body:decodedBodyStr});
         return;
     }
+    //全局打印异常
+    process.on('uncaughtException', function(err){
+        log.error("[worker]" + cluster.worker.id + " error");
+        log.error(err.stack);
+        var backHeadNode = {messageId:digestUtil.createUUID()};
+        backHeadNode.repCode = errCode.E9999.repCode;
+        backHeadNode.description = errCode.E9999.description;
+        backHeadNode.timestamp = dateUtil.getCurTime();
+        backHeadNode.digestType = 'md5';
+        var decodedBodyStr = digestUtil.generate(backHeadNode, key, '{}');
+        cb({head:backHeadNode, body:decodedBodyStr});
+    });
 };
 
 var f = new Filter();

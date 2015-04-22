@@ -1,4 +1,6 @@
 var platInterUtil = require('mcp_util').platInterUtil;
+var moment  = require('moment');
+
 var esut = require("easy_util");
 var log = esut.log;
 var digestUtil = esut.digestUtil;
@@ -152,5 +154,25 @@ QueryTest.prototype.queryCQ06 = function()
     });
 }
 
+/**
+ * 期次查询
+ */
+QueryTest.prototype.queryCQ10 = function()
+{
+    var self = this;
+    var bodyNode = {requestTime:moment().format('YYYY-MM-DD hh:mm:ss')};
+    self.query("CQ10", bodyNode, function(err, backMsgNode){
+        if(err)
+        {
+            log.info('err:' + err);
+        }
+        else
+        {
+            log.info('back:');
+            log.info(backMsgNode);
+        }
+    });
+}
+
 var queryTest = new QueryTest();
-queryTest.queryCQ01();
+queryTest.queryCQ10();
