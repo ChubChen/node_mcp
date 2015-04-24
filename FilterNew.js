@@ -135,7 +135,6 @@ Filter.prototype.startWeb = function()
             self.handle(message, function(backMsg){
                 try {
                     res.type('application/json;charset=utf-8');
-                    log.info("backMsg" + backMsg);
                     res.send(backMsg);
                     //res.json(backMsg);
                     log.info('worker' + cluster.worker.id + ',PID:' + process.pid );
@@ -152,7 +151,7 @@ Filter.prototype.startWeb = function()
             self.handle(message, function( backMsg){
                 try {
                     res.type('application/json;charset=utf-8');
-                    log.info("backMsg" + backMsg);
+                    log.info("backMsg" + JSON.stringify(backMsg));
                     res.send(backMsg);
                     log.info('worker' + cluster.worker.id + ',PID:' + process.pid );
                 }
@@ -174,7 +173,7 @@ Filter.prototype.startWeb = function()
 Filter.prototype.handle = function(message, cb)
 {
     var self = this;
-    log.info("message out:" + message);
+    log.info("message :" + message);
     if(message == undefined){
         cb({head:errCode.E0007, body:"{}"});
         return;
@@ -188,11 +187,11 @@ Filter.prototype.handle = function(message, cb)
     var headNode = msgNode.head;
     var bodyStr = msgNode.body;
     var start = new Date().getTime();
-    var key = headNode.key;
     try{
     cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
             var backHeadNode = {messageId:digestUtil.createUUID()};
-            if(key == undefined)
+        var key = headNode.key;
+        if(key == undefined)
             {
                 key = digestUtil.getEmptyKey();
                 if(headNode.digestType == '3des')
@@ -221,6 +220,7 @@ Filter.prototype.handle = function(message, cb)
             var decodedBodyStr = digestUtil.generate(backHeadNode, key, JSON.stringify(bodyNode));
             var end = new Date().getTime();
             log.info(headNode.cmd + ":" + headNode.userId + ":" + headNode.id + ",用时:" + (end - start) + "ms");
+            log.info("backMessage"+{head: backHeadNode, body: decodedBodyStr});
             cb({head: backHeadNode, body: decodedBodyStr});
         });
     }

@@ -97,8 +97,8 @@ PrintTest.prototype.printUtilEmpty = function()
         function(cb)
         {
             printTest.printP01(function(err, backBodyNode){
-                log.info(backBodyNode);
-                if(backBodyNode && backBodyNode.repCode == '0000')
+                log.info(backBodyNode + "back");
+                if(backBodyNode)
                 {
                     var tickets = backBodyNode.rst;
                     if(tickets.length == 0)

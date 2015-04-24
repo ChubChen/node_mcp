@@ -140,15 +140,15 @@ LotTest.prototype.lotT01 = function(cb){
 
     var self = this;
     var bodyNode = {};
-    var orderNode = {outerId:digestUtil.createUUID(), amount:15400};
-    var termCode = '2014112416';
+    var orderNode = {outerId:digestUtil.createUUID(), amount:200};
+    var termCode = '15046';
     var ticketsNode = [
         {gameCode:'T01', termCode:termCode, bType:'00', amount:200, pType:'00',
             multiple:1, number:'01,02,03,04,05|01,02', outerId:digestUtil.createUUID()},
-        {gameCode:'T01', termCode:termCode, bType:'01', amount:11200, pType:'00',
+       /* {gameCode:'T01', termCode:termCode, bType:'01', amount:11200, pType:'00',
             multiple:1, number:'01,02,03,04,05,06,07,08|01,02', outerId:digestUtil.createUUID()},
         {gameCode:'T01', termCode:termCode, bType:'02', amount:4000, pType:'00',
-            multiple:1, number:'01,02,03$04,05,06,07,08|01$02,03', outerId:digestUtil.createUUID()}]
+            multiple:1, number:'01,02,03$04,05,06,07,08|01$02,03', outerId:digestUtil.createUUID()}*/]
     orderNode.tickets = ticketsNode;
     bodyNode.order = orderNode;
 
@@ -169,7 +169,7 @@ LotTest.prototype.lotT03 = function(cb){
     var self = this;
     var bodyNode = {};
     var orderNode = {outerId:digestUtil.createUUID(), amount: 25600};
-    var termCode = '2015001';
+    var termCode = '20150003';
     //[1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 63, 69, 73, 75, 75, 73, 69, 63, 55, 45, 36, 28, 21, 15, 10, 6, 3, 1];
     //[10, 54, 96, 126, 144, 150, 144, 126, 96, 54]
     var ticketsNode = [
