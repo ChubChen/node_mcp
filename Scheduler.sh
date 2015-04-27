@@ -31,7 +31,7 @@ case $OPT in
                  echo "You cannot repeat stop"
                fi
                if [ ${#fileClient} -ne 0 ];  then
-                 kill -9  `ps -ef|grep Scheduler.js|grep -v grep|awk '{print $2}'`
+                 kill -9  `ps -ef|grep TermFileClient.js|grep -v grep|awk '{print $2}'`
                  echo "Stop TermFileClient.js success"
                else
                  echo "You cannot repeat stop"
