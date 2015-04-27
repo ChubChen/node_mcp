@@ -141,7 +141,7 @@ LotTest.prototype.lotT01 = function(cb){
     var self = this;
     var bodyNode = {};
     var orderNode = {outerId:digestUtil.createUUID(), amount:200};
-    var termCode = '15046';
+    var termCode = '15047';
     var ticketsNode = [
         {gameCode:'T01', termCode:termCode, bType:'00', amount:200, pType:'00',
             multiple:1, number:'01,02,03,04,05|01,02', outerId:digestUtil.createUUID()},

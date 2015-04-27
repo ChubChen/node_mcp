@@ -18,6 +18,11 @@ var notifyUtil = mcpUtil.notifyUtil;
 var cons = require('mcp_constants');
 var digestType = cons.digestType;
 var notifyType = cons.notifyType;
+var termStatus = cons.termStatus;
+
+var mcp_control = require('mcp_control');
+var notifyControl = mcp_control.notifyCtl;
+
 
 var Notify = function(){
     var self = this;
@@ -95,11 +100,9 @@ Notify.prototype.sendUntilEmpty = function()
         function(data, cb)
         {
             var msg = {};
-            msg.uniqueId = digestUtil.createUUID();
-            msg.content = data.content;
+            msg = data.content;
             msg.id = data._id;
             msg.type = data.type;
-            msg.createTime = dateUtil.toString(data.createTime);
 
             var options = {
                 hostname: data.ip,
@@ -150,6 +153,7 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
         cb(ec.E4002);
         return;
     }
+    log.info(msg);
     var cmd = '';
     if(msg.type == notifyType.TICKET)
     {
@@ -159,39 +163,67 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
     {
         cmd = "N03";
     }
-    else
+    else if(msg.type == notifyType.TERM)
     {
-        cmd = "N01";
+        if(msg.status == termStatus.ON_SALE){
+            cmd = 'N04';
+        }else if(msg.status == termStatus.END){
+            cmd = 'N05';
+        }else if(msg.status == termStatus.SEND){
+            cmd = 'N06';
+        }else if(msg.status == termStatus.DRAW){
+            cmd = 'N07'
+        }else if(msg.status == termStatus.SEAL){
+            cmd = 'N08';
+        }
     }
+    log.info(cmd);
     //不给商户发送的字段
     delete msg.type;
     delete msg.uniqueId;
-    notifyUtil.send(options, msgDigestType, key, cmd, msg, function(err, data){
-        if(err)
-        {
-            log.error("配置:");
-            log.error(options);
-            log.error("第" + tryCount + "次发送通知失败!");
-            log.error("消息内容:");
-            log.error(msg);
-            tryCount++;
-            if(tryCount > 3)
-            {
-                cb(err, data);
-            }
-            else
-            {
-                self.sendMsg(options, msgDigestType, key, msg, tryCount, cb);
-            }
+    async.waterfall([
+        //根据业务过滤返回字段
+        function(cb){
+            notifyControl.handle(msg, cmd, function (err, bodyNode) {
+                if(err){
+                    cb(err);
+                }else{
+                    cb(null, bodyNode);
+                }
+            })
         }
-        else
-        {
-            log.info("配置:");
-            log.info(options);
-            log.info("第" + tryCount + "次发送通知成功!");
-            log.info("消息内容:");
-            log.info(msg);
-            cb(null, data);
+    ],function(err, msg){
+        if(err){
+            log.error(err);
+        }else{
+            notifyUtil.send(options, msgDigestType, key, cmd, msg, function(err, data){
+                if(err)
+                {
+                    log.error("配置:");
+                    log.error(options);
+                    log.error("第" + tryCount + "次发送通知失败!");
+                    log.error("消息内容:");
+                    log.error(msg);
+                    tryCount++;
+                    if(tryCount > 3)
+                    {
+                        cb(err, data);
+                    }
+                    else
+                    {
+                        self.sendMsg(options, msgDigestType, key, msg, tryCount, cb);
+                    }
+                }
+                else
+                {
+                    log.info("配置:");
+                    log.info(options);
+                    log.info("第" + tryCount + "次发送通知成功!");
+                    log.info("消息内容:");
+                    log.info(msg);
+                    cb(null, data);
+                }
+            });
         }
     });
 }
