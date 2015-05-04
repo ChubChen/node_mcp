@@ -151,7 +151,6 @@ Filter.prototype.startWeb = function()
             self.handle(message, function( backMsg){
                 try {
                     res.type('application/json;charset=utf-8');
-                    log.info("backMsg" + JSON.stringify(backMsg));
                     res.send(backMsg);
                     log.info('worker' + cluster.worker.id + ',PID:' + process.pid );
                 }
@@ -220,7 +219,7 @@ Filter.prototype.handle = function(message, cb)
             var decodedBodyStr = digestUtil.generate(backHeadNode, key, JSON.stringify(bodyNode));
             var end = new Date().getTime();
             log.info(headNode.cmd + ":" + headNode.userId + ":" + headNode.id + ",用时:" + (end - start) + "ms");
-            log.info("backMessage"+{head: backHeadNode, body: decodedBodyStr});
+            log.info("backBody"+ JSON.stringify(bodyNode));
             cb({head: backHeadNode, body: decodedBodyStr});
         });
     }
