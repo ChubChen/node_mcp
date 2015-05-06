@@ -11,7 +11,7 @@ usage()
 OPT=$1
 PROCESSID=$2
 filterValue=`ps -ef|grep FilterNew.js|grep -v grep|awk '{print $2}'`
-gatewayValue=`ps -ef|grep Gateway.js|grep -v grep|awk '{print $2}'`
+adminValue=`ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
 notifyValue=`ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
 jcTermCorn=`ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
 
