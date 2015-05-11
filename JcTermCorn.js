@@ -54,7 +54,11 @@ JcTermCorn.prototype.get = function(options, cb)
         });
 
         res.on('end', function(){
-            cb(null, JSON.parse(resData));
+            if(resData){
+                cb(null, JSON.parse(resData));
+            }else{
+                log.error("请求返回结果为空");
+            }
         });
     });
     req.setTimeout(20000, function(){

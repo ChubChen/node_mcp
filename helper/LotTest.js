@@ -169,7 +169,7 @@ LotTest.prototype.lotT03 = function(cb){
     var self = this;
     var bodyNode = {};
     var orderNode = {outerId:digestUtil.createUUID(), amount: 25600};
-    var termCode = '2015009';
+    var termCode = '15121';
     //[1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 63, 69, 73, 75, 75, 73, 69, 63, 55, 45, 36, 28, 21, 15, 10, 6, 3, 1];
     //[10, 54, 96, 126, 144, 150, 144, 126, 96, 54]
     var ticketsNode = [
@@ -199,7 +199,7 @@ LotTest.prototype.lotT02 = function(cb){
     var self = this;
     var bodyNode = {};
     var orderNode = {outerId:digestUtil.createUUID(), amount: 13200};
-    var termCode = '2015001';
+    var termCode = '15051';
     var ticketsNode = [
         {gameCode:'T02', termCode:termCode, bType:'00', amount:400, pType:'00',
             multiple:1, number:'1|2|3|4|5|6|7;1|8|5|4|5|6|9', outerId:digestUtil.createUUID()},
@@ -214,7 +214,7 @@ LotTest.prototype.lotT02 = function(cb){
             log.info('err:' + err);
         }else{
             log.info("backMsgNode");
-            var decodeBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+            var decodeBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body)
             log.info(decodeBodyStr);
             cb();
         }

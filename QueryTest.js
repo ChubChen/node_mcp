@@ -174,5 +174,25 @@ QueryTest.prototype.queryCQ10 = function()
     });
 }
 
+/**
+ * 期次查询
+ */
+QueryTest.prototype.queryCQ22 = function()
+{
+    var self = this;
+    var bodyNode = {gameCode:'T51',pType:'01'};
+    self.query("CQ22", bodyNode, function(err, backMsgNode){
+        if(err)
+        {
+            log.info('err:' + err);
+        }
+        else
+        {
+            log.info('back:');
+            log.info(backMsgNode);
+        }
+    });
+}
+
 var queryTest = new QueryTest();
-queryTest.queryCQ04();
+queryTest.queryCQ22();

@@ -166,7 +166,7 @@ var initTermF01 = function()
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
-                    sql = sql + "'F01_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                     log.info(sql);
                     write.write(sql);
@@ -225,7 +225,7 @@ var initTermT01 = function()
                     var temp = new moment(currDate);
                     var term = {};
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
-                    sql = sql + "'T01_" +currCode +"','" + currCode + "','" + new Date(temp.add(2,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(2,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                     //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
@@ -239,7 +239,7 @@ var initTermT01 = function()
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
-                    sql = sql + "'T01_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                     //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
@@ -277,11 +277,9 @@ var initTermT02 = function()
         },
         function(cb)
         {
-            // var table = dc.main.get("term");
             var gameCode = 'T02';
-            // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15010;
+            var startCode  = 15052;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
@@ -294,15 +292,30 @@ var initTermT02 = function()
                 if(weekDay == 5 || weekDay == 0){
                     //log.info(weekDay);
                     //log.info(currDate.format("YYYY-MM-DD"));
+    /*                var openTime = currDate.format("YYYY-MM-DD 20:05:00")
+                    if(openTime > now && openTime){
+                        var currCode = startCode;
+                        var nextCode = startCode + 1;
+                        var temp = new moment(currDate);
+                        var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                        sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime()  +"',";
+                        sql = sql + "'"+new Date(now).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
+                        //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
+                        log.info(sql);
+                        //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
+                        write.write(sql);
+                        write.write("\n");
+                        startCode = nextCode;
+                    }*/
                     var currCode = startCode;
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
-                    var sql = "insert into term (id, code, createTime , endTime, openTime, gameCode, name, nextCode, status, version,prizepool, CONCEDEPOINTS) values (";
-                    sql = sql + "'" +digest.createUUID() +"','" + currCode + "',to_date('" + moment().format("YYYY-MM-DD HH:mm:ss") + "','yyyy-mm-dd hh24:mi:ss'),to_date('" + temp.add(2,'day').format("YYYY-MM-DD 19:50:00") +"','yyyy-mm-dd hh24:mi:ss'),";
-                    sql = sql + "to_date('"+currDate.format("YYYY-MM-DD 20:20:00") + "','yyyy-mm-dd hh24:mi:ss'),'" + gameCode + "','第"+currCode+"期','" + nextCode + "','" + 1100 +"','1'";
-                    sql += ",0,0);";
+                    var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(2,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                    sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                     //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
+                    //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
                     write.write(sql);
                     write.write("\n");
                     startCode = nextCode;
@@ -312,12 +325,12 @@ var initTermT02 = function()
                     var currCode = startCode;
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
-                    var sql = "insert into term (id, code, createTime , endTime, openTime, gameCode, name, nextCode, status, version,prizepool, CONCEDEPOINTS) values (";
-                    sql = sql + "'" +digest.createUUID() +"','" + currCode + "',to_date('" + moment().format("YYYY-MM-DD HH:mm:ss") + "','yyyy-mm-dd hh24:mi:ss'),to_date('" + temp.add(3,'day').format("YYYY-MM-DD 19:50:00") +"','yyyy-mm-dd hh24:mi:ss'),";
-                    sql = sql + "to_date('"+currDate.format("YYYY-MM-DD 20:20:00") + "','yyyy-mm-dd hh24:mi:ss'),'" + gameCode + "','第"+currCode+"期','" + nextCode + "','" + 1100 +"','1'";
-                    sql += ",0,0);";
+                    var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                    sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                     //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
+                    //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
                     write.write(sql);
                     write.write("\n");
                     startCode = nextCode;
@@ -354,7 +367,7 @@ var initTermT03 = function()
             var gameCode = 'T03';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15021;
+            var startCode  = 15122;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
@@ -366,10 +379,9 @@ var initTermT03 = function()
                 var currCode = startCode;
                 var nextCode = startCode + 1;
                 var temp = new moment(currDate);
-                var sql = "insert into term (id, code, createTime , endTime, openTime, gameCode, name, nextCode, status, version,prizepool, CONCEDEPOINTS) values (";
-                sql = sql + "'" +digest.createUUID() +"','" + currCode + "',to_date('" + moment().format("YYYY-MM-DD HH:mm:ss") + "','yyyy-mm-dd hh24:mi:ss'),to_date('" + temp.add(1,'day').format("YYYY-MM-DD 19:50:00") +"','yyyy-mm-dd hh24:mi:ss'),";
-                sql = sql + "to_date('"+currDate.format("YYYY-MM-DD 20:10:00") + "','yyyy-mm-dd hh24:mi:ss'),'" + gameCode + "','第"+currCode+"期','" + nextCode + "','" + 1100 +"','1'";
-                sql += ",0,0);";
+                var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(1,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                 //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                 log.info(sql);
                 write.write(sql);
@@ -407,7 +419,7 @@ var initTermT04 = function()
             var gameCode = 'T04';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15021;
+            var startCode  = 15122;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
@@ -419,10 +431,9 @@ var initTermT04 = function()
                 var currCode = startCode;
                 var nextCode = startCode + 1;
                 var temp = new moment(currDate);
-                var sql = "insert into term (id, code, createTime , endTime, openTime, gameCode, name, nextCode, status, version,prizepool, CONCEDEPOINTS) values (";
-                sql = sql + "'" +digest.createUUID() +"','" + currCode + "',to_date('" + moment().format("YYYY-MM-DD HH:mm:ss") + "','yyyy-mm-dd hh24:mi:ss'),to_date('" + temp.add(1,'day').format("YYYY-MM-DD 19:50:00") +"','yyyy-mm-dd hh24:mi:ss'),";
-                sql = sql + "to_date('"+currDate.format("YYYY-MM-DD 20:10:00") + "','yyyy-mm-dd hh24:mi:ss'),'" + gameCode + "','第"+currCode+"期','" + nextCode + "','" + 1100 +"','1'";
-                sql += ",0,0);";
+                var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(1,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
+                sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
                 //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                 log.info(sql);
                 write.write(sql);
@@ -709,5 +720,5 @@ var initTermT05Bj = function()
 };
 
 
-initTermF01();
+initTermT04();
 //console.log(moment().format("YYYY-MM-DD 19:50:00"));
