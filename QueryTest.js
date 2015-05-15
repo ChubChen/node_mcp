@@ -80,7 +80,7 @@ QueryTest.prototype.queryCQ02 = function()
 QueryTest.prototype.queryCQ03 = function()
 {
     var self = this;
-    var bodyNode = {cond:{}, sort:{}, skip:0, limit:20};
+    var bodyNode = {cond:{}, sort:{}};
     self.query("CQ03", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -195,4 +195,4 @@ QueryTest.prototype.queryCQ22 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ22();
+queryTest.queryCQ03();
