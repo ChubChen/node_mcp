@@ -82,6 +82,17 @@ html(lang="en")
                     });
                 });
 
+                //绑定事件
+                Node.all("input.nofify").each(function(item){
+                    item.on("click", function(){
+                        var tId = Node.one(this).attr("tId");
+                        var bodyNode = {id: tId};
+                        CurSite.sendDigest(Io, Json, "AD24", null, bodyNode, function(err, backBodyNode){
+                            alert(backBodyNode.description);
+                        });
+                    });
+                });
+
                 Node.all("input.chuli").each(function(item) {
                      item.on("click", function(){
                          var tId = Node.one(this).attr("tId");
@@ -190,6 +201,7 @@ html(lang="en")
                                     td=val.terminal
                                     td
                                         input(type="button", value="详情", class="detail", tId=val.id)
+                                        input(type="button", value="通知票", class="nofify", tId=val.id)
                                         if val.printStatus.id == 1100
                                                 input(type="button", value="处理", class="chuli", tId=val.id)
             .clearfix(style="margin-top:8px")
