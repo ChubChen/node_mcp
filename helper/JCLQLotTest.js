@@ -58,7 +58,7 @@ LotTest.prototype.lotT51 = function(cb){
         if(err){
             log.info('err:' + err);
         }else{
-            log.info("backMsgNode");
+            log.info(backMsgNode.head);
             var decodeBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
             log.info(decodeBodyStr);
             cb();
