@@ -199,6 +199,7 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
             notifyUtil.send(options, msgDigestType, key, cmd, msg, function(err, data){
                 if(err)
                 {
+                    log.error(err);
                     log.error("配置:");
                     log.error(options);
                     log.error("第" + tryCount + "次发送通知失败!");
@@ -211,7 +212,7 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
                     }
                     else
                     {
-                        self.sendMsg(options, msgDigestType, key, msg, tryCount, cb);
+                        self.sendMsgAgain(options, msgDigestType, key, cmd, msg, tryCount, cb)
                     }
                 }
                 else
@@ -227,6 +228,40 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
         }
     });
 }
+
+
+Notify.prototype.sendMsgAgain = function(options, msgDigestType, cmd , key, msg, tryCount, cb){
+
+    notifyUtil.send(options, msgDigestType, key, cmd, msg, function(err, data){
+        if(err)
+        {
+            log.error(err);
+            log.error("配置:");
+            log.error(options);
+            log.error("第" + tryCount + "次发送通知失败!");
+            log.error("消息内容:");
+            log.error(msg);
+            tryCount++;
+            if(tryCount > 3)
+            {
+                cb(err, data);
+            }
+            else
+            {
+
+            }
+        }
+        else
+        {
+            log.info("配置:");
+            log.info(options);
+            log.info("第" + tryCount + "次发送通知成功!");
+            log.info("消息内容:");
+            log.info(msg);
+            cb(null, data);
+        }
+    });
+};
 
 
 var notify = new Notify();
