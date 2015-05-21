@@ -65,7 +65,7 @@ Notify.prototype.start = function()
 Notify.prototype.sendNotify = function()
 {
     var self = this;
-    self.sendJob = new CronJob('*/5 * * * * *', function () {
+    self.sendJob = new CronJob('*/10 * * * * *', function () {
         self.sendUntilEmpty();
     });
     self.sendJob.start();
@@ -79,85 +79,91 @@ Notify.prototype.sendUntilEmpty = function()
     var self = this;
     var table = dc.mg.get("notifyqueen");
     async.waterfall([
-        //从队列中取消息
-        function(cb)
-        {
-            table.findAndRemove({}, {}, [], function(err, data){
-                if(err)
-                {
-                    cb(err);
-                    return;
-                }
-                if(!data)
-                {
-                    cb(self.ec.E0001);
-                    return;
-                }
-                cb(null, data);
+        //10秒钟通知一次。并且取出所有队列消息并分组通知
+        function (cb) {
+            var cursor = table.find({},{},[]).sort({customerId:1}).limit(20);
+            var userMap = new Object();
+            var userOther = new Object();
+            cursor.toArray(function (err, data) {
+                async.eachSeries(data, function(ticket, callback){
+                    self.getCmd(ticket, function(err, cmd){
+                        if(err){
+                            callback(err);
+                        }else{
+                            var key = ticket.customerId +"_"+ data;
+                            if(!userMap[key]){
+                                var array = new Array();
+                                array.push(ticket.content);
+                                userMap[key] = array;
+                                var info = {};
+                                info.userId = ticket.customerId;
+                                info.cmd = cmd;
+                                info.options = {
+                                    hostname: ticket.ip,
+                                    port: ticket.port,
+                                    path: ticket.path,
+                                    method: 'POST'
+                                };
+                                info.key = ticket.key;
+                                var msgDigestType = ticket.digestType;
+                                if(msgDigestType == undefined)
+                                {
+                                    msgDigestType = digestType.getInfoById(digestType.trippleDes).headCode;
+                                }
+                                else
+                                {
+                                    msgDigestType = digestType.getInfoById(msgDigestType).headCode;
+                                }
+                                info.msgDigestType = msgDigestType;
+                                userOther[key] = info;
+                                //table.remove({_id: ticket._id}, {},function(err, data){
+                                    callback(err);
+                                //});
+                            }else{
+                                userMap[key].push(ticket.content);
+                               // table.remove({_id: ticket._id}, {},function(err, data){
+                                    callback(err);
+                               // });
+                            }
+                        }
+                    })
+                }, function (err) {
+                    cursor.count(function(err, count){
+                        cb(null, userMap, userOther, count);
+                    });
+                });
             });
         },
         //发送消息
-        function(data, cb)
+        function(userMap, userOther, count, cb)
         {
-            var msg = {};
-            msg = data.content;
-            msg.id = data._id;
-            msg.type = data.type;
-
-            var options = {
-                hostname: data.ip,
-                port: data.port,
-                path: data.path,
-                method: 'POST'
-            };
-
-            var key = data.key;
-            var msgDigestType = data.digestType;
-            if(msgDigestType == undefined)
-            {
-                msgDigestType = digestType.getInfoById(digestType.trippleDes).headCode;
+            if(count > 0){
+                for(var key in userMap ){
+                    var msgArray = userMap[key];
+                    var info = userOther[key];
+                    log.info("开始向用户" + info.userId + "发送消息");
+                    self.sendMsg(info.options, info.msgDigestType, info.key, info.cmd, msgArray, 1, function(err, data){
+                        cb(err, data);
+                    });
+                }
+            }else{
+                cb(self.ec.E0001);
             }
-            else
-            {
-                msgDigestType = digestType.getInfoById(msgDigestType).headCode;
-            }
-            self.sendMsg(options, msgDigestType, key, msg, 1, function(err, data){
-                cb(err, data);
-            });
         }
     ], function (err, result) {
         //无消息可发送
-        if(err == self.ec.E0001)
+        if(err)
         {
-            log.info(err);
-        }
-        else
-        {
-            if(err)
-            {
-                log.error(err);
-            }
-            self.sendUntilEmpty();
+            log.error(err);
         }
     });
 }
-
-/**
- * 发送单个消息
- */
-Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, cb)
-{
-    var self = this;
-    if(!options.hostname || !key || key.length == 0)
-    {
-        cb(ec.E4002);
-        return;
-    }
-    log.info(msg);
+Notify.prototype.getCmd = function(msg, cb){
     var cmd = '';
     if(msg.type == notifyType.TICKET)
     {
         cmd = "N02";
+
     }
     else if(msg.type == notifyType.GAME)
     {
@@ -176,15 +182,28 @@ Notify.prototype.sendMsg = function(options, msgDigestType, key, msg, tryCount, 
         }else if(msg.status == termStatus.SEAL){
             cmd = 'N08';
         }
+    }else{
+        cb(ec.E9000);
+        return;
     }
-    log.info(cmd);
-    //不给商户发送的字段
-    delete msg.type;
-    delete msg.uniqueId;
+    cb(null, cmd);
+    return
+}
+/**
+ * 发送单个消息
+ */
+Notify.prototype.sendMsg = function(options, msgDigestType, key, cmd, msgArray, tryCount, cb)
+{
+    var self = this;
+    if(!options.hostname || !key || key.length == 0)
+    {
+        cb(ec.E4002);
+        return;
+    }
     async.waterfall([
         //根据业务过滤返回字段
         function(cb){
-            notifyControl.handle(msg, cmd, function (err, bodyNode) {
+            notifyControl.handle(msgArray, cmd, function (err, bodyNode) {
                 if(err){
                     cb(err);
                 }else{

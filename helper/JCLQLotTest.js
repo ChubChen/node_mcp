@@ -7,7 +7,7 @@ var digestUtil = esut.digestUtil;
 
 var LotTest = function(){
     var self = this;
-    self.userId = 'Q0001';
+    self.userId = 'Q0002';
     self.userType = "CHANNEL";
     self.key = '135790';
     self.cmd = 'CT03';
