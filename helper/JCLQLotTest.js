@@ -7,7 +7,7 @@ var digestUtil = esut.digestUtil;
 
 var LotTest = function(){
     var self = this;
-    self.userId = 'Q0002';
+    self.userId = 'Q0001';
     self.userType = "CHANNEL";
     self.key = '135790';
     self.cmd = 'CT03';
@@ -29,7 +29,7 @@ LotTest.prototype.lotT51 = function(cb){
         {
             gameCode:'T51', pType:'02', bType:'11', amount:200,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'02|201505214008|1'
+            number:'02|201505225017|1'
         },
       /* {
             gameCode:'T52', pType:'01', bType:'21', amount:200,
@@ -69,7 +69,7 @@ LotTest.prototype.lotT51 = function(cb){
 var lotTest = new LotTest();
 var count = 0;
 async.whilst(
-    function() { return count < 1},
+    function() { return count < 10},
     function(whileCb) {
         lotTest.lotT51(function(){
             count++;

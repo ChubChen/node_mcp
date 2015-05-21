@@ -82,6 +82,7 @@ Notify.prototype.sendUntilEmpty = function()
         //10秒钟通知一次。并且取出所有队列消息并分组通知
         function (cb) {
             var cursor = table.find({},{},[]).sort({customerId:1}).limit(10);
+            var length = 0;
             var userMap = new Object();
             var userOther = new Object();
             cursor.toArray(function (err, data) {
@@ -114,11 +115,13 @@ Notify.prototype.sendUntilEmpty = function()
                                 info.msgDigestType = msgDigestType;
                                 userOther[key] = info;
                                 table.remove({_id: ticket._id}, {},function(err, data){
+                                    length ++;
                                     callback(err);
                                 });
                             }else{
                                 userMap[key].push(ticket.content);
                                 table.remove({_id: ticket._id}, {},function(err, data){
+                                    length ++;
                                     callback(err);
                                 });
                             }
@@ -146,13 +149,12 @@ Notify.prototype.sendUntilEmpty = function()
                          info.msgDigestType = msgDigestType;
                          userOther[ticket._id] = info;
                          table.remove({_id: ticket._id}, {},function(err, data){
+                             length ++;
                              callback(err);
                          });
                      }
                 }, function (err) {
-                    cursor.count(function(err, count){
-                        cb(null, userMap, userOther, count);
-                    });
+                    cb(null, userMap, userOther, length);
                 });
             });
         },
@@ -175,7 +177,11 @@ Notify.prototype.sendUntilEmpty = function()
         //无消息可发送
         if(err)
         {
-            log.error(err);
+            if(err == self.ec.E0001){
+                log.info(err);
+            }else{
+                log.error(err);
+            }
         }
     });
 }
