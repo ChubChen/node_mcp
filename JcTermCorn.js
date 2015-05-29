@@ -282,7 +282,7 @@ JcTermCorn.prototype.job = function () {
                    var data = {
                        'i_format': 'json',
                        'poolcode[2]':'mnl',
-                       'poolcode[3]':'hdc',
+                       'poolcode[4]':'hdc',
                        '_':new Date().getTime()
                    };
                    var content = qs.stringify(data);
