@@ -272,16 +272,17 @@ JcTermCorn.prototype.job = function () {
                                    cb(err);
                                });
                            }else{
-                               cb(new Error("没有查询到结果"));
+                               cb(new Error("竞猜足球没有查询到结果"));
                            }
                        }
                    });
                },
                function(cb){
-                   //竞猜足球的抓取
+                   //竞猜篮球的抓取
                    var data = {
                        'i_format': 'json',
                        'poolcode[2]':'mnl',
+                       'poolcode[3]':'hdc',
                        '_':new Date().getTime()
                    };
                    var content = qs.stringify(data);
@@ -300,7 +301,7 @@ JcTermCorn.prototype.job = function () {
                                    cb(err);
                                });
                            }else {
-                               cb(new Error("没有查询到结果"));
+                               cb(new Error("竞猜篮球没有查询到结果"));
                            }
                        }
                    });
