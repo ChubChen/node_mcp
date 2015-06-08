@@ -25,7 +25,7 @@ LotTest.prototype.lotT51 = function(cb){
     var self = this;
     var bodyNode = {};
 
-    var orderNode = {outerId:digestUtil.createUUID(), amount:600};
+    var orderNode = {outerId:digestUtil.createUUID(), amount:400};
   /*  var ticketsNode = [
         {
             gameCode:'T51', pType:'06', bType:'21', amount:200,
@@ -51,9 +51,9 @@ LotTest.prototype.lotT51 = function(cb){
             multiple:1, outerId:digestUtil.createUUID(),
             number:'03|201504105001|13,90;02|201504105002|3,1'
         },*/{
-            gameCode:'T51', pType:'05', bType:'33', amount:600,
+            gameCode:'T51', pType:'02', bType:'11', amount:400,
             multiple:1, outerId:digestUtil.createUUID(),
-            number:'05|201504271001|33;05|201504271002|10;05|201504271003|03'
+            number:'02|201506081008|3,1'
         }
         /*{
             gameCode:'T51', pType:'06', bType:'71', amount:200,

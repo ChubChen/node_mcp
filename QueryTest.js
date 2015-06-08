@@ -180,7 +180,7 @@ QueryTest.prototype.queryCQ10 = function()
 QueryTest.prototype.queryCQ22 = function()
 {
     var self = this;
-    var bodyNode = {gameCode:'T51',pType:'01'};
+    var bodyNode = {gameCode:'T51', pType:['01']};
     self.query("CQ22", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -195,4 +195,4 @@ QueryTest.prototype.queryCQ22 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ01();
+queryTest.queryCQ22();

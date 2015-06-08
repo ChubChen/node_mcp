@@ -106,27 +106,41 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
                 var closeTime = data.date + " "+ data.time;
                 var status = termStatus.ON_SALE;
                 var term = {id:"T51_" + code, gameCode:"T51", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
+                var jcodds = {_id:"T51_" + code, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
                 rstTermArray.push(term);
                 if(data.had){
-                    var jcodds = {_id:"T51_" + code +"_" + 02, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"), pType: "02", matchName: data.h_cn + "|" + data.a_cn + "|" + data.l_cn + "|" + "0",
-                        oddsInfo: data.had.h + "|" + data.had.d + "|" + data.had.a, oddsCode: "cn02", oddsName:"胜平负"};
-                    if(data.had.single == 1 && data.had.o_type == "F"){
-                        jcodds.oddsSingle = 1;
-                    }else{
-                        jcodds.oddsSingle = 0;
-                    }
-                    rstOddsArray.push(jcodds);
+                    jcodds.had = {win:data.had.h, level:data.had.d, lose:data.had.a, status:data.had.p_status, single: data.had.single};
                 }
                 if(data.hhad){
-                    var jcoddshhad = {_id:"T51_" + code + "_" + 01, matchCode:code, gameCode:"T51", createTime:moment().format("YYYYMMDD hh:mm:ss"), pType:"01", matchName:data.h_cn + "|" + data.a_cn + "|" + data.l_cn + "|" + data.hhad.fixedodds,
-                        oddsInfo:data.hhad.h + "|" +data.hhad.d + "|" +data.hhad.a, oddsCode:"cn01", oddsName:"让球胜平负"};
-                    if(data.hhad.single == 1 && data.hhad.o_type == "F"){
-                        jcoddshhad.oddsSingle = 1;
-                    }else{
-                        jcoddshhad.oddsSingle = 0;
-                    }
-                    rstOddsArray.push(jcoddshhad);
+                    jcodds.hhad = {win:data.hhad.h, level:data.hhad.d, lose:data.hhad.a, status:data.hhad.p_status, single: data.hhad.single, fixedodds: data.hhad.fixedodds};
                 }
+                //半全场
+                if(data.hafu){
+                    jcodds.hafu = {winWinRate:data.hafu.hh, winLevelRate:data.hafu.hd, winLoseRate:data.hafu.ha,
+                        levelWinRate:data.hafu.dh, levelLevelRate:data.hafu.dd, levelLoseRate:data.hafu.da,
+                        loseWinRate:data.hafu.ah, loseLevelRate:data.hafu.ad, loseLoseRate:data.hafu.aa,
+                        status:data.hafu.p_status, single: data.hafu.single };
+                }
+                if(data.crs){
+                    jcodds.crs = {oneToZero:data.crs["0000"], twoToZero:data.crs["0200"], twoToOne:data.crs["0201"],
+                        threeToZero:data.crs["0300"], threeToOne:data.crs["0301"], threeToTwo:data.crs["0302"],
+                        fourToZero:data.crs["0400"], fourToOne:data.crs["0401"], fourToTwo:data.crs["0402"],
+                        fiveToZero:data.crs["0500"], fiveToOne:data.crs["0501"], fiveToTwo:data.crs["0500"],
+                        zeroToOne:data.crs["0001"], zeroToTwo:data.crs["0002"], oneToTwo:data.crs["0102"],
+                        zeroToThree:data.crs["0003"], oneToThree:data.crs["0103"], twoToThree:data.crs["0203"],
+                        zeroToFour:data.crs["0004"], oneToFour:data.crs["0104"], twoToFour:data.crs["0204"],
+                        zeroToFive:data.crs["0005"], oneToFive:data.crs["0105"], twoToFive:data.crs["0205"],
+                        zeroToZero:data.crs["0000"], oneToOne:data.crs["0101"], twoToTwo:data.crs["0202"],
+                        threeToThree:data.crs["0303"], winOther:data.crs["-1-h"], lostOther:data.crs["-1-a"],
+                        levelOther:data.crs["-1-d"],status:data.hhad.p_status, single: data.hhad.single };
+                }
+                if(data.ttg){
+                    jcodds.ttg = {totalGoal0Rate:data.ttg.s0, totalGoal1Rate:data.ttg.s1, totalGoal2Rate:data.ttg.s2,
+                        totalGoal3Rate:data.ttg.s3, totalGoal4Rate:data.ttg.s4, totalGoal5Rate:data.ttg.s5,
+                        totalGoal6Rate:data.ttg.s6, totalGoal7Rate:data.ttg.s7,
+                        status:data.ttg.p_status, single: data.ttg.single};
+                }
+                rstOddsArray.push(jcodds);
             }
             cb(null, rstTermArray, rstOddsArray);
         },
@@ -184,7 +198,6 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
 JcTermCorn.prototype.handleT52 = function(Object, cb){
     async.waterfall([
         function (cb) {
-
             var time = dateUtil.toDate(Object.status.last_updated).getTime();
             var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
             jcUpdateTable.findOne({"_id": "JCLQUPDATETIME"}, {}, [], function (err, data) {
@@ -248,11 +261,14 @@ JcTermCorn.prototype.job = function () {
     var corn = new CronJob('*/5 * * * *', function () {
         async.waterfall([
                function(cb){
-                   //竞猜足球的抓取
+                   //竞猜足球的抓取胜平负数据
                    var data = {
                        'i_format': 'json',
                        'poolcode[0]':'hhad', //让球胜平负
                        'poolcode[1]':'had', //胜平负
+                       'poolcode[2]':'crs', //比分
+                       'poolcode[3]':'ttg', //总进球
+                       'poolcode[4]':'hafu', //半全场
                        '_':new Date().getTime()
                    };
                    var content = qs.stringify(data);
