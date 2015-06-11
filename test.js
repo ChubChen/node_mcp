@@ -1,3 +1,4 @@
+/*
 var async = require('async');
 var dc = require("mcp_db").dc;
 var esut = require('easy_util');
@@ -43,4 +44,28 @@ var test = function () {
 
 }
 
-new test();
+new test();*/
+var split = "^";
+var startStr = new Date().getTime();
+console.log("String start");
+for(var i =0 ; i<1000000 ; i++){
+    var temp = "1"+"2"+i + split+split+split;
+}
+console.log("String shijian " + (new Date().getTime() - startStr));
+
+var startarray = new Date().getTime();
+
+console.log("String start");
+for(var i =0 ; i<1000000 ; i++){
+    var array = new Array();
+
+    array.push("1");
+    array.push("2");
+    array.push(i);
+    array.push(split);
+    array.push(split);
+    array.push(split);
+    array.join("");
+    var temp = "1"+"2"+i + split+split+split;
+}
+console.log("String shijian " + (new Date().getTime() - startarray));
