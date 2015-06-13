@@ -171,12 +171,12 @@ LotTest.prototype.lotT03 = function(cb){
     var self = this;
     var bodyNode = {};
     var orderNode = {outerId:digestUtil.createUUID(), amount: 400};
-    var termCode = '15145';
+    var termCode = '2015111';
     //[1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 63, 69, 73, 75, 75, 73, 69, 63, 55, 45, 36, 28, 21, 15, 10, 6, 3, 1];
     //[10, 54, 96, 126, 144, 150, 144, 126, 96, 54]
     var ticketsNode = [
         {gameCode:'T03', termCode:termCode, bType:'00', amount:400, pType:'01',
-            multiple:1, number:'1|2|3;2|4|7', outerId:123}]
+            multiple:1, number:'1|2|3;2|4|7', outerId:digestUtil.createUUID()}]
       /*  {gameCode:'T03', termCode:termCode, bType:'03', amount:3600, pType:'01',
             multiple:1, number:'01,04', outerId:digestUtil.createUUID()},
         {gameCode:'T03', termCode:termCode, bType:'06', amount:21600, pType:'01',
