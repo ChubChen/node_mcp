@@ -207,19 +207,42 @@ var initTermT01 = function()
             var gameCode = 'T01';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15046;
+            var startCode  = 15062; //今天的场次
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
+            var today = now.weekday();
+            var count = 0;
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
                 var guonian2 = moment("20150225", 'YYYYMMDD');
                 var guonian1 = moment("20150218", 'YYYYMMDD');
                 if(currDate >= guonian1 && currDate <= guonian2 ){
                     continue;
                 }
+                //如果今天正好结束那么现在的场次应该到今天纠结束
+                if( count ==0 ){
+                    var currCode = startCode;
+                    var nextCode = startCode + 1;
+                    var term = {};
+                    var temp = moment() ;
+                    while(true){
+                        var today = temp.weekday();
+                        if(today == 5 ||today  == 0 || today == 2){
+                            var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                            sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.format('YYYY-MM-DD 19:55:00')).getTime() +"',";
+                            sql = sql + "'"+new Date(currDate).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
+                            startCode = nextCode;
+                            log.info(sql);
+                            write.write(sql);
+                            write.write("\n");
+                            break;
+                        }else{
+                            temp.add(1,'day');
+                        }
+                    }
+                }
                 var weekDay = currDate.weekday();
                 if(weekDay == 1 || weekDay == 6){
-                    //log.info(weekDay);
-                    //log.info(currDate.format("YYYY-MM-DD"));
+
                     var currCode = startCode;
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
@@ -227,14 +250,11 @@ var initTermT01 = function()
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
                     sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(2,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
-                    //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
                     write.write(sql);
                     write.write("\n");
                     startCode = nextCode;
                 }else if(weekDay == 3){
-                    //log.info(weekDay);
-                    //log.info(currDate.format("YYYY-MM-DD"));
                     var currCode = startCode;
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
@@ -247,8 +267,7 @@ var initTermT01 = function()
                     write.write("\n");
                     startCode = nextCode;
                 }
-
-
+                count ++;
             }
             write.end(function(){
                 console.log("end");
@@ -279,43 +298,48 @@ var initTermT02 = function()
         {
             var gameCode = 'T02';
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15052;
+            var startCode  = 15063;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
+            var count = 0;
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
                 var guonian2 = moment("20150225", 'YYYYMMDD');
                 var guonian1 = moment("20150218", 'YYYYMMDD');
                 if(currDate >= guonian1 && currDate <= guonian2 ){
                     continue;
                 }
+                //如果今天正好结束那么现在的场次应该到今天纠结束
+                if( count ==0 ){
+                    var currCode = startCode;
+                    var nextCode = startCode + 1;
+                    var term = {};
+                    var temp = moment() ;
+                    while(true){
+                        var today = temp.weekday();
+                        if(today == 5 ||today  == 0 || today == 2){
+                            var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                            sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.format('YYYY-MM-DD 19:55:00')).getTime() +"',";
+                            sql = sql + "'"+new Date(currDate).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
+                            startCode = nextCode;
+                            log.info(sql);
+                            write.write(sql);
+                            write.write("\n");
+                            break;
+                        }else{
+                            temp.add(1,'day');
+                        }
+                    }
+                }
                 var weekDay = currDate.weekday();
                 if(weekDay == 5 || weekDay == 0){
-                    //log.info(weekDay);
-                    //log.info(currDate.format("YYYY-MM-DD"));
-    /*                var openTime = currDate.format("YYYY-MM-DD 20:05:00")
-                    if(openTime > now && openTime){
-                        var currCode = startCode;
-                        var nextCode = startCode + 1;
-                        var temp = new moment(currDate);
-                        var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
-                        sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime()  +"',";
-                        sql = sql + "'"+new Date(now).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
-                        //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
-                        log.info(sql);
-                        //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
-                        write.write(sql);
-                        write.write("\n");
-                        startCode = nextCode;
-                    }*/
+
                     var currCode = startCode;
                     var nextCode = startCode + 1;
                     var temp = new moment(currDate);
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
                     sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(2,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
-                    //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
-                    //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
                     write.write(sql);
                     write.write("\n");
                     startCode = nextCode;
@@ -328,13 +352,13 @@ var initTermT02 = function()
                     var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
                     sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.add(3,'day').format("YYYY-MM-DD 19:55:00")).getTime() +"',";
                     sql = sql + "'"+new Date(currDate.format("YYYY-MM-DD 20:05:00")).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
-                    //sql = "update term set gameCode = 'T01' where  code = '" + currCode +"' and gameCode = 'F01';"
                     log.info(sql);
                     //log.info(new Date(currDate.format("YYYY-MM-DD 20:05:00")));
                     write.write(sql);
                     write.write("\n");
                     startCode = nextCode;
                 }
+                count++;
             }
             write.end(function(){
                 console.log("end");
@@ -367,14 +391,30 @@ var initTermT03 = function()
             var gameCode = 'T03';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15122;
+            var startCode  = 15145;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
+            var count = 0;
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
                 var guonian2 = moment("20150225", 'YYYYMMDD');
                 var guonian1 = moment("20150218", 'YYYYMMDD');
                 if(currDate >= guonian1 && currDate <= guonian2 ){
                     continue;
+                }
+                //如果今天正好结束那么现在的场次应该到今天纠结束
+                if( count ==0 ){
+                    var currCode = startCode;
+                    var nextCode = startCode + 1;
+                    var term = {};
+                    var temp = moment() ;
+                    var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.format('YYYY-MM-DD 19:55:00')).getTime() +"',";
+                    sql = sql + "'"+new Date(currDate).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
+                    startCode = nextCode;
+                    log.info(sql);
+                    write.write(sql);
+                    write.write("\n");
+
                 }
                 var currCode = startCode;
                 var nextCode = startCode + 1;
@@ -387,6 +427,8 @@ var initTermT03 = function()
                 write.write(sql);
                 write.write("\n");
                 startCode = nextCode;
+
+                count ++;
             }
             write.end(function(){
                 console.log("end");
@@ -419,14 +461,30 @@ var initTermT04 = function()
             var gameCode = 'T04';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15122;
+            var startCode  = 15145;
             var now = moment();
             var end = moment("20160101", "YYYYMMDD");
+            var count = 0;
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
                 var guonian2 = moment("20150225", 'YYYYMMDD');
                 var guonian1 = moment("20150218", 'YYYYMMDD');
                 if(currDate >= guonian1 && currDate <= guonian2 ){
                     continue;
+                }
+                //如果今天正好结束那么现在的场次应该到今天纠结束
+                if( count ==0 ){
+                    var currCode = startCode;
+                    var nextCode = startCode + 1;
+                    var term = {};
+                    var temp = moment() ;
+                    var sql = "insert into term (id, code, closeTime, openTime, gameCode, nextCode, status, version) values (";
+                    sql = sql + "'"+gameCode+"_" +currCode +"','" + currCode + "','" + new Date(temp.format('YYYY-MM-DD 19:55:00')).getTime() +"',";
+                    sql = sql + "'"+new Date(currDate).getTime() + "','" + gameCode + "','" + nextCode + "','" + 1100 +"','1');";
+                    startCode = nextCode;
+                    log.info(sql);
+                    write.write(sql);
+                    write.write("\n");
+
                 }
                 var currCode = startCode;
                 var nextCode = startCode + 1;
@@ -439,6 +497,8 @@ var initTermT04 = function()
                 write.write(sql);
                 write.write("\n");
                 startCode = nextCode;
+
+                count ++;
             }
             write.end(function(){
                 console.log("end");
@@ -720,6 +780,7 @@ var initTermT05Bj = function()
 };
 
 
+<<<<<<< HEAD
 
 var initTermT05HB = function()
 {
@@ -791,3 +852,7 @@ var initTermT05HB = function()
 initTermT05HB();
 //initTermT04();
 //console.log(moment().format("YYYY-MM-DD 19:50:00"));
+=======
+initTermT01();
+//console.log(moment().format("YYYY-MM-DD 19:50:00"));
+>>>>>>> 1e11904c765d289f6773809d23633f1f6322603d
