@@ -673,34 +673,44 @@ var initTermT05 = function()
                 for(var i = 1; i <= 78 ; i++){
                     var currCode = currDate.format("YYMMDD")*100 + i;
                     var nextCode = currCode + 1;
-                    var openStr = "";
-                    var endStr = "";
+                    var startTime = "";
+                    var endTime = "";
                     if(i == 1){
-                        openStr = openTime.format('YYYY-MM-DD HH:mm:ss');
+                        startTime = new Date(openTime).getTime();
                         openTime.set('hour', 09);
                         openTime.set('minute', 05);
                         openTime.set('seconds', 00);
-                        endStr = openTime.format('YYYY-MM-DD HH:mm:ss');
+                        endTime = new Date(openTime).getTime();
                     }else{
-                        openStr = openTime.format('YYYY-MM-DD HH:mm:ss');
-                        endStr = new moment(openTime).add(10, 'm').format('YYYY-MM-DD HH:mm:ss');
+                        startTime = new Date(openTime).getTime();
                         openTime = openTime.add(10, 'm');
+                        endTime = new Date(openTime).getTime();
                     }
                     if(i == 78){
-                        nextCode = openTime.add(1, 'day').format("YYMMDD")*100 + 1;
+                        nextCode = new moment(openTime).add(1,'day').format("YYMMDD")*100 + i;
                     }
-                    var sql = "insert into term (id, code, createTime , endTime, openTime, gameCode, name, nextCode, status, version,prizepool, CONCEDEPOINTS) values (";
-                    sql = sql + "'" +digest.createUUID() +"','" + currCode + "',to_date('" + moment().format("YYYY-MM-DD HH:mm:ss") + "','yyyy-mm-dd hh24:mi:ss'),to_date('" + endStr +"','yyyy-mm-dd hh24:mi:ss'),";
-                    sql = sql + "to_date('"+ openStr + "','yyyy-mm-dd hh24:mi:ss'),'" + gameCode + "','第"+currCode+"期','" + nextCode + "','" + 1100 +"','1'";
-                    sql += ",0,0);";
-                    log.info(sql);
-                    write.write(sql);
+                    var term = {};
+                    term.id = gameCode+"_"+currCode;
+                    term.gameCode = gameCode;
+                    term.code = currCode;
+                    term.closeTime= endTime;
+                    term.openTime = startTime;
+                    term.status = 1100;
+                    term.nextCode = nextCode;
+                    log.info(term);
+                    var termTable = dc.main.get("term");
+                    termTable.save(term, [], function(err){
+                        if(err)
+                        log.error(err);
+                    });
+                    write.write(term.toString());
                     write.write("\n");
                 }
             }
             write.end(function(){
                 console.log("end");
-            })
+            });
+            cb(null);
         },
         function(cb)
         {
@@ -780,7 +790,6 @@ var initTermT05Bj = function()
 };
 
 
-<<<<<<< HEAD
 
 var initTermT05HB = function()
 {
@@ -849,10 +858,4 @@ var initTermT05HB = function()
     });
 };
 
-initTermT05HB();
-//initTermT04();
-//console.log(moment().format("YYYY-MM-DD 19:50:00"));
-=======
-initTermT01();
-//console.log(moment().format("YYYY-MM-DD 19:50:00"));
->>>>>>> 1e11904c765d289f6773809d23633f1f6322603d
+initTermT05();
