@@ -20,8 +20,8 @@ var initTerm = function()
         function(cb)
         {
             var table = dc.main.get("term");
-            var startDate = 20150101;
-            var endDate = 20150119;
+            var startDate = 20150610;
+            var endDate = 20150610;
             var gameCode = 'T05';
             var rst = [];
             for(var curDate = startDate; curDate <= endDate; curDate++)
@@ -780,5 +780,79 @@ var initTermT05Bj = function()
 };
 
 
+<<<<<<< HEAD
+
+var initTermT05HB = function()
+{
+    async.waterfall([
+        function(cb){
+            dc.init(function(err){
+                cb(err);
+            });
+        },
+        function(cb)
+        {
+            var table = dc.main.get("term");
+            var startDate = 20150611;
+            var endDate = 20150611;
+            var gameCode = 'T05';
+            var rst = [];
+            for(var curDate = startDate; curDate <= endDate; curDate++)
+            {
+                var startTimeStamp = moment(curDate + "085000", "YYYYMMDDHHmmss").valueOf();
+                var gap = 10*60*1000;
+                for(var i = 1; i <=79; i++)
+                {
+                    var start = startTimeStamp + (i - 1)*gap;
+                    var end = startTimeStamp + i*gap;
+                    var code = (curDate*100 + i) + "";
+                    code=code.substr(2);
+                    var nextCode = "";
+                    if(i == 1)
+                    {
+                        nextCode += (curDate*100 + i + 1) + "";
+                        start = moment( curDate - 1+"23:00:00", "YYYYMMDDHHmmss").valueOf();
+                    }
+                    else
+                    {
+                        nextCode += (curDate*100 + i + 1) + "";
+                    }
+                    if(i==85){
+                        nextCode = ((curDate+1)*100 + 1) + "";
+                    }
+
+
+                    var term = {gameCode:gameCode, code:code, nextCode:nextCode.substr(2),
+                        openTime:start, closeTime:end,
+                        status:constants.termStatus.NOT_ON_SALE, wNum:""};
+                    term.id = term.gameCode + "_" + term.code;
+                    rst[rst.length] = term;
+                }
+            }
+            log.info(rst);
+
+            async.eachSeries(rst, function(term, callback) {
+                table.save(term, {}, function(err, data){
+                    callback(err);
+                });
+            }, function(err){
+                cb(null);
+            });
+        },
+        function(cb)
+        {
+            cb(null, "success");
+        }
+    ], function (err, result) {
+        log.info(err);
+        log.info("end...........");
+    });
+};
+
+initTermT05HB();
+//initTermT04();
+//console.log(moment().format("YYYY-MM-DD 19:50:00"));
+=======
 initTermT01();
 //console.log(moment().format("YYYY-MM-DD 19:50:00"));
+>>>>>>> 1e11904c765d289f6773809d23633f1f6322603d
