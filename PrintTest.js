@@ -8,6 +8,8 @@ var esut = require("easy_util");
 var log = esut.log;
 var digestUtil = esut.digestUtil;
 var dateUtil = esut.dateUtil;
+var dc = require('mcp_db').dc;
+
 
 var cons = require('mcp_constants');
 var userType = cons.userType;
@@ -21,7 +23,21 @@ var gameType = cons.gameType;
 var config = require('mcp_config');
 var game = config.game;
 
-
+var argv = process.argv;
+var kvs = {};
+var method = "T03";
+for(var key in argv)
+{
+    if(key > 1)
+    {
+        var kv = argv[key].split("=");
+        kvs[kv[0]] = kv[1];
+    }
+}
+if(kvs.method)
+{
+    method = kvs.method;
+}
 
 var PrintTest = function(){
     var self = this;
@@ -72,22 +88,66 @@ PrintTest.prototype.printP02 = function(bodyNode, cb)
     });
 };
 
-PrintTest.prototype.printP03 = function(bodyNode, cb)
+PrintTest.prototype.printP03 = function(cb){
+    async.waterfall([
+        function(cb)
+        {
+            dc.init(function(err){
+                cb(err);
+            });
+        },
+        //校验基础数据的可用性
+        function(cb)
+        {
+            dc.check(function(err){
+                cb(err);
+            });
+        },
+        function(cb){
+            var term = dc.main.get("term");
+            var cond = {status : termStatus.WAITING_DRAW_NUMBER, gameCode:'T05'}
+            term.findOne(cond, [], function(err, term){
+                cb(err, term)
+            });
+        }
+    ], function(err, term){
+        term.wNum = "01,02,03,04,05";
+        var bodyNode = {term:term};
+        log.info("即将开奖的场次");
+        log.info(bodyNode);
+        self.print("P03", bodyNode, function(err, backMsgNode){
+            if(err)
+            {
+                cb(err, null);
+            }
+            else
+            {
+                var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+                var backBodyNode = JSON.parse(backBodyStr);
+                log.info(backBodyNode);
+                cb(null, backBodyNode);
+            }
+        });
+    });
+}
+
+PrintTest.prototype.sendP03 = function( cb)
 {
     var self = this;
-    self.print("P03", bodyNode, function(err, backMsgNode){
-        if(err)
-        {
-            cb(err, null);
-        }
-        else
-        {
-            var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
-            var backBodyNode = JSON.parse(backBodyStr);
-            cb(null, backBodyNode);
-        }
+    var draw = new CronJob('*/10 * * * * *', function () {
+         self.printP03(function(err, result){
+             log.info(err);
+         })
     });
+    draw.start();
 };
+
+PrintTest.prototype.sendP01 = function(){
+    var printJob = new CronJob('*//*10 * * * * *', function () {
+        printTest.printUtilEmpty();
+    });
+    printJob.start();
+}
 
 PrintTest.prototype.printUtilEmpty = function()
 {
@@ -171,25 +231,15 @@ PrintTest.prototype.printUtilEmpty = function()
     });
 }
 
+PrintTest.prototype.start = function(){
+    var self = this;
+    var query = "send" + method;
+    if(self[query]){
+        self[query](function(){
 
+        });
+    }
+}
 var printTest = new PrintTest();
-
-/*var bodyNode = {term:{
-    gameCode:'F04', code:'2014001', status:termStatus.NOT_ON_SALE,
-    openTime:'2015-01-09 15:49:59', closeTime:'2015-01-09 15:29:59'
-}};
-printTest.printP03(bodyNode, function(err, data){
-    log.info(err);
-    log.info(data);
-});*/
-
-//console.log(dateUtil.toDate("2020-01-01 00:00:00").getTime());
-
-var printJob = new CronJob('*/10 * * * * *', function () {
-    printTest.printUtilEmpty();
-});
-printJob.start();
-
-
-
+printTest.start();
 
