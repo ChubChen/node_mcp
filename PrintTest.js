@@ -106,8 +106,8 @@ PrintTest.prototype.printP03 = function(cb){
         function(cb){
             var term = dc.main.get("term");
             var cond = {status : termStatus.WAITING_DRAW_NUMBER, gameCode:'T05'}
-            term.findOne(cond, [], function(err, term){
-                cb(err, term)
+            term.find(cond, {}).limit(1).toArray(function(err, data){
+                cb(err, data)
             });
         }
     ], function(err, term){
