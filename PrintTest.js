@@ -90,19 +90,6 @@ PrintTest.prototype.printP02 = function(bodyNode, cb)
 
 PrintTest.prototype.printP03 = function(cb){
     async.waterfall([
-        function(cb)
-        {
-            dc.init(function(err){
-                cb(err);
-            });
-        },
-        //校验基础数据的可用性
-        function(cb)
-        {
-            dc.check(function(err){
-                cb(err);
-            });
-        },
         function(cb){
             var term = dc.main.get("term");
             var cond = {status : termStatus.WAITING_DRAW_NUMBER, gameCode:'T05'}
@@ -134,12 +121,32 @@ PrintTest.prototype.printP03 = function(cb){
 PrintTest.prototype.sendP03 = function( cb)
 {
     var self = this;
-    var draw = new CronJob('*/10 * * * * *', function () {
-         self.printP03(function(err, result){
-             log.info(err);
-         })
+    async.waterfall([
+        function(cb)
+        {
+            dc.init(function(err){
+                cb(err);
+            });
+        },
+        //校验基础数据的可用性
+        function(cb)
+        {
+            dc.check(function(err){
+                cb(err);
+            });
+        }
+       ], function (err) {
+        if(err){
+
+        }else{
+            var draw = new CronJob('*/10 * * * * *', function () {
+                self.printP03(function(err, result){
+                    log.info(err);
+                })
+            });
+            draw.start();
+        }
     });
-    draw.start();
 };
 
 PrintTest.prototype.sendP01 = function(){
@@ -235,8 +242,8 @@ PrintTest.prototype.start = function(){
     var self = this;
     var query = "send" + method;
     if(self[query]){
-        self[query](function(){
-
+        self[query](function(err){
+            log.info(err);
         });
     }
 }
