@@ -802,8 +802,8 @@ var initTermT05HB = function()
         function(cb)
         {
             var table = dc.main.get("term");
-            var startDate = 20150611;
-            var endDate = 20150611;
+            var startDate = 20150616;
+            var endDate = 20150630;
             var gameCode = 'T05';
             var rst = [];
             for(var curDate = startDate; curDate <= endDate; curDate++)
