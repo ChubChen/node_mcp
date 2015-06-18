@@ -44,7 +44,8 @@ var test = function () {
 
 }
 
-new test();*/
+new test();*//*
+
 var split = "^";
 var startStr = new Date().getTime();
 console.log("String start");
@@ -68,4 +69,6 @@ for(var i =0 ; i<1000000 ; i++){
     array.join("");
     var temp = "1"+"2"+i + split+split+split;
 }
-console.log("String shijian " + (new Date().getTime() - startarray));
+console.log("String shijian " + (new Date().getTime() - startarray));*/
+
+var gameGrades = request('mcp_constans')
