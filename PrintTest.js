@@ -89,32 +89,51 @@ PrintTest.prototype.printP02 = function(bodyNode, cb)
 };
 
 PrintTest.prototype.printP03 = function(cb){
-    async.waterfall([
+	 var self = this;
+	async.waterfall([
         function(cb){
             var term = dc.main.get("term");
-            var cond = {status : termStatus.WAITING_DRAW_NUMBER, gameCode:'T05'}
-            term.find(cond, {}).limit(1).toArray(function(err, data){
-                cb(err, data)
+            var cond = {status : termStatus.WAITING_DRAW_NUMBER, gameCode:{$in:['T05','T03','T04','T02','T01']}}
+            term.find(cond, {}).limit(0,1).toArray(function(err, data){
+		 cb(err, data[0])
             });
+        },
+	function(term, cb){
+		if(term != undefined && term!= null){
+		   if( term.gameCode == "T05"){
+               		 term.wNum = "01,02,03,04,05";
+      		  }else if(term.gameCode == "T01"){
+               		 term.wNum = "01,02,03,04,05|01,02";
+     		   }else if(term.gameCode == "T02"){
+               		 term.wNum = "1|2|3|4|5|6|7";
+      		  }else if(term.gameCode == "T03"){
+               		 term.wNum = "1|2|3";
+      		  }else if(term.gameCode == "T04"){
+               		 term.wNum = "1|2|3|4|5";
+        	 } 
+                 term.status = termStatus.DRAW;
+       		 var bodyNode = {term:term};
+      		  log.info("即将开奖的场次");
+       		 log.info(bodyNode);
+       		 self.print("P03", bodyNode, function(err, backMsgNode){
+            		if(err)
+            		{
+                		cb(err, null);
+           		 }
+           		 else
+            		{
+                		var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+                		var backBodyNode = JSON.parse(backBodyStr);
+                		log.info(backBodyNode);
+                		cb(null, backBodyNode);
+           	 }
+        	});
+        }else{
+                log.info("暂时没有数据");
         }
-    ], function(err, term){
-        term.wNum = "01,02,03,04,05";
-        var bodyNode = {term:term};
-        log.info("即将开奖的场次");
-        log.info(bodyNode);
-        self.print("P03", bodyNode, function(err, backMsgNode){
-            if(err)
-            {
-                cb(err, null);
-            }
-            else
-            {
-                var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
-                var backBodyNode = JSON.parse(backBodyStr);
-                log.info(backBodyNode);
-                cb(null, backBodyNode);
-            }
-        });
+      }
+    ], function (err){
+	log.info(err);
     });
 }
 
