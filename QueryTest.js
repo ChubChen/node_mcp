@@ -80,7 +80,7 @@ QueryTest.prototype.queryCQ02 = function()
 QueryTest.prototype.queryCQ03 = function()
 {
     var self = this;
-    var bodyNode = {cond:{}, sort:{}};
+    var bodyNode = {cond:{outerId:{$in:["imvui1za6zvndn29"]}}, sort:{}};
     self.query("CQ03", bodyNode, function(err, backMsgNode){
         if(err)
         {
@@ -180,7 +180,7 @@ QueryTest.prototype.queryCQ10 = function()
 QueryTest.prototype.queryCQ22 = function()
 {
     var self = this;
-    var bodyNode = {gameCode:'T51', pType:['01','02']};
+    var bodyNode = {gameCode:'T52', pType:['01','02']};
     self.query("CQ22", bodyNode, function(err, backMsgNode){
         if(err)
         {

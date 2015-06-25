@@ -174,10 +174,9 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
         //删除历史赔率
         function(rstOddsArray, cb){
             var jcoddsTable = dc.mg.get("jcodds");
-            jcoddsTable.drop(function(err,data){
+            jcoddsTable.remove({gameCode:"T51"}, [], function(err,data){
                  cb(null, rstOddsArray);
             });
-
         },
         function(rstOddsArray, cb){
             async.eachSeries(rstOddsArray, function (odds, callback) {
@@ -216,6 +215,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
         },
         function(cb){
             var rstTermArray = new Array();
+            var rstOddsArray = new Array();
             for(var key in Object.data){
                 var data = Object.data[key];
                 var beginDate = moment(data.b_date, "YYYY-MM-DD");
@@ -225,11 +225,29 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                 var closeTime = data.date + " "+ data.time;
                 var status = termStatus.ON_SALE;
                 var term = {id:"T52_" + code, gameCode:"T52", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
+                var jcodds = {_id:"T52_" + code, matchCode: code, gameCode: "T52", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
+                if(data.mnl){
+                    jcodds.mnl = {win:data.mnl.h, lose:data.mnl.a, status:data.mnl.p_status, single: data.mnl.single, fixedodds: data.mnl.fixedodds};
+                }
+                if(data.hdc){
+                    jcodds.hdc = {win:data.hdc.h,  lose:data.hdc.a, status:data.hdc.p_status, single: data.hdc.single, fixedodds: data.hdc.fixedodds};
+                }
+                //胜分差
+                if(data.wnm){
+                    jcodds.wnm = {hostWin1:data.wnm.w1, hostWin2: data.wnm.w2, hostWin3: data.wnm.w3, hostWin4 : data.wnm.w4, hostWin5: data.wnm.w5, hostWin6: data.wnm.w6,
+                        guestWin1: data.wnm.l1, guestWin2: data.wnm.l2, guestWin3: data.wnm.l3, guestWin4: data.wnm.l4, guestWin5: data.wnm.l5, guestWin6: data.wnm.l6,
+                        status:data.wnm.p_status, single: data.wnm.single,fixedodds: data.hdc.fixedodds
+                    };
+                }
+                if(data.hilo){
+                    jcodds.hilo = {win:data.hilo.h,  lose:data.hilo.a, status:data.hilo.p_status, single: data.hilo.single, fixedodds: data.hilo.fixedodds};
+                }
+                rstOddsArray.push(jcodds);
                 rstTermArray.push(term);
             }
-            cb(null, rstTermArray);
+            cb(null, rstTermArray,  rstOddsArray);
         },
-        function(rstTermArray, cb){
+        function(rstTermArray,  rstOddsArray,  cb){
             var cols = {id:1, gameCode:1, code:1};
             async.eachSeries(rstTermArray, function (term, callback) {
                 var termTable = dc.main.get("term");
@@ -248,6 +266,24 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                     }
                 });
             }, function (err) {
+                cb(err, rstOddsArray);
+            });
+        },
+        //删除历史赔率
+        function(rstOddsArray, cb){
+            var jcoddsTable = dc.mg.get("jcodds");
+            jcoddsTable.remove({gameCode:"T52"}, [], function(err,data){
+                cb(null, rstOddsArray);
+            });
+        },
+        function(rstOddsArray, cb){
+            async.eachSeries(rstOddsArray, function (odds, callback) {
+                var jcoddsTable = dc.mg.get("jcodds");
+                jcoddsTable.save(odds, function(err, data){
+                    log.info(odds)
+                    callback(null);
+                })
+            }, function (err) {
                 cb(err);
             });
         }
@@ -257,8 +293,8 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
 };
 
 JcTermCorn.prototype.job = function () {
-    var self = this
-    var corn = new CronJob('*/5 * * * *', function () {
+    var self = this;
+    var corn = new CronJob('*/10 * * * * *', function () {
         async.waterfall([
                function(cb){
                    //竞猜足球的抓取胜平负数据
@@ -297,8 +333,10 @@ JcTermCorn.prototype.job = function () {
                    //竞猜篮球的抓取
                    var data = {
                        'i_format': 'json',
-                       'poolcode[2]':'mnl',
-                       'poolcode[3]':'hdc',
+                       'poolcode[0]':'mnl', //胜负
+                       'poolcode[1]':'hdc',//让分
+                       'poolcode[2]':'wnm', //胜分差
+                       'poolcode[3]':'hilo', //大小
                        '_':new Date().getTime()
                    };
                    var content = qs.stringify(data);
