@@ -240,7 +240,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                     };
                 }
                 if(data.hilo){
-                    jcodds.hilo = {win:data.hilo.h,  lose:data.hilo.a, status:data.hilo.p_status, single: data.hilo.single, fixedodds: data.hilo.fixedodds};
+                    jcodds.hilo = {big:data.hilo.h,  small:data.hilo.l, status:data.hilo.p_status, single: data.hilo.single, fixedodds: data.hilo.fixedodds};
                 }
                 rstOddsArray.push(jcodds);
                 rstTermArray.push(term);
