@@ -282,6 +282,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                 //将场次开奖结果放放入缓存
                 jcDrawNumberCache.update({"_id":matchCode}, drawCahe, [{upsert:true}], function(err, data){
                     if(err){
+                        log.error(err);
                         cb(err);
                     }else{
                         cb(null);
@@ -292,6 +293,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
             function (cb) {
                 termTable.findOne({'id':"T52_" + matchCode}, {}, [], function(err, data){
                     if(err){
+                        log.error(err);
                         cb(err);
                     }else{
                         log.info(data);
