@@ -28,41 +28,31 @@ JcDrawNumberQuery.prototype.startJob=function(){
             dc.init(function(err){
                 cb(err);
             });
-        },
-        function(cb){
-            dc.check(function(err){
-                cb(err);
-            });
         }
     ], function (err) {
-        if(err){
-            log.error(err);
-        }else{
-            self.crontab = new CronJob('*/5 * * * * *', function () {
-                log.info("执行");
-                async.waterfall([
-                    function(cb){
-                        var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
-                        self.getT51(options,function(matchResult){
-                            self.handleT51(matchResult, function(err){
-                                cb(null);
-                            })
-                        });
-                    },
-                    function(cb){
-                        var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
-                        self.getT52(options,function(matchResult){
-                            self.handleT52(matchResult, function(err){
-                                cb(err);
-                            })
-                        });
-                    }
-                ],function(err){
-                    console.log(err);
-                })
-            });
-            self.crontab.start();
-        }
+        self.crontab = new CronJob('*/10 * * * *', function () {
+           async.waterfall([
+               function(cb){
+                   var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
+                   self.getT51(options,function(matchResult){
+                      self.handleT51(matchResult, function(err){
+                          cb(null);
+                      })
+                   });
+               },
+               function(cb){
+                   var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
+                   self.getT52(options,function(matchResult){
+                       self.handleT52(matchResult, function(err){
+                           cb(err);
+                       })
+                   });
+               }
+           ],function(err){
+               console.log(err);
+           })
+        });
+        self.crontab.start();
     })
 
 }
@@ -214,9 +204,8 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
          var drawCahe = {$set:{"_id": matchCode, drawNumber: math.wNum}};
              async.waterfall([
                  function(cb){
-                     log.info(drawCahe);
                      //将场次开奖结果放放入缓存
-                     jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, {new:true}, function(err, data){
+                     jcDrawNumberCache.update({"_id":matchCode}, drawCahe, {upsert:true}, function(err, data){
                         if(err){
                             cb(err);
                         }else{
@@ -276,7 +265,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
              ],function(err){
                   callback(err);
          });
-     },function(err){
+     },function(){
         cb(null);
     });
 };
@@ -290,11 +279,9 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
         var drawCahe = {$set:{"_id": matchCode, drawNumber: math.wNum}};
         async.waterfall([
             function(cb){
-                log.info(drawCahe);
                 //将场次开奖结果放放入缓存
-                jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, [{new:true}], function(err, data){
+                jcDrawNumberCache.update({"_id":matchCode}, drawCahe, [{upsert:true}], function(err, data){
                     if(err){
-                        log.error(err);
                         cb(err);
                     }else{
                         cb(null);
@@ -305,7 +292,6 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
             function (cb) {
                 termTable.findOne({'id':"T52_" + matchCode}, {}, [], function(err, data){
                     if(err){
-                        log.error(err);
                         cb(err);
                     }else{
                         log.info(data);
