@@ -216,7 +216,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                  function(cb){
                      log.info(drawCahe);
                      //将场次开奖结果放放入缓存
-                     jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, {upsert:true}, function(err, data){
+                     jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, {new:true}, function(err, data){
                         if(err){
                             cb(err);
                         }else{
@@ -276,7 +276,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
              ],function(err){
                   callback(err);
          });
-     },function(){
+     },function(err){
         cb(null);
     });
 };
@@ -292,7 +292,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
             function(cb){
                 log.info(drawCahe);
                 //将场次开奖结果放放入缓存
-                jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, [{upsert:true}], function(err, data){
+                jcDrawNumberCache.findAndModify({"_id":matchCode},{}, drawCahe, [{new:true}], function(err, data){
                     if(err){
                         log.error(err);
                         cb(err);
