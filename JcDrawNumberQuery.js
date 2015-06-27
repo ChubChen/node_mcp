@@ -28,8 +28,14 @@ JcDrawNumberQuery.prototype.startJob=function(){
             dc.init(function(err){
                 cb(err);
             });
-        }
+        },
+        function(cb){
+            dc.check(function(err){
+                cb(err);
+            });
+        },
     ], function (err) {
+        log.info(err);
         self.crontab = new CronJob('*/10 * * * *', function () {
            async.waterfall([
                function(cb){
