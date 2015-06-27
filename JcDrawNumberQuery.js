@@ -28,31 +28,41 @@ JcDrawNumberQuery.prototype.startJob=function(){
             dc.init(function(err){
                 cb(err);
             });
+        },
+        function(cb){
+            dc.check(function(err){
+                cb(err);
+            });
         }
     ], function (err) {
-        self.crontab = new CronJob('*/10 * * * *', function () {
-           async.waterfall([
-               function(cb){
-                   var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
-                   self.getT51(options,function(matchResult){
-                      self.handleT51(matchResult, function(err){
-                          cb(null);
-                      })
-                   });
-               },
-               function(cb){
-                   var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
-                   self.getT52(options,function(matchResult){
-                       self.handleT52(matchResult, function(err){
-                           cb(err);
-                       })
-                   });
-               }
-           ],function(err){
-               console.log(err);
-           })
-        });
-        self.crontab.start();
+        if(err){
+            log.error(err);
+        }else{
+            self.crontab = new CronJob('*/5 * * * * *', function () {
+                log.info("执行");
+                async.waterfall([
+                    function(cb){
+                        var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
+                        self.getT51(options,function(matchResult){
+                            self.handleT51(matchResult, function(err){
+                                cb(null);
+                            })
+                        });
+                    },
+                    function(cb){
+                        var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
+                        self.getT52(options,function(matchResult){
+                            self.handleT52(matchResult, function(err){
+                                cb(err);
+                            })
+                        });
+                    }
+                ],function(err){
+                    console.log(err);
+                })
+            });
+            self.crontab.start();
+        }
     })
 
 }
