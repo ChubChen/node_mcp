@@ -97,50 +97,54 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
         function(cb){
             var rstTermArray = new Array();
             var rstOddsArray = new Array();
-            for(var key in Object.data){
-                var data = Object.data[key];
-                var beginDate = moment(data.b_date, "YYYY-MM-DD");
-                var week = beginDate.isoWeekday();
-                var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
-                var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
-                var closeTime = data.date + " "+ data.time;
-                var status = termStatus.ON_SALE;
-                var term = {id:"T51_" + code, gameCode:"T51", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
-                var jcodds = {_id:"T51_" + code, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
-                rstTermArray.push(term);
-                if(data.had){
-                    jcodds.had = {win:data.had.h, level:data.had.d, lose:data.had.a, status:data.had.p_status, single: data.had.single};
+            try{
+                for(var key in Object.data){
+                    var data = Object.data[key];
+                    var beginDate = moment(data.b_date, "YYYY-MM-DD");
+                    var week = beginDate.isoWeekday();
+                    var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
+                    var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
+                    var closeTime = data.date + " "+ data.time;
+                    var status = termStatus.ON_SALE;
+                    var term = {id:"T51_" + code, gameCode:"T51", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
+                    var jcodds = {_id:"T51_" + code, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
+                    rstTermArray.push(term);
+                    if(data.had){
+                        jcodds.had = {win:data.had.h, level:data.had.d, lose:data.had.a, status:data.had.p_status, single: data.had.single};
+                    }
+                    if(data.hhad){
+                        jcodds.hhad = {win:data.hhad.h, level:data.hhad.d, lose:data.hhad.a, status:data.hhad.p_status, single: data.hhad.single, fixedodds: data.hhad.fixedodds};
+                    }
+                    //半全场
+                    if(data.hafu){
+                        jcodds.hafu = {winWinRate:data.hafu.hh, winLevelRate:data.hafu.hd, winLoseRate:data.hafu.ha,
+                            levelWinRate:data.hafu.dh, levelLevelRate:data.hafu.dd, levelLoseRate:data.hafu.da,
+                            loseWinRate:data.hafu.ah, loseLevelRate:data.hafu.ad, loseLoseRate:data.hafu.aa,
+                            status:data.hafu.p_status, single: data.hafu.single };
+                    }
+                    if(data.crs){
+                        jcodds.crs = {oneToZero:data.crs["0000"], twoToZero:data.crs["0200"], twoToOne:data.crs["0201"],
+                            threeToZero:data.crs["0300"], threeToOne:data.crs["0301"], threeToTwo:data.crs["0302"],
+                            fourToZero:data.crs["0400"], fourToOne:data.crs["0401"], fourToTwo:data.crs["0402"],
+                            fiveToZero:data.crs["0500"], fiveToOne:data.crs["0501"], fiveToTwo:data.crs["0500"],
+                            zeroToOne:data.crs["0001"], zeroToTwo:data.crs["0002"], oneToTwo:data.crs["0102"],
+                            zeroToThree:data.crs["0003"], oneToThree:data.crs["0103"], twoToThree:data.crs["0203"],
+                            zeroToFour:data.crs["0004"], oneToFour:data.crs["0104"], twoToFour:data.crs["0204"],
+                            zeroToFive:data.crs["0005"], oneToFive:data.crs["0105"], twoToFive:data.crs["0205"],
+                            zeroToZero:data.crs["0000"], oneToOne:data.crs["0101"], twoToTwo:data.crs["0202"],
+                            threeToThree:data.crs["0303"], winOther:data.crs["-1-h"], lostOther:data.crs["-1-a"],
+                            levelOther:data.crs["-1-d"],status:data.crs.p_status, single: data.crs.single };
+                    }
+                    if(data.ttg){
+                        jcodds.ttg = {totalGoal0Rate:data.ttg.s0, totalGoal1Rate:data.ttg.s1, totalGoal2Rate:data.ttg.s2,
+                            totalGoal3Rate:data.ttg.s3, totalGoal4Rate:data.ttg.s4, totalGoal5Rate:data.ttg.s5,
+                            totalGoal6Rate:data.ttg.s6, totalGoal7Rate:data.ttg.s7,
+                            status:data.ttg.p_status, single: data.ttg.single};
+                    }
+                    rstOddsArray.push(jcodds);
                 }
-                if(data.hhad){
-                    jcodds.hhad = {win:data.hhad.h, level:data.hhad.d, lose:data.hhad.a, status:data.hhad.p_status, single: data.hhad.single, fixedodds: data.hhad.fixedodds};
-                }
-                //半全场
-                if(data.hafu){
-                    jcodds.hafu = {winWinRate:data.hafu.hh, winLevelRate:data.hafu.hd, winLoseRate:data.hafu.ha,
-                        levelWinRate:data.hafu.dh, levelLevelRate:data.hafu.dd, levelLoseRate:data.hafu.da,
-                        loseWinRate:data.hafu.ah, loseLevelRate:data.hafu.ad, loseLoseRate:data.hafu.aa,
-                        status:data.hafu.p_status, single: data.hafu.single };
-                }
-                if(data.crs){
-                    jcodds.crs = {oneToZero:data.crs["0000"], twoToZero:data.crs["0200"], twoToOne:data.crs["0201"],
-                        threeToZero:data.crs["0300"], threeToOne:data.crs["0301"], threeToTwo:data.crs["0302"],
-                        fourToZero:data.crs["0400"], fourToOne:data.crs["0401"], fourToTwo:data.crs["0402"],
-                        fiveToZero:data.crs["0500"], fiveToOne:data.crs["0501"], fiveToTwo:data.crs["0500"],
-                        zeroToOne:data.crs["0001"], zeroToTwo:data.crs["0002"], oneToTwo:data.crs["0102"],
-                        zeroToThree:data.crs["0003"], oneToThree:data.crs["0103"], twoToThree:data.crs["0203"],
-                        zeroToFour:data.crs["0004"], oneToFour:data.crs["0104"], twoToFour:data.crs["0204"],
-                        zeroToFive:data.crs["0005"], oneToFive:data.crs["0105"], twoToFive:data.crs["0205"],
-                        zeroToZero:data.crs["0000"], oneToOne:data.crs["0101"], twoToTwo:data.crs["0202"],
-                        threeToThree:data.crs["0303"], winOther:data.crs["-1-h"], lostOther:data.crs["-1-a"],
-                        levelOther:data.crs["-1-d"],status:data.hhad.p_status, single: data.hhad.single };
-                }
-                if(data.ttg){
-                    jcodds.ttg = {totalGoal0Rate:data.ttg.s0, totalGoal1Rate:data.ttg.s1, totalGoal2Rate:data.ttg.s2,
-                        totalGoal3Rate:data.ttg.s3, totalGoal4Rate:data.ttg.s4, totalGoal5Rate:data.ttg.s5,
-                        totalGoal6Rate:data.ttg.s6, totalGoal7Rate:data.ttg.s7,
-                        status:data.ttg.p_status, single: data.ttg.single};
-                }
-                rstOddsArray.push(jcodds);
+            }catch (err){
+                cb(err);
             }
             cb(null, rstTermArray, rstOddsArray);
         },
@@ -216,34 +220,38 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
         function(cb){
             var rstTermArray = new Array();
             var rstOddsArray = new Array();
-            for(var key in Object.data){
-                var data = Object.data[key];
-                var beginDate = moment(data.b_date, "YYYY-MM-DD");
-                var week = beginDate.isoWeekday();
-                var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
-                var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
-                var closeTime = data.date + " "+ data.time;
-                var status = termStatus.ON_SALE;
-                var term = {id:"T52_" + code, gameCode:"T52", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
-                var jcodds = {_id:"T52_" + code, matchCode: code, gameCode: "T52", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
-                if(data.mnl){
-                    jcodds.mnl = {win:data.mnl.h, lose:data.mnl.a, status:data.mnl.p_status, single: data.mnl.single, fixedodds: data.mnl.fixedodds};
+            try{
+                for(var key in Object.data){
+                    var data = Object.data[key];
+                    var beginDate = moment(data.b_date, "YYYY-MM-DD");
+                    var week = beginDate.isoWeekday();
+                    var code = beginDate.format("YYYYMMDD").valueOf() + week + data.num.substr(data.num.length-3);
+                    var openTime = beginDate.format("YYYYMMDD hh:mm:ss");
+                    var closeTime = data.date + " "+ data.time;
+                    var status = termStatus.ON_SALE;
+                    var term = {id:"T52_" + code, gameCode:"T52", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
+                    var jcodds = {_id:"T52_" + code, matchCode: code, gameCode: "T52", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
+                    if(data.mnl){
+                        jcodds.mnl = {win:data.mnl.h, lose:data.mnl.a, status:data.mnl.p_status, single: data.mnl.single, fixedodds: data.mnl.fixedodds};
+                    }
+                    if(data.hdc){
+                        jcodds.hdc = {win:data.hdc.h,  lose:data.hdc.a, status:data.hdc.p_status, single: data.hdc.single, fixedodds: data.hdc.fixedodds};
+                    }
+                    //胜分差
+                    if(data.wnm){
+                        jcodds.wnm = {hostWin1:data.wnm.w1, hostWin2: data.wnm.w2, hostWin3: data.wnm.w3, hostWin4 : data.wnm.w4, hostWin5: data.wnm.w5, hostWin6: data.wnm.w6,
+                            guestWin1: data.wnm.l1, guestWin2: data.wnm.l2, guestWin3: data.wnm.l3, guestWin4: data.wnm.l4, guestWin5: data.wnm.l5, guestWin6: data.wnm.l6,
+                            status:data.wnm.p_status, single: data.wnm.single,fixedodds: data.hdc.fixedodds
+                        };
+                    }
+                    if(data.hilo){
+                        jcodds.hilo = {big:data.hilo.h,  small:data.hilo.l, status:data.hilo.p_status, single: data.hilo.single, fixedodds: data.hilo.fixedodds};
+                    }
+                    rstOddsArray.push(jcodds);
+                    rstTermArray.push(term);
                 }
-                if(data.hdc){
-                    jcodds.hdc = {win:data.hdc.h,  lose:data.hdc.a, status:data.hdc.p_status, single: data.hdc.single, fixedodds: data.hdc.fixedodds};
-                }
-                //胜分差
-                if(data.wnm){
-                    jcodds.wnm = {hostWin1:data.wnm.w1, hostWin2: data.wnm.w2, hostWin3: data.wnm.w3, hostWin4 : data.wnm.w4, hostWin5: data.wnm.w5, hostWin6: data.wnm.w6,
-                        guestWin1: data.wnm.l1, guestWin2: data.wnm.l2, guestWin3: data.wnm.l3, guestWin4: data.wnm.l4, guestWin5: data.wnm.l5, guestWin6: data.wnm.l6,
-                        status:data.wnm.p_status, single: data.wnm.single,fixedodds: data.hdc.fixedodds
-                    };
-                }
-                if(data.hilo){
-                    jcodds.hilo = {big:data.hilo.h,  small:data.hilo.l, status:data.hilo.p_status, single: data.hilo.single, fixedodds: data.hilo.fixedodds};
-                }
-                rstOddsArray.push(jcodds);
-                rstTermArray.push(term);
+            }catch (err){
+                cb(err)
             }
             cb(null, rstTermArray,  rstOddsArray);
         },
