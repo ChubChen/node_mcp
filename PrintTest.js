@@ -200,6 +200,7 @@ PrintTest.prototype.printUtilEmpty = function()
                             log.info(temp);
                             log.info(temp.length);
                             var array = new Array();
+
                             for(var i =0 ; i< temp.length ; i++){
                                 log.info(temp[i]);
                                 var match = temp[i].split("|");
@@ -208,7 +209,13 @@ PrintTest.prototype.printUtilEmpty = function()
                                 for(var j = 0; j < result.length ; j++){
                                     var tempstr = "";
                                     if(result[j].indexOf("@") < 0){
-                                        tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
+                                        if(ticket.gameCode == 'T52' && ticket.bType == '01'){
+                                            tempstr = result[j] + "(" + (Math.random()*10 -5).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
+                                        }else if(ticket.gameCode == 'T52' && ticket.bType == '04'){
+                                            tempstr = result[j] + "(" + (Math.random()*200 - Math.random()*100).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
+                                        }else{
+                                            tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
+                                        }
                                     }else{
                                         tempstr = result[j];
                                     }
@@ -221,11 +228,11 @@ PrintTest.prototype.printUtilEmpty = function()
                             var rnumber = array.join(";");
                             rst[rst.length] = {id:ticket.id,
                                 status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',passw:123456,
-                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:rnumber};
+                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment().format("YYYY-MM-DD HH:mm:ss"),rNumber:rnumber};
                         }else{
                             rst[rst.length] = {id:ticket.id,
                                 status:ticketPrintStatus.PRINT_SUCCESS, province:'bj',passw:123456,
-                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),rNumber:ticket.number};
+                                seq:digestUtil.createUUID(), terminal:'123456', printTime: moment().format("YYYY-MM-DD HH:mm:ss"),rNumber:ticket.number};
                         }
                         callback();
                     }, function(err){
