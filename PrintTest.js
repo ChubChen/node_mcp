@@ -169,7 +169,7 @@ PrintTest.prototype.sendP03 = function( cb)
 };
 
 PrintTest.prototype.sendP01 = function(){
-    var printJob = new CronJob('*//*10 * * * * *', function () {
+    var printJob = new CronJob('*/10 * * * * *', function () {
         printTest.printUtilEmpty();
     });
     printJob.start();
@@ -209,9 +209,9 @@ PrintTest.prototype.printUtilEmpty = function()
                                 for(var j = 0; j < result.length ; j++){
                                     var tempstr = "";
                                     if(result[j].indexOf("@") < 0){
-                                        if(ticket.gameCode == 'T52' && ticket.bType == '01'){
+                                        if(ticket.gameCode == 'T52' && ticket.pType == '01'){
                                             tempstr = result[j] + "(" + (Math.random()*10 -5).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
-                                        }else if(ticket.gameCode == 'T52' && ticket.bType == '04'){
+                                        }else if(ticket.gameCode == 'T52' && ticket.pType == '04'){
                                             tempstr = result[j] + "(" + (Math.random()*200 - Math.random()*100).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
                                         }else{
                                             tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
