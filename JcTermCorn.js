@@ -75,16 +75,18 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
     async.waterfall([
         function (cb) {
             if(Object != undefined && Object!= null) {
+		log.info("精彩网时间："+ Object.status.last_updated);
                 var time = dateUtil.toDate(Object.status.last_updated).getTime();
                 var jcUpdateTable = dc.mg.get("JcOddsLastUpdateTime");
                 jcUpdateTable.findOne({"_id": "JCZQUPDATETIME"}, {}, [], function (err, data) {
                     if (err) {
                         cb(err)
                     } else {
+			log.info(moment(data.date).format("YYYY-MM-DD HH:mm:ss"));
                         if (data && time <= data.date) {
                             cb("足球已经是最新的不用更新");
                         } else {
-                            jcUpdateTable.save({"_id": "JCZQUPDATETIME", date: time}, [], function (err, data) {
+                            jcUpdateTable.findAndModify({"_id": "JCZQUPDATETIME"},{$set:{"date": time}},{new:true}, function (err, data) {
                                 cb(null);
                             });
                         }
@@ -210,7 +212,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                     if(data && time <= data.date){
                         cb("篮球已经是最新的不用更新");
                     }else{
-                        jcUpdateTable.save({"_id":"JCLQUPDATETIME", date: time}, [] ,function(err, data){
+                        jcUpdateTable.findAndModify({"_id":"JCLQUPDATETIME"}, {$set:{"date": time}}, {new:true} ,function(err, data){
                             cb(null);
                         });
                     }
@@ -302,7 +304,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
 
 JcTermCorn.prototype.job = function () {
     var self = this;
-    var corn = new CronJob('*/10 * * * * *', function () {
+    var corn = new CronJob('*/30 * * * * *', function () {
         async.waterfall([
                function(cb){
                    //竞猜足球的抓取胜平负数据
