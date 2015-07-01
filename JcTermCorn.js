@@ -82,11 +82,17 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
                     if (err) {
                         cb(err)
                     } else {
-			log.info(moment(data.date).format("YYYY-MM-DD HH:mm:ss"));
-                        if (data && time <= data.date) {
-                            cb("足球已经是最新的不用更新");
-                        } else {
-                            jcUpdateTable.findAndModify({"_id": "JCZQUPDATETIME"},{$set:{"date": time}},{new:true}, function (err, data) {
+                        if(data){
+                            log.info(moment(data.date).format("YYYY-MM-DD HH:mm:ss"));
+                            if (time <= data.date) {
+                                cb("足球已经是最新的不用更新");
+                            } else {
+                                jcUpdateTable.findAndModify({"_id": "JCZQUPDATETIME"},{$set:{"date": time}},{new:true}, function (err, data) {
+                                    cb(null);
+                                });
+                            }
+                        }else{
+                            jcUpdateTable.save({"_id": "JCZQUPDATETIME","date": time},[], function (err, data) {
                                 cb(null);
                             });
                         }
@@ -209,10 +215,16 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                 if(err){
                     cb(err)
                 }else{
-                    if(data && time <= data.date){
-                        cb("篮球已经是最新的不用更新");
+                    if(data){
+                        if(time <= data.date){
+                            cb("篮球已经是最新的不用更新");
+                        }else{
+                            jcUpdateTable.findAndModify({"_id":"JCLQUPDATETIME"}, {$set:{"date": time}}, {new:true} ,function(err, data){
+                                cb(null);
+                            });
+                        }
                     }else{
-                        jcUpdateTable.findAndModify({"_id":"JCLQUPDATETIME"}, {$set:{"date": time}}, {new:true} ,function(err, data){
+                        jcUpdateTable.save({"_id":"JCLQUPDATETIME" ,"date": time}, [] ,function(err, data){
                             cb(null);
                         });
                     }
