@@ -87,7 +87,7 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
                             if (time <= data.date) {
                                 cb("足球已经是最新的不用更新");
                             } else {
-                                jcUpdateTable.findAndModify({"_id": "JCZQUPDATETIME"},{$set:{"date": time}},{new:true}, function (err, data) {
+                                jcUpdateTable.findAndModify({"_id": "JCZQUPDATETIME"},{}, {$set:{"date": time}},[], function (err, data) {
                                     cb(null);
                                 });
                             }
@@ -219,7 +219,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                         if(time <= data.date){
                             cb("篮球已经是最新的不用更新");
                         }else{
-                            jcUpdateTable.findAndModify({"_id":"JCLQUPDATETIME"}, {$set:{"date": time}}, {new:true} ,function(err, data){
+                            jcUpdateTable.findAndModify({"_id":"JCLQUPDATETIME"},{}, {$set:{"date": time}}, [] ,function(err, data){
                                 cb(null);
                             });
                         }
