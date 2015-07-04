@@ -126,25 +126,42 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                            }
                            var Table = data.Table;
                            var grades = new Array();
-                           var mapGrade = {"一等奖":1, "二等奖":2, "三等奖": 3, "四等奖": 4, "五等奖": 5, "六等奖": 6}
                            //添加基本奖级
                            for(var i = 0 ; i< Table.length; i++){
                                var tempTable = Table[i];
                                var gameGradeItem  = {};
-                               if(mapGrade[tempTable["Grade"].trim()]){
-                                   gameGradeItem.level = mapGrade[tempTable["Grade"].trim()];
-                                   gameGradeItem.id= term.id + "_" + gameGradeItem.level;
-                                   gameGradeItem.code = "lv"+gameGradeItem.level;
-                                   gameGradeItem.gameCode = term.gameCode;
-                                   gameGradeItem.name =   tempTable["Grade"];
-                                   gameGradeItem.count = tempTable["BasicStakes"];
-                                   gameGradeItem.termCode = term.code;
-                                   if(gameGradeItem.count == 0){
-                                       gameGradeItem.bonus = 0;
+                               gameGradeItem.level = tempTable["ID"];
+                               gameGradeItem.id= term.id + "_" + gameGradeItem.level;
+                               gameGradeItem.code = "lv"+gameGradeItem.level;
+                               gameGradeItem.gameCode = term.gameCode;
+                               gameGradeItem.name =   tempTable["Grade"];
+                               gameGradeItem.count = tempTable["BasicStakes"];
+                               gameGradeItem.termCode = term.code;
+                               if(gameGradeItem.count == 0){
+                                   gameGradeItem.bonus = 0;
+                               }else{
+                                   gameGradeItem.bonus = tempTable["BasicBonus"].replace(/[^0-9]/g,"") * 100;
+                               }
+                               grades.push(gameGradeItem);
+                           }
+                           //添加追加奖级
+                           for(var i = 0 ; i< Table.length; i++){
+                               var tempTable = Table[i];
+                               var gameGradeItemZh  = {};
+                               if(tempTable["ID"] && tempTable["ID"] != 6){
+                                   var id = parseInt(tempTable["ID"],10) + 6;
+                                   gameGradeItemZh.level = id;
+                                   gameGradeItemZh.id= term.id + "_" + gameGradeItemZh.level;
+                                   gameGradeItemZh.gameCode = term.gameCode;
+                                   gameGradeItemZh.code = "lv"+id;
+                                   gameGradeItemZh.name =   tempTable["Grade"] + "追加";
+                                   gameGradeItemZh.count = tempTable["PursueStakes"];
+                                   if(gameGradeItemZh.count == 0){
+                                       gameGradeItemZh.bonus = 0;
                                    }else{
-                                       gameGradeItem.bonus = tempTable["BasicBonus"].replace(/[^0-9]/g,"") * 100;
+                                       gameGradeItemZh.bonus = tempTable["PursueBonus"].replace(/[^0-9]/g,"") * 100;
                                    }
-                                   grades.push(gameGradeItem);
+                                   grades.push(gameGradeItemZh);
                                }
                            }
                            log.info(grades);
@@ -224,42 +241,25 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                             }
                             var Table = data.Table;
                             var grades = new Array();
+                            var mapGrade = {"一等奖": 1, "二等奖": 2, "三等奖": 3, "四等奖": 4, "五等奖": 5, "六等奖": 6}
                             //添加基本奖级
                             for(var i = 0 ; i< Table.length; i++){
                                 var tempTable = Table[i];
                                 var gameGradeItem  = {};
-                                gameGradeItem.level = tempTable["ID"];
-                                gameGradeItem.id= term.id + "_" + gameGradeItem.level;
-                                gameGradeItem.code = "lv"+gameGradeItem.level;
-                                gameGradeItem.gameCode = term.gameCode;
-                                gameGradeItem.name =   tempTable["Grade"];
-                                gameGradeItem.count = tempTable["BasicStakes"];
-                                gameGradeItem.termCode = term.code;
-                                if(gameGradeItem.count == 0){
-                                    gameGradeItem.bonus = 0;
-                                }else{
-                                    gameGradeItem.bonus = tempTable["BasicBonus"].replace(/[^0-9]/g,"") * 100;
-                                }
-                                grades.push(gameGradeItem);
-                            }
-                            //添加追加奖级
-                            for(var i = 0 ; i< Table.length; i++){
-                                var tempTable = Table[i];
-                                var gameGradeItemZh  = {};
-                                if(tempTable["ID"] && tempTable["ID"] != 6){
-                                    var id = parseInt(tempTable["ID"],10) + 6;
-                                    gameGradeItemZh.level = id;
-                                    gameGradeItemZh.id= term.id + "_" + gameGradeItemZh.level;
-                                    gameGradeItemZh.gameCode = term.gameCode;
-                                    gameGradeItemZh.code = "lv"+id;
-                                    gameGradeItemZh.name =   tempTable["Grade"] + "追加";
-                                    gameGradeItemZh.count = tempTable["PursueStakes"];
-                                    if(gameGradeItemZh.count == 0){
-                                        gameGradeItemZh.bonus = 0;
+                                if(mapGrade[tempTable["Grade"].trim()]){
+                                    gameGradeItem.level = mapGrade[tempTable["Grade"].trim()];
+                                    gameGradeItem.id= term.id + "_" + gameGradeItem.level;
+                                    gameGradeItem.code = "lv"+gameGradeItem.level;
+                                    gameGradeItem.gameCode = term.gameCode;
+                                    gameGradeItem.name =   tempTable["Grade"];
+                                    gameGradeItem.count = tempTable["BasicStakes"];
+                                    gameGradeItem.termCode = term.code;
+                                    if(gameGradeItem.count == 0){
+                                        gameGradeItem.bonus = 0;
                                     }else{
-                                        gameGradeItemZh.bonus = tempTable["PursueBonus"].replace(/[^0-9]/g,"") * 100;
+                                        gameGradeItem.bonus = tempTable["BasicBonus"].replace(/[^0-9]/g,"") * 100;
                                     }
-                                    grades.push(gameGradeItemZh);
+                                    grades.push(gameGradeItem);
                                 }
                             }
                             log.info(grades);
