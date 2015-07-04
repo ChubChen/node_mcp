@@ -163,7 +163,7 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
         },
         function(grades, cb){
             var gradeTable = dc.main.get("gamegrade");
-            async.eachSeries(grades, function(grade, callback){
+            /*async.eachSeries(grades, function(grade, callback){
                gradeTable.save(grade,[], function(err){
                    callback(err);
                });
@@ -173,11 +173,12 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                 }else{
                     var termTable = dc.main.get("term");
                     var cond = {id: term.id};
-                    termTable.update(cond, {}, term, [], function(err, data){
+                    termTable.update(cond, term, {}, function(err, data){
                          cb(err);
                     });
                 }
-            });
+            });*/
+            cb(null);
         }
     ], function(err){
             cb(err);
@@ -277,7 +278,7 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
         },
         function(grades, cb){
             var gradeTable = dc.main.get("gamegrade");
-            async.eachSeries(grades, function(grade, callback){
+           /* async.eachSeries(grades, function(grade, callback){
                 gradeTable.save(grade,[], function(err){
                     callback(err);
                 });
@@ -287,11 +288,12 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                 }else{
                     var termTable = dc.main.get("term");
                     var cond = {id: term.id};
-                    termTable.update(cond, {}, term, [], function(err, data){
+                    termTable.update(cond, term, {},  function(err, data){
                         cb(err);
                     });
                 }
-            });
+            });*/
+            cb(null);
         }
     ], function(err){
         cb(err);
@@ -347,9 +349,10 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
         function(cb){
             var termTable = dc.main.get("term");
             var cond = {id: term.id};
-            termTable.update(cond, {}, term, [], function(err, data){
+            /*termTable.update(cond,  term, {}, function(err, data){
                 cb(err);
-            });
+            });*/
+            cb(null);
         }
     ], function(err){
         cb(err);
@@ -405,9 +408,10 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
         function(cb){
             var termTable = dc.main.get("term");
             var cond = {id: term.id};
-            termTable.update(cond, {}, term, [], function(err, data){
+           /* termTable.update(cond, {}, term, [], function(err, data){
                 cb(err);
-            });
+            });*/
+            cb(null);
         }
     ], function(err){
         cb(err);
