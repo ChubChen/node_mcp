@@ -71,4 +71,4 @@ for(var i =0 ; i<1000000 ; i++){
 }
 console.log("String shijian " + (new Date().getTime() - startarray));*/
 
-var gameGrades = request('mcp_constans')
+console.log("309,662".replace(/[^0-9]/g,""));
