@@ -191,7 +191,8 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                 }else{
                     var termTable = dc.main.get("term");
                     var cond = {id: term.id};
-                    termTable.update(cond, term, {}, function(err, data){
+                    var formTerm = {$set:term};
+                    termTable.update(cond, formTerm, {}, function(err, data){
                          cb(err);
                     });
                 }
@@ -288,7 +289,8 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                 }else{
                     var termTable = dc.main.get("term");
                     var cond = {id: term.id};
-                    termTable.update(cond, term, {},  function(err, data){
+                    var formTerm = {$set:term};
+                    termTable.update(cond, formTerm, {},  function(err, data){
                         cb(err);
                     });
                 }
@@ -348,7 +350,8 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
         function(cb){
             var termTable = dc.main.get("term");
             var cond = {id: term.id};
-            termTable.update(cond,  term, {}, function(err, data){
+            var formTerm = {$set:term};
+            termTable.update(cond,  formTerm, {}, function(err, data){
                 cb(err);
             });
         }
@@ -406,7 +409,8 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
         function(cb){
             var termTable = dc.main.get("term");
             var cond = {id: term.id};
-            termTable.update(cond, {}, term, [], function(err, data){
+            var formTerm = {$set:term};
+            termTable.update(cond, formTerm, {}, function(err, data){
                 cb(err);
             });
         }
