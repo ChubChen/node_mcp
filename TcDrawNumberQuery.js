@@ -156,6 +156,7 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                                    gameGradeItemZh.code = "lv"+id;
                                    gameGradeItemZh.name =   tempTable["Grade"] + "追加";
                                    gameGradeItemZh.count = tempTable["PursueStakes"];
+                                   gameGradeItem.termCode = term.code;
                                    if(gameGradeItemZh.count == 0){
                                        gameGradeItemZh.bonus = 0;
                                    }else{
