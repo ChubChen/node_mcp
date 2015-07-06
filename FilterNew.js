@@ -188,7 +188,7 @@ Filter.prototype.handle = function(message, cb)
     var start = new Date().getTime();
     try{
     cmdFac.handle(headNode, bodyStr, function(err, bodyNode) {
-            var backHeadNode = {messageId:digestUtil.createUUID()};
+        var backHeadNode = {messageId:digestUtil.createUUID()};
         var key = headNode.key;
         if(key == undefined)
             {
@@ -206,8 +206,13 @@ Filter.prototype.handle = function(message, cb)
                 bodyNode = {};
             }
             if (err) {
-                backHeadNode.repCode = err.repCode;
-                backHeadNode.description = err.description;
+                if(err.repCode){
+                    backHeadNode.repCode = err.repCode;
+                    backHeadNode.description = err.description;
+                }else{
+                    backHeadNode.repCode = errCode.E9999.repCode;
+                    backHeadNode.description = errCode.E9999.description;
+                }
             }
             else
             {
