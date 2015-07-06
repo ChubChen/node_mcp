@@ -193,6 +193,25 @@ QueryTest.prototype.queryCQ22 = function()
         }
     });
 }
+/**
+ * 期次查询
+ */
+QueryTest.prototype.queryCQ21 = function()
+{
+    var self = this;
+    var bodyNode = {gameCode:'T51', matchCode:["201507057001","201507057002"]};
+    self.query("CQ21", bodyNode, function(err, backMsgNode){
+        if(err)
+        {
+            log.info('err:' + err);
+        }
+        else
+        {
+            log.info('back:');
+            log.info(backMsgNode);
+        }
+    });
+}
 
 var queryTest = new QueryTest();
-queryTest.queryCQ22();
+queryTest.queryCQ21();
