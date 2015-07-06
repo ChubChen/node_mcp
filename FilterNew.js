@@ -210,8 +210,8 @@ Filter.prototype.handle = function(message, cb)
                     backHeadNode.repCode = err.repCode;
                     backHeadNode.description = err.description;
                 }else{
-                    backHeadNode.repCode = errCode.E9999.repCode;
-                    backHeadNode.description = errCode.E9999.description;
+                    backHeadNode.repCode = errCode.E0999.repCode;
+                    backHeadNode.description = errCode.E0999.description;
                 }
             }
             else
