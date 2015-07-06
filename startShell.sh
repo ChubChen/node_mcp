@@ -15,6 +15,7 @@ adminValue=`ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
 notifyValue=`ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
 jcTermCorn=`ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
 tcdrawNumber=`ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
+jcDrawNumber=`ps -ef|grep JcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
 
 if [ $# -eq 0 ]; then
         usage
@@ -42,6 +43,10 @@ case $OPT in
                nohup node TcDrawNumberQuery.js  target=$PROCESSID > /data/mcplog/tcDrawNumberQuery.log 2>&1 &
                echo "Start TcDrawNumberQuery.js success"
          fi
+         if [ ${#jcDrawNumber} -eq 0 ]; then
+               nohup node JcDrawNumberQuery.js  target=$PROCESSID > /data/mcplog/jcDrawNumberQuery.log 2>&1 &
+               echo "Start JcDrawNumberQuery.js success"
+         fi
         ;;
         stop|Stop) echo "Stopping.....$PROCESSID"
                if [ ${#filterValue} -ne 0 ];  then
@@ -64,6 +69,10 @@ case $OPT in
                   kill -9  `ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
                   echo "Stop TcDrawNumberQuery.js success"
                fi
+               if [ ${#tcdrawNumber} -ne 0 ];  then
+                  kill -9  `ps -ef|grep JcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
+                  echo "Stop JcDrawNumberQuery.js success"
+               fi
         ;;
         restart|ReStart) echo "ReStarting.....$PROCESSID"
                if [ ${#filterValue} -ne 0 ];  then
@@ -83,6 +92,11 @@ case $OPT in
                   kill -9  `ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
                fi
                nohup node TcDrawNumberQuery.js target=$PROCESSID > /data/mcplog/tcDrawNumberQuery.log 2>&1 &
+
+               if [ ${#jcDrawNumber} -ne 0 ];  then
+                  kill -9  `ps -ef|grep JcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
+               fi
+               nohup node JcDrawNumberQuery.js target=$PROCESSID > /data/mcplog/jcDrawNumberQuery.log 2>&1 &
 
                if [ ${#adminValue} -ne 0 ];  then
                  kill -9  `ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
