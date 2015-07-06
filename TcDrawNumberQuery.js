@@ -70,7 +70,10 @@ TcDrawNumberQuery.prototype.handle = function(cb){
                 var method = "get"+gameCode;
                 if(self[method]){
                     self[method](term, function(err){
-                        callback(err);
+                        if(err){
+                            log.error(err);
+                        }
+                        callback(null);
                     })
                 }else{
                     log.info("暂时没有["+gameCode+"]该游戏的抓取方法");
@@ -111,7 +114,7 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                    cb(err);
                }else{
                    try{
-                       if(term.code == data.IssueNum){
+                       if(term.code == data.IssueNum.substr(2)){
                            var tempArray = data.Results.split(",");
                            var blueArray = tempArray.slice(5,7);
                            var redArray = tempArray.slice(0,5);
@@ -455,6 +458,4 @@ TcDrawNumberQuery.prototype.get = function(options, cb)
 };
 
 var jcJob = new TcDrawNumberQuery();
-jcJob.startJob();
-
-
+jcJob.star
