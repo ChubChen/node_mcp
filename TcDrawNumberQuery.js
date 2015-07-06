@@ -458,4 +458,4 @@ TcDrawNumberQuery.prototype.get = function(options, cb)
 };
 
 var jcJob = new TcDrawNumberQuery();
-jcJob.star
+jcJob.startJob();
