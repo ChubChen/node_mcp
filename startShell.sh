@@ -14,6 +14,7 @@ filterValue=`ps -ef|grep FilterNew.js|grep -v grep|awk '{print $2}'`
 adminValue=`ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
 notifyValue=`ps -ef|grep Notify.js|grep -v grep|awk '{print $2}'`
 jcTermCorn=`ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
+tcdrawNumber=`ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
 
 if [ $# -eq 0 ]; then
         usage
@@ -37,6 +38,10 @@ case $OPT in
               nohup node JcTermCorn.js  target=$PROCESSID > /data/mcplog/jcTermCorn.log 2>&1 &
               echo "Start JcTermCorn.js success"
          fi
+         if [ ${#tcdrawNumber} -eq 0 ]; then
+               nohup node TcDrawNumberQuery.js  target=$PROCESSID > /data/mcplog/tcDrawNumberQuery.log 2>&1 &
+               echo "Start TcDrawNumberQuery.js success"
+         fi
         ;;
         stop|Stop) echo "Stopping.....$PROCESSID"
                if [ ${#filterValue} -ne 0 ];  then
@@ -55,6 +60,10 @@ case $OPT in
                   kill -9  `ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
                   echo "Stop JcTermCorn.js success"
                fi
+               if [ ${#tcdrawNumber} -ne 0 ];  then
+                  kill -9  `ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
+                  echo "Stop TcDrawNumberQuery.js success"
+               fi
         ;;
         restart|ReStart) echo "ReStarting.....$PROCESSID"
                if [ ${#filterValue} -ne 0 ];  then
@@ -69,6 +78,11 @@ case $OPT in
                   kill -9  `ps -ef|grep JcTermCorn.js|grep -v grep|awk '{print $2}'`
                fi
                nohup node JcTermCorn.js target=$PROCESSID > /data/mcplog/jcTermCorn.log 2>&1 &
+
+               if [ ${#tcdrawNumber} -ne 0 ];  then
+                  kill -9  `ps -ef|grep TcDrawNumberQuery.js|grep -v grep|awk '{print $2}'`
+               fi
+               nohup node TcDrawNumberQuery.js target=$PROCESSID > /data/mcplog/tcDrawNumberQuery.log 2>&1 &
 
                if [ ${#adminValue} -ne 0 ];  then
                  kill -9  `ps -ef|grep Admin.js|grep -v grep|awk '{print $2}'`
