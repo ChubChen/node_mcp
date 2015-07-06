@@ -237,7 +237,7 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                     cb(err);
                 }else{
                     try{
-                        if(term.code == data.IssueNum){
+                        if(term.code == data.IssueNum.substr(2)){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                             term.wNum = wNum;
@@ -286,6 +286,7 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
         },
         function(grades, cb){
             if(grades.length > 0){
+                var gradeTable = dc.main.get("gamegrade");
                 async.eachSeries(grades, function(grade, callback){
                     gradeTable.save(grade,[], function(err){
                         callback(err);
