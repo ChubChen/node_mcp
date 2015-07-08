@@ -824,15 +824,15 @@ var initTermT05HB = function()
                     var startTime = "";
                     var endTime = "";
                     if(i == 1){
-                        startTime = new Date(firstTime)//.getTime();
+                        startTime = new Date(firstTime).getTime();
                         openTime.set('hour', 09);
                         openTime.set('minute', 00);
                         openTime.set('seconds', 00);
-                        endTime = new Date(openTime)//.getTime();
+                        endTime = new Date(openTime).getTime();
                     }else{
-                        startTime = new Date(openTime)//.getTime();
+                        startTime = new Date(openTime).getTime();
                         openTime = openTime.add(10, 'm');
-                        endTime = new Date(openTime)//.getTime();
+                        endTime = new Date(openTime).getTime();
                     }
                     if(i == 79){
                         nextCode = new moment(openTime).add(1,'day').format("YYMMDD")*100 + i;
@@ -860,6 +860,8 @@ var initTermT05HB = function()
                         log.error(err);
                     callback(err);
                 });
+            },function(err){
+                cb(err);
             });
         }
     ], function (err, result) {
