@@ -41,7 +41,7 @@ TcDrawNumberQuery.prototype.startJob=function(){
         }
     ], function (err) {
         log.info(err);
-        self.crontab = new CronJob('*/10 * * * * *', function () {
+        self.crontab = new CronJob('*/10 * 18-24 * * *', function () {
             log.info("开始执行抓取任务");
                self.handle(function(err){
                    if(err){
@@ -215,6 +215,7 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
     var openTime = new Date().getTime();
     async.waterfall([
         function(cb){
+	    log.info("现在开始抓取七星彩第:" +term.code+ "期数据");
             var options = {url : 'http://www.310win.com/qixingcai/kaijiang_sz_25.html',"encoding":'binary'};
             request(options, function (error, res, body) {
                 if (!error && res.statusCode == 200) {
@@ -234,9 +235,11 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
             };
             self.get(options, function(err, data){
                 if(err){
+		    log.info(err);
                     cb(err);
                 }else{
                     try{
+			log.info(data);
                         if(term.code == data.IssueNum.substr(2)){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
@@ -376,6 +379,7 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
     var openTime = new Date().getTime();
     async.waterfall([
         function(cb){
+	    log.info("开始抓取排列五第"+term.code+"期数据");
             var options = {url : 'http://www.310win.com/pailie5/kaijiang_sz_27.html',"encoding":'binary'};
             request(options, function (error, res, body) {
                 if (!error && res.statusCode == 200) {
