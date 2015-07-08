@@ -115,7 +115,7 @@ JcTermCorn.prototype.handleT51 = function(Object, cb){
                     var closeTime = data.date + " "+ data.time;
                     var status = termStatus.ON_SALE;
                     var term = {id:"T51_" + code, gameCode:"T51", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
-                    var jcodds = {_id:"T51_" + code, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
+                    var jcodds = {_id:"T51_" + code, matchCode: code, gameCode: "T51", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn,l_background_color:data.l_background_color };
                     rstTermArray.push(term);
                     if(data.had){
                         jcodds.had = {win:data.had.h, level:data.had.d, lose:data.had.a, status:data.had.p_status, single: data.had.single};
@@ -244,7 +244,7 @@ JcTermCorn.prototype.handleT52 = function(Object, cb){
                     var closeTime = data.date + " "+ data.time;
                     var status = termStatus.ON_SALE;
                     var term = {id:"T52_" + code, gameCode:"T52", code:code, nextCode: "-1", openTime:openTime, closeTime:closeTime, status:status};
-                    var jcodds = {_id:"T52_" + code, matchCode: code, gameCode: "T52", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn };
+                    var jcodds = {_id:"T52_" + code, matchCode: code, gameCode: "T52", createTime: moment().format("YYYYMMDD hh:mm:ss"),  l_cn:data.l_cn, home_cn:data.h_cn, guest_cn:data.a_cn,l_background_color:data.l_background_color };
                     if(data.mnl){
                         jcodds.mnl = {win:data.mnl.h, lose:data.mnl.a, status:data.mnl.p_status, single: data.mnl.single, fixedodds: data.mnl.fixedodds};
                     }
