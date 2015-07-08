@@ -801,61 +801,72 @@ var initTermT05HB = function()
         },
         function(cb)
         {
-            var table = dc.main.get("term");
-            var startDate = 20150616;
-            var endDate = 20150630;
             var gameCode = 'T05';
-            var rst = [];
-            for(var curDate = startDate; curDate <= endDate; curDate++)
-            {
-                var startTimeStamp = moment(curDate + "085000", "YYYYMMDDHHmmss").valueOf();
-                var gap = 10*60*1000;
-                for(var i = 1; i <=79; i++)
-                {
-                    var start = startTimeStamp + (i - 1)*gap;
-                    var end = startTimeStamp + i*gap;
-                    var code = (curDate*100 + i) + "";
-                    code=code.substr(2);
-                    var nextCode = "";
-                    if(i == 1)
-                    {
-                        nextCode += (curDate*100 + i + 1) + "";
-                        start = moment( curDate - 1+"23:00:00", "YYYYMMDDHHmmss").valueOf();
-                    }
-                    else
-                    {
-                        nextCode += (curDate*100 + i + 1) + "";
-                    }
-                    if(i==85){
-                        nextCode = ((curDate+1)*100 + 1) + "";
-                    }
+            var now = moment("20150709", "YYYYMMDD");
+            var end = moment("20151231", "YYYYMMDD");
+            var termArray = new Array();
+            for(var currDate = now; currDate < end; currDate.add(1,'day')){
 
+                var guonian2 = moment("20150225", 'YYYYMMDD');
+                var guonian1 = moment("20150218", 'YYYYMMDD');
+                if(currDate >= guonian1 && currDate <= guonian2 ){
+                    continue;
+                }
 
-                    var term = {gameCode:gameCode, code:code, nextCode:nextCode.substr(2),
-                        openTime:start, closeTime:end,
-                        status:constants.termStatus.NOT_ON_SALE, wNum:""};
-                    term.id = term.gameCode + "_" + term.code;
-                    rst[rst.length] = term;
+                var openTime = new moment(currDate);
+                var firstTime = new moment(currDate).add(-1,'day');
+                firstTime.set('hour', 22);
+                firstTime.set('minute', 00);
+                firstTime.set('seconds', 00);
+                for(var i = 1; i <= 79 ; i++){
+                    var currCode = currDate.format("YYMMDD")*100 + i;
+                    var nextCode = currCode + 1;
+                    var startTime = "";
+                    var endTime = "";
+                    if(i == 1){
+                        startTime = new Date(firstTime)//.getTime();
+                        openTime.set('hour', 09);
+                        openTime.set('minute', 00);
+                        openTime.set('seconds', 00);
+                        endTime = new Date(openTime)//.getTime();
+                    }else{
+                        startTime = new Date(openTime)//.getTime();
+                        openTime = openTime.add(10, 'm');
+                        endTime = new Date(openTime)//.getTime();
+                    }
+                    if(i == 79){
+                        nextCode = new moment(openTime).add(1,'day').format("YYMMDD")*100 + i;
+                    }
+                    var term = {};
+                    term.id = gameCode+"_"+currCode;
+                    term.gameCode = gameCode;
+                    term.code = currCode;
+                    term.closeTime= endTime;
+                    term.openTime = startTime;
+                    term.status = 1100;
+                    term.nextCode = nextCode;
+                    log.info(term);
+                    termArray.push(term);
                 }
             }
-            log.info(rst);
-
-            async.eachSeries(rst, function(term, callback) {
-                table.save(term, {}, function(err, data){
+            cb(null, termArray);
+        },
+        function(termAray, cb)
+        {
+            var termTable = dc.main.get("term");
+            async.eachSeries(termAray, function(term , callback){
+                termTable.save(term, [], function(err){
+                    if(err)
+                        log.error(err);
                     callback(err);
                 });
-            }, function(err){
-                cb(null);
             });
-        },
-        function(cb)
-        {
-            cb(null, "success");
         }
     ], function (err, result) {
         log.info(err);
         log.info("end...........");
     });
+
 };
 
-initTermT05();
+initTermT05HB();
