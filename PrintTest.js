@@ -25,7 +25,7 @@ var game = config.game;
 
 var argv = process.argv;
 var kvs = {};
-var method = "T03";
+var method = "P01";
 for(var key in argv)
 {
     if(key > 1)
@@ -206,13 +206,15 @@ PrintTest.prototype.printUtilEmpty = function()
                                 var match = temp[i].split("|");
                                 var result = match[2].split(",");
                                 var tempArray = new Array();
+                                var rang = (Math.random()*10 -5).toFixed(1);
+                                var yushe = (Math.random()*200 - Math.random()*100).toFixed(1);
                                 for(var j = 0; j < result.length ; j++){
                                     var tempstr = "";
                                     if(result[j].indexOf("@") < 0){
-                                        if(ticket.gameCode == 'T52' && ticket.pType == '01'){
-                                            tempstr = result[j] + "(" + (Math.random()*10 -5).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
-                                        }else if(ticket.gameCode == 'T52' && ticket.pType == '04'){
-                                            tempstr = result[j] + "(" + (Math.random()*200 - Math.random()*100).toFixed(1) + ")@" + (Math.random()*10).toFixed(2);
+                                        if(ticket.gameCode == 'T52' && match[0] == '01'){
+                                            tempstr = result[j] + "(" + rang + ")@" + (Math.random()*10).toFixed(2);
+                                        }else if(ticket.gameCode == 'T52' && match[0]  == '04'){
+                                            tempstr = result[j] + "(" + yushe + ")@" + (Math.random()*10).toFixed(2);
                                         }else{
                                             tempstr = result[j] + "@" + (Math.random()*10).toFixed(2);
                                         }
