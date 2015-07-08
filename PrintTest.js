@@ -88,6 +88,25 @@ PrintTest.prototype.printP02 = function(bodyNode, cb)
     });
 };
 
+PrintTest.prototype.sendP04 = function(bodyNode)
+{
+    var self = this;
+    bodyNode = {outerId:123};
+    self.print("P04", bodyNode, function(err, backMsgNode){
+        if(err)
+        {
+            cb(err, null);
+        }
+        else
+        {
+            var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+            var backBodyNode = JSON.parse(backBodyStr);
+            //cb(null, backBodyNode);
+        }
+    });
+};
+
+
 PrintTest.prototype.printP03 = function(cb){
 	 var self = this;
 	async.waterfall([
