@@ -41,7 +41,7 @@ TcDrawNumberQuery.prototype.startJob=function(){
         }
     ], function (err) {
         log.info(err);
-        self.crontab = new CronJob('*/10 * 20-24 * * *', function () {
+        self.crontab = new CronJob('*/20 * 20-24  * * *', function () {
             log.info("开始执行抓取任务");
                self.handle(function(err){
                    if(err){
@@ -114,7 +114,7 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                    cb(err);
                }else{
                    try{
-                       if(term.code == data.IssueNum.substr(2)){
+                       if(term.code == data.IssueNum){
                            var tempArray = data.Results.split(",");
                            var blueArray = tempArray.slice(5,7);
                            var redArray = tempArray.slice(0,5);
@@ -195,10 +195,11 @@ TcDrawNumberQuery.prototype.saveGrades = function(term, grades, cb){
     var gradeTable = dc.main.get("gamegrade");
     if(grades.length > 0){
         async.eachSeries(grades, function(grade, callback){
-            gradeTable.findOne({id: grade.id},[], function (err ,data) {
+            gradeTable.findOne({id: grade.id},{id:1},[], function (err ,data) {
+		log.info(data);
                 if(data){
                     var sets = {$set:grade};
-                    gradeTable.update({id: grade.id}, sets ,[], function(err){
+                    gradeTable.update({id: data.id}, sets ,[], function(err){
                         callback(err);
                     });
                 }else{
