@@ -236,11 +236,11 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                                             if (err) {
                                                 cb(err);
                                             } else {
-                                                cb(data);
+                                                cb(err, data);
                                             }
                                         });
                                     }else{
-                                        cb(null);
+                                        cb("处于不可开奖状态");
                                     }
                                     /*termSer.draw(fromTerm, function (err, data) {
                                         if(err){
@@ -250,7 +250,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                                         }
                                     });*/
                                 }else{
-                                    cb(null);
+                                    cb("表中数据不存在");
                                 }
                             }
                      });
@@ -314,11 +314,11 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                                         log.error(err);
                                         cb(err);
                                     }else{
-                                        cb(data);
+                                        cb(null, data);
                                     }
                                 });
                             }else{
-                                cb(null);
+                                cb("处于不可开奖状态");
                             }
                             /*termSer.draw(fromTerm, function (err, data) {
                                 if(err){
@@ -329,7 +329,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                                 }
                             });*/
                         }else{
-                            cb(null);
+                            cb("没有找到场次");
                         }
                     }
                 });
