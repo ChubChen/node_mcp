@@ -172,7 +172,9 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                            log.info(grades);
                            log.info(term);
                            log.info("耗时：" + (new Date().getTime() - openTime));
-                           cb(null, grades);
+                           self.saveGrades(term, grades, function(err){
+                               cb(err);
+                           });
                        }else{
                            cb("要抓去的数据和抓取的数据不一致")
                        }
@@ -182,35 +184,46 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                    }
                }
             })
-        },
-        function(grades, cb){
-            var gradeTable = dc.main.get("gamegrade");
-            if(grades.length > 0){
-                async.eachSeries(grades, function(grade, callback){
-                    gradeTable.save(grade,[], function(err){
-                        callback(err);
-                    });
-                }, function (err) {
-                    if(err){
-                        cb(err);
-                    }else{
-                        var termTable = dc.main.get("term");
-                        var cond = {id: term.id};
-                        var formTerm = {$set:term};
-                        termTable.update(cond, formTerm, {}, function(err, data){
-                            notifySer.saveTerm(term, function(err){
-                                cb(err);
-                            });
-                        });
-                    }
-                });
-            }else{
-                cb("等待奖级结果出来后更新");
-            }
         }
     ], function(err){
             cb(err);
     });
+};
+
+TcDrawNumberQuery.prototype.saveGrades = function(term, grades, cb){
+    var self  = this;
+    var gradeTable = dc.main.get("gamegrade");
+    if(grades.length > 0){
+        async.eachSeries(grades, function(grade, callback){
+            gradeTable.findOne({id: grade.id},[], function (err ,data) {
+                if(data){
+                    var sets = {$set:grade};
+                    gradeTable.update({id: grade.id}, sets ,[], function(err){
+                        callback(err);
+                    });
+                }else{
+                    gradeTable.save(grade,[], function(err){
+                        callback(err);
+                    });
+                }
+            });
+        }, function (err) {
+            if(err){
+                cb(err);
+            }else{
+                var termTable = dc.main.get("term");
+                var cond = {id: term.id};
+                var formTerm = {$set:term};
+                termTable.update(cond, formTerm, {}, function(err, data){
+                    notifySer.saveTerm(term, function(err){
+                        cb(err);
+                    });
+                });
+            }
+        });
+    }else{
+        cb("等待奖级结果出来后更新");
+    }
 };
 
 TcDrawNumberQuery.prototype.getT02 = function(term, cb){
@@ -280,7 +293,9 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                             log.info(grades);
                             log.info(term);
                             log.info("耗时：" + (new Date().getTime() - openTime));
-                            cb(null, grades);
+                            self.saveGrades(term, grades, function(err){
+                                cb(err);
+                            });
                         }else{
                             cb("要抓去的数据和抓取的数据不一致")
                         }
@@ -290,31 +305,6 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                     }
                 }
             })
-        },
-        function(grades, cb){
-            if(grades.length > 0){
-                var gradeTable = dc.main.get("gamegrade");
-                async.eachSeries(grades, function(grade, callback){
-                    gradeTable.save(grade,[], function(err){
-                        callback(err);
-                    });
-                }, function (err) {
-                    if(err){
-                        cb(err);
-                    }else{
-                        var termTable = dc.main.get("term");
-                        var cond = {id: term.id};
-                        var formTerm = {$set:term};
-                        termTable.update(cond, formTerm, {}, function(err, data){
-                            notifySer.saveTerm(term, function(err){
-                                cb(err);
-                            });
-                        });
-                    }
-                });
-            }else{
-                cb("等待奖级结果出来后更新");
-            }
         }
     ], function(err){
         cb(err);
