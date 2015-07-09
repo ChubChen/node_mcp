@@ -121,6 +121,7 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                            var wNum = redArray.join(",")+"|"+blueArray.join(",");
                            var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                            term.wNum = wNum;
+                           term.status = 1500;
                            term.totalsalemoney = totalsalemoney;
                            term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                            if(totalsalemoney == 0){
@@ -197,7 +198,9 @@ TcDrawNumberQuery.prototype.getT01 = function(term, cb){
                         var cond = {id: term.id};
                         var formTerm = {$set:term};
                         termTable.update(cond, formTerm, {}, function(err, data){
-                            cb(err);
+                            notifySer.saveTerm(term, function(err){
+                                cb(err);
+                            });
                         });
                     }
                 });
@@ -244,6 +247,7 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                             term.wNum = wNum;
+                            term.status = 1500;
                             term.totalsalemoney = totalsalemoney;
                             term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                             if(totalsalemoney == 0){
@@ -302,7 +306,9 @@ TcDrawNumberQuery.prototype.getT02 = function(term, cb){
                         var cond = {id: term.id};
                         var formTerm = {$set:term};
                         termTable.update(cond, formTerm, {}, function(err, data){
-                            cb(err);
+                            notifySer.saveTerm(term, function(err){
+                                cb(err);
+                            });
                         });
                     }
                 });
@@ -346,6 +352,7 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                             term.wNum = wNum;
+                            term.status = 1500;
                             term.totalsalemoney = totalsalemoney;
                             term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                             log.info(term);
@@ -366,7 +373,9 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
             var cond = {id: term.id};
             var formTerm = {$set:term};
             termTable.update(cond,  formTerm, {}, function(err, data){
-                cb(err);
+                notifySer.saveTerm(term, function(err){
+                    cb(err);
+                });
             });
         }
     ], function(err){
@@ -406,6 +415,7 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                             term.wNum = wNum;
+                            term.status = 1500;
                             term.totalsalemoney = totalsalemoney;
                             term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                             log.info(term);
@@ -426,7 +436,9 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
             var cond = {id: term.id};
             var formTerm = {$set:term};
             termTable.update(cond, formTerm, {}, function(err, data){
-                cb(err);
+                notifySer.saveTerm(term, function(err){
+                    cb(err);
+                });
             });
         }
     ], function(err){
