@@ -214,4 +214,4 @@ QueryTest.prototype.queryCQ21 = function()
 }
 
 var queryTest = new QueryTest();
-queryTest.queryCQ04();
+queryTest.queryCQ22();

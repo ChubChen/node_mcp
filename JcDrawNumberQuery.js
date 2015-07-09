@@ -72,7 +72,7 @@ JcDrawNumberQuery.prototype.handle = function(cb){
     var termTable = dc.main.get("term");
     //第一步查找要开奖的游戏
     var queryTime = new Date().getTime();
-    var cond = {status:termStatus.WAITING_DRAW_NUMBER, wNum: "", closeTime : {$gte : queryTime - 1000*60*60*5}, gameCode: {$in:['T51','T52']}};
+    var cond = {status:termStatus.WAITING_DRAW_NUMBER, wNum: "", closeTime : {$gte : queryTime - 1000*60*60*24}, gameCode: {$in:['T51','T52']}};
     termTable.find(cond,{id:1, code:1, gameCode:1}, []).sort({closeTime:1}).toArray(function (err, data) {
         if(err){
             cb(err);
