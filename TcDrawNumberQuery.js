@@ -41,7 +41,7 @@ TcDrawNumberQuery.prototype.startJob=function(){
         }
     ], function (err) {
         log.info(err);
-        self.crontab = new CronJob('*/10 * 18-24 * * *', function () {
+        self.crontab = new CronJob('*/10 * 20-24 * * *', function () {
             log.info("开始执行抓取任务");
                self.handle(function(err){
                    if(err){

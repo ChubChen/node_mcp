@@ -37,7 +37,7 @@ JcDrawNumberQuery.prototype.startJob=function(){
     ], function (err) {
         log.info(err);
         self.crontab = new CronJob('*/10 * * * *', function () {
-           async.waterfall([
+         /*  async.waterfall([
                function(cb){
                    var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
                    self.getT51(options,function(matchResult){
@@ -56,14 +56,55 @@ JcDrawNumberQuery.prototype.startJob=function(){
                }
            ],function(err){
                console.log(err);
-           })
+           })*/
+            self.handle(function(err){
+                if(err)
+                log.error(err);
+            })
         });
         self.crontab.start();
     })
 
 }
 
-JcDrawNumberQuery.prototype.getT51=function(options, cb){
+JcDrawNumberQuery.prototype.handle = function(cb){
+    var self = this;
+    var termTable = dc.main.get("term");
+    //第一步查找要开奖的游戏
+    var queryTime = new Date().getTime();
+    var cond = {status:termStatus.WAITING_DRAW_NUMBER, wNum: "", closeTime : {$gte : queryTime - 1000*60*60*5}, gameCode: {$in:['T51','T52']}};
+    termTable.find(cond,{id:1, code:1, gameCode:1}, []).sort({closeTime:1}).toArray(function (err, data) {
+        if(err){
+            cb(err);
+        }else{
+            log.info(data);
+            async.eachSeries(data, function(term , callback){
+                var gameCode = term.gameCode;
+                var method = "get"+gameCode;
+                var handle = "handle"+gameCode;
+                if(self[method] && self[handle]){
+                    self[method](term, function(matchResult){
+                        self[handle](matchResult, function(err){
+                            if(err){
+                                log.error(err);
+                            }
+                            callback(null);
+                        });
+                    });
+                }else{
+                    log.info("暂时没有["+gameCode+"]该游戏的抓取方法");
+                    callback(null);
+                }
+            },function(err){
+                cb(err);
+            });
+        }
+    });
+};
+
+
+JcDrawNumberQuery.prototype.getT51=function(term, cb){
+    var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
     request(options, function (error, res, body) {
         if (!error && res.statusCode == 200) {
             body = new Iconv('GBK','UTF8').convert(new Buffer(body,'binary')).toString();
@@ -127,7 +168,9 @@ JcDrawNumberQuery.prototype.getT51=function(options, cb){
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }
-                    mathResult.push({termCode:mathCode,wNum:resutArray.join(",")});
+                    if(mathCode == term.code){
+                        mathResult.push({termCode:mathCode,wNum:resutArray.join(",")});
+                    }
                 }
             });
             cb(mathResult);
@@ -135,7 +178,8 @@ JcDrawNumberQuery.prototype.getT51=function(options, cb){
     });
 };
 
-JcDrawNumberQuery.prototype.getT52=function(options, cb){
+JcDrawNumberQuery.prototype.getT52=function(term, cb){
+    var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
     request(options, function (error, res, body) {
         if (!error && res.statusCode == 200) {
             body = new Iconv('GBK','UTF8').convert(new Buffer(body,'binary')).toString();
@@ -193,7 +237,9 @@ JcDrawNumberQuery.prototype.getT52=function(options, cb){
                         }
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }
-                    mathResult.push({termCode:mathCode,wNum:endResult});
+                    if(mathCode == term.code){
+                        mathResult.push({termCode:mathCode,wNum:resutArray.join(",")});
+                    }
                 }
             });
             cb(mathResult);
