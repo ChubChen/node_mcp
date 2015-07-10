@@ -238,7 +238,7 @@ JcDrawNumberQuery.prototype.getT52=function(term, cb){
                         mathCode = resultDay.format("YYYYMMDD")+resultDay.isoWeekday()+code;
                     }
                     if(mathCode == term.code){
-                        mathResult.push({termCode:mathCode,wNum:resutArray.join(",")});
+                        mathResult.push({termCode:mathCode,wNum:endResult});
                     }
                 }
             });
