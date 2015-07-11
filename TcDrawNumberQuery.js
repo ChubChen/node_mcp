@@ -339,7 +339,7 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
                     cb(err);
                 }else{
                     try{
-                        if(term.code == data.IssueNum){
+                        //if(term.code == data.IssueNum){
                             var wNum = data.Results;
                             var totalsalemoney = data.SaleMoney.replace(/[^0-9]/g, "") *100;
                             term.wNum = wNum;
@@ -349,19 +349,20 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
                             log.info(term);
                             log.info("耗时：" + (new Date().getTime() - openTime));
                             var gradesArray = new Array();
-                            var gameGrades = gameGrade.getInfoById(term.gameCode);
+                            var gameGrades = gameGrade.getInfoById(term.gameCode).grades;
                             for(var key  in gameGrades){
                                 var info = gameGrades[key];
+                                log.info(info);
                                 var id = term.gameCode+"_"+term.code+"_"+info.id;
                                 var lv1 = {id:id,gameCode:term.gameCode, termCode:term.code, level:info.id, name:info.des, bonus:info.bonus};
                                 gradesArray.push(lv1);
                             };
-                            self.saveGrades(term, gradesArray, function(err){
+                           /* self.saveGrades(term, gradesArray, function(err){
                                 cb(err);
-                            });
-                        }else{
+                            });*/
+                        /*}else{
                             cb("要抓去的数据和抓取的数据不一致")
-                        }
+                        }*/
                     }catch (err){
                         log.error(err);
                         cb(err)
@@ -412,7 +413,7 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
                             log.info(term);
                             log.info("耗时：" + (new Date().getTime() - openTime));
                             var gradesArray = new Array();
-                            var gameGrades = gameGrade.getInfoById(term.gameCode);
+                            var gameGrades = gameGrade.getInfoById(term.gameCode).grades;
                             for(var key  in gameGrades){
                                 var info = gameGrades[key];
                                 var id = term.gameCode+"_"+term.code+"_"+info.id;
@@ -466,7 +467,7 @@ TcDrawNumberQuery.prototype.get = function(options, cb)
 };
 
 var jcJob = new TcDrawNumberQuery();
-/*jcJob.getT03({gameCode:'T03', code:"123"}, function(){
+jcJob.getT03({gameCode:'T03', code:"123"}, function(){
 
-});*/
-jcJob.startJob();
+});
+//jcJob.startJob();
