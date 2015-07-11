@@ -41,7 +41,7 @@ TcDrawNumberQuery.prototype.startJob=function(){
         }
     ], function (err) {
         log.info(err);
-        self.crontab = new CronJob('*/20 * 20-24  * * *', function () {
+        self.crontab = new CronJob('*/1 *  * * *', function () {
             log.info("开始执行抓取任务");
                self.handle(function(err){
                    if(err){
@@ -348,7 +348,17 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
                             term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                             log.info(term);
                             log.info("耗时：" + (new Date().getTime() - openTime));
-                            cb(null);
+                            var gradesArray = new Array();
+                            var gameGrades = gameGrade.getInfoById(term.gameCode);
+                            for(var key  in gameGrades){
+                                var info = gameGrades[key];
+                                var id = term.gameCode+"_"+term.code+"_"+info.id;
+                                var lv1 = {id:id,gameCode:term.gameCode, termCode:term.code, level:info.id, name:info.des, bonus:info.bonus};
+                                gradesArray.push(lv1);
+                            };
+                            self.saveGrades(term, gradesArray, function(err){
+                                cb(err);
+                            });
                         }else{
                             cb("要抓去的数据和抓取的数据不一致")
                         }
@@ -358,16 +368,6 @@ TcDrawNumberQuery.prototype.getT03 = function(term, cb){
                     }
                 }
             })
-        },
-        function(cb){
-            var termTable = dc.main.get("term");
-            var cond = {id: term.id};
-            var formTerm = {$set:term};
-            termTable.update(cond,  formTerm, {}, function(err, data){
-                notifySer.saveTerm(term, function(err){
-                    cb(err);
-                });
-            });
         }
     ], function(err){
         cb(err);
@@ -411,7 +411,17 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
                             term.pool =  data.PoolMoney.replace(/[^0-9]/g, "") * 100;
                             log.info(term);
                             log.info("耗时：" + (new Date().getTime() - openTime));
-                            cb(null);
+                            var gradesArray = new Array();
+                            var gameGrades = gameGrade.getInfoById(term.gameCode);
+                            for(var key  in gameGrades){
+                                var info = gameGrades[key];
+                                var id = term.gameCode+"_"+term.code+"_"+info.id;
+                                var lv1 = {id:id,gameCode:term.gameCode, termCode:term.code, level:info.id, name:info.des, bonus:info.bonus};
+                                gradesArray.push(lv1);
+                            };
+                            self.saveGrades(term, gradesArray, function(err){
+                                cb(err);
+                            });
                         }else{
                             cb("要抓去的数据和抓取的数据不一致")
                         }
@@ -421,16 +431,6 @@ TcDrawNumberQuery.prototype.getT04 = function(term, cb){
                     }
                 }
             })
-        },
-        function(cb){
-            var termTable = dc.main.get("term");
-            var cond = {id: term.id};
-            var formTerm = {$set:term};
-            termTable.update(cond, formTerm, {}, function(err, data){
-                notifySer.saveTerm(term, function(err){
-                    cb(err);
-                });
-            });
         }
     ], function(err){
         cb(err);
@@ -466,4 +466,7 @@ TcDrawNumberQuery.prototype.get = function(options, cb)
 };
 
 var jcJob = new TcDrawNumberQuery();
+/*jcJob.getT03({gameCode:'T03', code:"123"}, function(){
+
+});*/
 jcJob.startJob();
