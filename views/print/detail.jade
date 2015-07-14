@@ -8,6 +8,7 @@ html(lang="en")
                     var data = {};
                     data.id = Node.one("#ticketId").val();
                     data.termCode = Node.one("#termCode").val();
+                    data.type = Node.one("#type").val();
                     data.rNumber = Node.one("#rNumber").val();
                     data.province = Node.one("#province").val();
                     data.seq = Node.one("#seq").val();
@@ -26,7 +27,7 @@ html(lang="en")
                 var checkParam = function(data){
                     if(data.printStatus == 1300)
                     {
-                       if(data.rNumber == '' || data.rNumber == null){
+                       if(data.type == '3' && (data.rNumber == '' || data.rNumber == null)){
                             alert("输入错误");
                             return false;
                        }
@@ -43,15 +44,12 @@ html(lang="en")
                         });
                     }
                 });
-                Node.one("#backup").on("click", function(){
-                     var url = "print_queenList.html?time=" + new Date().getTime();
-                     CurSite.redirectTo(null, url);
-                });
             });
     body
         body
         input(id="ticketId", type="hidden", value=ticket._id)
         input(id="termCode", type="hidden", value=ticket.termCode)
+        input(id="type", type="hidden", value=ticket.game.type)
         #tWin.container
         .bodyAdminDiv
             .clearfix(style="margin-top:8px")
@@ -81,7 +79,7 @@ html(lang="en")
                 .vs_grid_plain(style="margin-left:8px;")
                     input(id="rNumber", type="text", value=ticket.rNumber)
             .clearfix(style="margin-top:8px")
-                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 出票状态*:
+                .vs_grid_plain(style="width:100px;text-align:right;margin-top:4px") 队列状态*:
                 .vs_grid_plain(style="margin-left:8px;")
                     select(id="printQueenStatus")
                         - each val in printQueenStatus
