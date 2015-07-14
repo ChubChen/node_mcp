@@ -251,7 +251,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
     var self = this;
     var jcDrawNumberCache = dc.mg.get("jcDrawNumberCache");
     var termTable = dc.main.get("term");
-     async.each(matchArray, function(math, callback){
+     async.eachSeries(matchArray, function(math, callback){
          var matchCode = math.termCode;
          var drawCahe = {$set:{ drawNumber: math.wNum}};
              async.waterfall([
@@ -327,7 +327,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
     var self = this;
     var jcDrawNumberCache = dc.mg.get("jcDrawNumberCache");
     var termTable = dc.main.get("term");
-    async.each(matchArray, function(math, callback){
+    async.eachSeries(matchArray, function(math, callback){
         var matchCode = math.termCode;
         var drawCahe = {$set:{ drawNumber: math.wNum}};
         async.waterfall([
