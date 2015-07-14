@@ -343,10 +343,12 @@ JcTermCorn.prototype.job = function () {
                        }else{
                            if(jsonData){
                                self.handleT51(jsonData, function(err){
-                                   cb(err);
+                                   log.error(err);
+                                   cb(null);
                                });
                            }else{
-                               cb(new Error("竞猜足球没有查询到结果"));
+                               log.error(new Error("竞猜足球没有查询到结果"));
+                               cb(null);
                            }
                        }
                    });
