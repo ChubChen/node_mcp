@@ -91,6 +91,9 @@ Filter.prototype.startWeb = function()
 
         cluster.on('exit', function (worker, code, signal) {
             log.error('[master] ' + 'exit worker' + worker.id + ' died');
+            if(code != 0){
+                log.error("工作进程退出，错误码：" + code);
+            }
             cluster.fork();
         });
 
