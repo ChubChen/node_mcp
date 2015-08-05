@@ -1,74 +1,67 @@
-/*
-var async = require('async');
+var async = require("async");
 var dc = require("mcp_db").dc;
-var esut = require('easy_util');
+
 var test = function () {
+
+}
+
+test.prototype.start = function () {
+    var self = this;
     async.waterfall([
         function (cb) {
-            dc.init(function(){
-                cb(null);
-            });
+            dc.init(function(err){
+                cb(err);
+            })
         },
         function (cb) {
-            var tticket = dc.main.get("tticket");
-            var customer = tticket.find({status:1000,printStatus:1300,customerId:"Q0002"}, {}, []);
-            customer.toArray(function(err ,data){
-                if(data){
-                    async.eachSeries(data, function (row, callback) {
-                        if(row.rNumber){
-                            var math = row.rNumber.split(";");
-                            async.eachSeries(math, function (mathcode ,call) {
-                                var peilv = mathcode.split("|")[2].split(",");
-                                async.eachSeries(peilv, function (iter, cll) {
-                                    if(iter.indexOf('@') > 0  && iter.substr(peilv.indexOf('@')).length >2  ){
-                                        cll(null);
-                                    }else{
-                                        console.log(row.id);
-                                        cll(null);
-
-                                    }
-                                })
-                                call(null);
-                            });
-                            callback(null);
-                        }
-                    })
-                }else{
-                    cb(null);
-                }
-            });
+            dc.check(function (err) {
+                cb(err);
+            })
         }
-    ], function (err) {
-        cb(err);
+    ], function (cb) {
+        var conntion = dc.main.getConn();
+        var conn = conntion.conn;
+        conn.beginTransaction(
+            self.handle(conntion,function(err,data){
+                console.log((err));
+                //cb(err);
+                if(err){
+                    conn.rollback();
+                }else{
+                    conn.commit();
+                }
+
+           })
+        );
     })
-
 }
 
-new test();*//*
+test.prototype.handle = function (conn, cb) {
+    var self = this;
+        async.waterfall([
+            function (cb) {
+                var sql = "insert into tticket(gameCode,pType,bType,amount,multiple,outerId,number,customerId,printId,termCode,createTime,status,orderId,auditTime) values('T51','02','21',400,1,123456,'02|201508053016|3,1;02|201508053016|1','Q0001','C0001','termCode',123123,1100,11,123)";
+                conn.execute(sql, {}, function (err, data) {
+                    console.log(data);
+                    cb(err,data)
+                });
+                /*var ticket = {
+                    gameCode:'T51', pType:'02', bType:'21', amount:400,
+                    multiple:1, outerId:123456,
+                    number:'02|201508053016|3,1;02|201508053016|1', customerId:'Q0001',printId:"C0001",termCode:'termCode',createTime:123123,status:1100,orderId:11,auditTime:123};
+                tticket.save(ticket, {}, function(err, data){
+                    //console.log(data.insertId);
+                    cb(err,data);
+                })*/
 
-var split = "^";
-var startStr = new Date().getTime();
-console.log("String start");
-for(var i =0 ; i<1000000 ; i++){
-    var temp = "1"+"2"+i + split+split+split;
+            }
+
+        ], function (err, data) {
+            console.log(err);
+            console.log(data);
+            cb(err)
+        })
 }
-console.log("String shijian " + (new Date().getTime() - startStr));
 
-var startarray = new Date().getTime();
-
-console.log("String start");
-for(var i =0 ; i<1000000 ; i++){
-    var array = new Array();
-
-    array.push("1");
-    array.push("2");
-    array.push(i);
-    array.push(split);
-    array.push(split);
-    array.push(split);
-    array.join("");
-    var temp = "1"+"2"+i + split+split+split;
-}
-console.log("String shijian " + (new Date().getTime() - startarray));*/
-
-console.log("309,662".replace(/[^0-9]/g,""));
+var t = new test();
+t.start()
