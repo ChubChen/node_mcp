@@ -55,7 +55,11 @@ JcTermCorn.prototype.get = function(options, cb)
 
         res.on('end', function(){
             if(resData){
-                cb(null, JSON.parse(resData));
+                try{
+                    cb(null, JSON.parse(resData));
+                }catch (err){
+                    log.error(err);
+                }
             }else{
                 log.error("请求返回结果为空");
             }
