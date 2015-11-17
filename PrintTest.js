@@ -187,6 +187,65 @@ PrintTest.prototype.sendP03 = function( cb)
     });
 };
 
+PrintTest.prototype.sendP06 = function( cb)
+{
+    var self = this;
+    async.waterfall([
+        function(cb)
+        {
+            dc.init(function(err){
+                cb(err);
+            });
+        },
+        //校验基础数据的可用性
+        function(cb)
+        {
+            dc.check(function(err){
+                cb(err);
+            });
+        }
+    ], function (err) {
+        if(err){
+
+        }else{
+               async.waterfall([
+                    function(cb){
+                        var tticket = dc.main.get("tticket");
+                        var cond = {};
+                        tticket.find(cond, {}).limit(0,1).toArray(function(err, data){
+                            cb(err, data[0])
+                        });
+                    },
+                    function(ticket, cb){
+                        var bodyNode = {};
+                        var rst = new Array();
+                        ticket.cashAmount=111;
+                        ticket.cashTerminal="123";
+                        ticket.cashTime="1111";
+                        rst.push(ticket);
+                        bodyNode.rst = rst;
+                        log.info(bodyNode);
+                        self.print("P06", bodyNode, function(err, backMsgNode){
+                            if(err)
+                            {
+                                cb(err, null);
+                            }
+                            else
+                            {
+                                var backBodyStr = digestUtil.check(backMsgNode.head, self.key, backMsgNode.body);
+                                var backBodyNode = JSON.parse(backBodyStr);
+                                log.info(backBodyNode);
+                                cb(null, backBodyNode);
+                            }
+                        });
+                    }
+                ], function (err){
+                    log.info(err);
+                });
+            }
+    });
+};
+
 PrintTest.prototype.sendP01 = function(){
     var printJob = new CronJob('*/10 * * * * *', function () {
         printTest.printUtilEmpty();
