@@ -36,27 +36,7 @@ JcDrawNumberQuery.prototype.startJob=function(){
         },
     ], function (err) {
         log.info(err);
-        self.crontab = new CronJob('*/1 * * * *', function () {
-         /*  async.waterfall([
-               function(cb){
-                   var options = {url : 'http://www.okooo.com/jingcai/kaijiang/',"encoding":'binary'};
-                   self.getT51(options,function(matchResult){
-                      self.handleT51(matchResult, function(err){
-                          cb(null);
-                      })
-                   });
-               },
-               function(cb){
-                   var options = {url : 'http://www.okooo.com/jingcailanqiu/kaijiang/',"encoding":'binary'};
-                   self.getT52(options,function(matchResult){
-                       self.handleT52(matchResult, function(err){
-                           cb(err);
-                       })
-                   });
-               }
-           ],function(err){
-               console.log(err);
-           })*/
+        self.crontab = new CronJob('*/2 * * * *', function () {
             self.handle(function(err){
                 if(err)
                 log.error(err);
@@ -277,7 +257,7 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                                     if(math.wNum != data.wNum) {
                                         log.info("更新开奖结果");
                                         var cond = {id: data.id, version: data.version};
-                                        var fromTerm = {$set: {wNum: math.wNum,status:termStatus.DRAW, version: data.version++}};
+                                        var fromTerm = {$set: {wNum: math.wNum,status:termStatus.DRAW,bonusTime:new Date().getTime(), version: data.version++}};
                                         termTable.update(cond, fromTerm, [], function (err, data) {
                                             if (err) {
                                                 cb(err);
@@ -288,13 +268,6 @@ JcDrawNumberQuery.prototype.handleT51=function(matchArray, cb){
                                     }else{
                                         cb("处于不可开奖状态");
                                     }
-                                    /*termSer.draw(fromTerm, function (err, data) {
-                                        if(err){
-                                            cb(err);
-                                        }else{
-                                            cb(err, data);
-                                        }
-                                    });*/
                                 }else{
                                     cb("表中数据不存在");
                                 }
@@ -354,7 +327,7 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                                 log.info("更新开奖结果");
                                 log.info({id:data.id, wNum: math.wNum});
                                 var cond = {id:data.id, version:data.version};
-                                var fromTerm = {$set:{wNum: math.wNum, status:termStatus.DRAW, version:data.version}};
+                                var fromTerm = {$set:{wNum: math.wNum, status:termStatus.DRAW,bonusTime:new Date().getTime(), version:data.version}};
                                 termTable.update(cond, fromTerm, [], function(err, data){
                                     if(err){
                                         log.error(err);
@@ -366,14 +339,6 @@ JcDrawNumberQuery.prototype.handleT52=function(matchArray, cb){
                             }else{
                                 cb("处于不可开奖状态");
                             }
-                            /*termSer.draw(fromTerm, function (err, data) {
-                                if(err){
-                                    log.error(err);
-                                    cb(err);
-                                }else{
-                                    cb(err, data);
-                                }
-                            });*/
                         }else{
                             cb("没有找到场次");
                         }
