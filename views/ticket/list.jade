@@ -7,7 +7,35 @@ html(lang="en")
         include ../includes/script.jade
         script(type='text/javascript').
             KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
-                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,O){
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar,O){
+                    new Calendar('#printStartDate', {
+                        popup: true,
+                        triggerType: ['click'],
+                        closable: true
+                    }).on('select', function (e) {
+                        Node.one('#printStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd HH:MM:ss'));
+                    });
+                    new Calendar('#printEndDate', {
+                        popup: true,
+                        triggerType: ['click'],
+                        closable: true
+                    }).on('select', function (e) {
+                        Node.one('#printEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd HH:MM:ss'));
+                    });
+                    new Calendar('#cashStartDate', {
+                        popup: true,
+                        triggerType: ['click'],
+                        closable: true
+                    }).on('select', function (e) {
+                        Node.one('#cashStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                    });
+                    new Calendar('#cashEndDate', {
+                        popup: true,
+                        triggerType: ['click'],
+                        closable: true
+                    }).on('select', function (e) {
+                        Node.one('#cashEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                    });
                 var count = parseInt(Node.one('#count').val());
                 var skip = parseInt(Node.one('#skip').val());
                 var limit = parseInt(Node.one('#limit').val());
@@ -49,11 +77,20 @@ html(lang="en")
                     {
                         cond.id = id;
                     }
-
-
+                    var customerId = Node.one('#customerId').val();
+                    if (customerId && customerId.length > 0) {
+                        cond.customerId = customerId;
+                    }
                     return cond;
                 };
-
+                var getAddition = function () {
+                    var add = {};
+                    add.cashStartDate = Node.one('#cashStartDate').val();
+                    add.cashEndDate = Node.one('#cashEndDate').val();
+                    add.printStartDate = Node.one('#printStartDate').val();
+                    add.printEndDate = Node.one('#printEndDate').val();
+                    return add;
+                };
                 var getSort = function()
                 {
                     return {id:-1};
@@ -68,7 +105,8 @@ html(lang="en")
                     }
                     var cond = encodeURIComponent(Json.stringify(getCondition()));
                     var sort = encodeURIComponent(Json.stringify(getSort()));
-                    CurSite.redirectTo(null, "ticket_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort);
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    CurSite.redirectTo(null, "ticket_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort +"&add=" + add);
                 };
 
                 //绑定事件
@@ -155,6 +193,20 @@ html(lang="en")
                         td ID:
                             td
                                 input(id="id", type="text", value=cond.id)
+                        td 用户:
+                            td
+                                input(id="customerId", type="text", value=cond.customerId)
+                    tr
+                        td 出票时间:
+                            td
+                                input(type="text" id="printStartDate" value=cond.printStartDate)
+                                span 至
+                                input(type="text" id="printEndDate"   value=cond.printEndDate)
+                        td 兑奖时间:
+                            td
+                                input(type="text" id="cashStartDate" value=cond.cashStartDate)
+                                span 至
+                                input(type="text" id="cashEndDate"   value=cond.cashEndDate)
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")

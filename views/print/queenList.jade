@@ -38,15 +38,19 @@ html(lang="en")
                 });
                 Node.one("#repeat").on("click", function(){
                     var bodyNode = {cond:{}, cmd: 1000};
-                    CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
-                          toPage(cur);
-                    });
+                    if(confirm("真的确定，要全部重新出票吗？")){
+                        CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function (err, backBodyNode) {
+                            toPage(cur);
+                        });
+                    }
               });
               Node.one("#allFail").on("click", function(){
-                   var bodyNode = {cond:{}, cmd: 1500};
-                   CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function(err, backBodyNode){
-                         toPage(cur)
-                   });
+                  var bodyNode = {cond:{}, cmd: 1500};
+                  if (confirm("真的确定，要全部出票失败吗？")) {
+                      CurSite.sendDigest(Io, Json, "AD23", null, bodyNode, function (err, backBodyNode) {
+                          toPage(cur)
+                      });
+                  }
               });
               //绑定事件
                Node.all("input.fail").each(function(item){
