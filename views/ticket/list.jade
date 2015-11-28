@@ -7,7 +7,7 @@ html(lang="en")
         include ../includes/script.jade
         script(type='text/javascript').
             KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
-                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar,O){
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Button,Calendar,O){
                     var S_Date = S.Date;
                     new Calendar('#printStartDate', {
                         popup: true,
@@ -267,5 +267,5 @@ html(lang="en")
                 | (元)&nbsp;,&nbsp;&nbsp;奖金:
                 font(color="red")=bonus / 100
                 | (元)&nbsp;.
-            .clearfix(style="margin-top:8px")
+        .clearfix(style="margin-top:8px")
             #manu
