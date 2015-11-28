@@ -8,6 +8,7 @@ html(lang="en")
         script(type='text/javascript').
             KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay",
                 function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar,O){
+                    var S_Date = S.Date;
                     new Calendar('#printStartDate', {
                         popup: true,
                         triggerType: ['click'],
@@ -200,13 +201,15 @@ html(lang="en")
                         td 出票时间:
                             td
                                 input(type="text" id="printStartDate" value=cond.printStartDate)
-                                span 至
+                        td 至
+                            td
                                 input(type="text" id="printEndDate"   value=cond.printEndDate)
                         td 兑奖时间:
                             td
                                 input(type="text" id="cashStartDate" value=cond.cashStartDate)
-                                span 至
-                                input(type="text" id="cashEndDate"   value=cond.cashEndDate)
+                        td 至
+                            td
+                                 input(type="text" id="cashEndDate"   value=cond.cashEndDate)
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
@@ -256,5 +259,13 @@ html(lang="en")
                                         input(type="button", value="通知票", class="nofify", tId=val.id)
                                         if val.printStatus.id == 1100
                                                 input(type="button", value="处理", class="chuli", tId=val.id)
+        .clearfix(style="margin-top:8px")
+            #audit 数量:&nbsp;
+                font(color="red")=num
+                |  &nbsp;,&nbsp;&nbsp;金额:&nbsp;
+                font(color="red")=amount / 100
+                | (元)&nbsp;,&nbsp;&nbsp;奖金:
+                font(color="red")=bonus / 100
+                | (元)&nbsp;.
             .clearfix(style="margin-top:8px")
-                #manu
+            #manu
