@@ -113,9 +113,6 @@ html(lang="en")
                        td 彩票期次:
                        td
                            input(id="termCode", type="text", value=cond.termCode)
-                       td 彩票外部ID:
-                       td
-                           input(id="outerId", type="text", value=cond.outerId)
                         td 出票状态:
                             td
                                 select(id="printStatus")
@@ -147,8 +144,11 @@ html(lang="en")
                         td 至
                         td
                             input(type="text" id="endDate"   value=add.endDate)
-                        td
-                        td
+                    tr
+                        td 彩票外部ID:
+                            td
+                                input(id="outerId", type="text", value=cond.outerId)
+
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
