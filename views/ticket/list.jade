@@ -5,39 +5,23 @@ html(lang="en")
         link(rel='stylesheet', type='text/css', href='./js/css/dpl/base-min.css')
         link(rel='stylesheet', type='text/css', href='./css/select.css')
         link(rel='stylesheet', type='text/css', href='./css/custombutton.css')
-        link(rel='stylesheet', type='text/css', href='js/overlay/assets/self.css')
         include ../includes/script.jade
         script(type='text/javascript').
-            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,overlay,button,calendar,calendar/assets/base.css",
-                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Calendar,Button,O){
+            KISSY.use("io,node,json,vs-grid-table,vs-onepagebar,vs-round-input,vs-window,button,calendar,calendar/assets/base.css",
+                function(S, Io, Node, Json, VsGridTable, VsOnePagebar, VsRoundInput, VsWindow,Button,Calendar){
                     var S_Date = S.Date;
-                    new Calendar('#printStartDate', {
-                        popup: true,
-                        triggerType: ['click'],
-                        closable: true
-                    }).on('select', function (e) {
-                        Node.one('#printStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd HH:MM:ss'));
-                    });
-                    new Calendar('#printEndDate', {
-                        popup: true,
-                        triggerType: ['click'],
-                        closable: true
-                    }).on('select', function (e) {
-                        Node.one('#printEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd HH:MM:ss'));
-                    });
-                    new Calendar('#cashStartDate', {
-                        popup: true,
-                        triggerType: ['click'],
-                        closable: true
-                    }).on('select', function (e) {
+                    new Calendar('#cashStartDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
                         Node.one('#cashStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
                     });
-                    new Calendar('#cashEndDate', {
-                        popup: true,
-                        triggerType: ['click'],
-                        closable: true
-                    }).on('select', function (e) {
+                    new Calendar('#cashEndDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
                         Node.one('#cashEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                    });
+
+                    new Calendar('#printStartDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                        Node.one('#printStartDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
+                    });
+                    new Calendar('#printEndDate', {popup:true,triggerType:['click'],closable:true}).on('select', function(e) {
+                        Node.one('#printEndDate').val(S_Date.format(e.date, 'yyyy-mm-dd'));
                     });
                 var count = parseInt(Node.one('#count').val());
                 var skip = parseInt(Node.one('#skip').val());
