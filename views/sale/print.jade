@@ -49,6 +49,10 @@ html(lang="en")
                 Node.one("#search").on("click", function(){
                      toPage(cur,true);
                   });
+                //绑定事件
+                Node.one("#export").on("click", function () {
+                    window.open("","url")
+                });
 
                 var getAddition = function(){
                     var add = {};
@@ -152,6 +156,7 @@ html(lang="en")
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
+                    input(type="button", id="export", value="导出")
             .clearfix(style="margin-top:8px")
                 .tab-list
                     table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
