@@ -53,8 +53,8 @@ html(lang="en")
                 Node.one("#export").on("click", function () {
                     var cond = encodeURIComponent(Json.stringify(getCondition()));
                     var add = encodeURIComponent(Json.stringify(getAddition()));
-                   // window.open("下载","/download/sale_download.html?cond=" + cond + "&add=" + add);
-                    CurSite.open("下载","/download/sale_download.html?cond=" + cond + "&add=" + add)
+                    window.open("下载","/download/sale_download.html?cond=" + cond + "&add=" + add);
+                   // CurSite .open("下载","/download/sale_download.html?cond=" + cond + "&add=" + add)
                 });
 
                 var getAddition = function(){
