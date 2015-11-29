@@ -7,6 +7,8 @@ var errCode = config.ec;
 var cmdFac = require("mcp_factory").cmdFac;
 var dc = require('mcp_db').dc;
 var pageCtl = require("mcp_control").pageCtl;
+var util = require('mcp_util');
+var excelUtil = util.excelUtil;
 
 var esut = require("easy_util");
 var log = esut.log;
@@ -106,6 +108,29 @@ Gateway.prototype.startWeb = function()
             log.info(backMsgNode);
         });
     });
+    app.get('/download/:name', function(req, res){
+        var path = req.params.name.match(/^([a-zA-Z0-9_]+)(\.html)$/);
+        log.info(path);
+        if(path){
+            var downLoadPath = path[1].split("/");
+            var headNode = {cmd:downLoadPath};
+            headNode.userId = req.cookies.userId;
+            headNode.userType = req.cookies.userType;
+            headNode.key = req.cookies.st;
+            log.info("downloadPaht" + downLoadPath[0]+"/"+ downLoadPath[1]);
+            pageCtl.handle(headNode, req.query, function(err, filePath){
+                if(err)
+                {
+                    res.render("sys/error", err);
+                }
+                else
+                {
+                    excelUtil.download(filePath, req, res, true);
+                }
+            });
+        }
+
+    });
 
     app.get('/:name', function(req, res, next){
         var path = req.params.name.match(/^([a-zA-Z0-9_]+)(\.html)$/);
@@ -133,6 +158,7 @@ Gateway.prototype.startWeb = function()
             next();
         }
     });
+
 
     httpServer.listen(9988);
 };
