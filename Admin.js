@@ -112,12 +112,11 @@ Gateway.prototype.startWeb = function()
         var path = req.params.name.match(/^([a-zA-Z0-9_]+)(\.html)$/);
         log.info(path);
         if(path){
-            var downLoadPath = path[1].split("/");
+            var downLoadPath = path[1].split("_");
             var headNode = {cmd:downLoadPath};
             headNode.userId = req.cookies.userId;
             headNode.userType = req.cookies.userType;
             headNode.key = req.cookies.st;
-            log.info("downloadPaht" + downLoadPath[0]+"/"+ downLoadPath[1]);
             pageCtl.handle(headNode, req.query, function(err, filePath){
                 if(err)
                 {
