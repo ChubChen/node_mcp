@@ -95,6 +95,12 @@ html(lang="en")
                     var add = encodeURIComponent(Json.stringify(getAddition()));
                     CurSite.redirectTo(null, "ticket_list.html?" + 'skip=' + skip + "&limit=" + limit + "&cond=" + cond + "&sort=" + sort +"&add=" + add);
                 };
+                //绑定事件
+                Node.one("#export").on("click", function () {
+                    var cond = encodeURIComponent(Json.stringify(getCondition()));
+                    var add = encodeURIComponent(Json.stringify(getAddition()));
+                    window.open("/download/ticket_download.html?cond=" + cond + "&add=" + add, "下载");
+                });
 
                 //绑定事件
                 Node.all("input.detail").each(function(item){
@@ -199,6 +205,7 @@ html(lang="en")
             .clearfix(style="margin-top:8px")
                 .vs_grid_plain(style="width:423px;")
                     input(type="button", id="search", value="查询")
+                    input(type="button", id="export", value="导出")
             .clearfix(style="margin-top:8px")
                 .tab-list
                     table(width="100%" border="0" cellspacing="0" cellpadding="0" class="tab")
