@@ -124,6 +124,9 @@ Gateway.prototype.startWeb = function()
                 }
                 else
                 {
+                    var name = "明细导出.xlsx";
+                    res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+                    res.setHeader("Content-Disposition", "attachment; filename=" + encodeURIComponent(name));
                     excelUtil.download(filePath, req, res, true);
                 }
             });
