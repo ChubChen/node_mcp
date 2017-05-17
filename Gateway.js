@@ -87,10 +87,49 @@ Gateway.prototype.startWeb = function()
             log.info(backMsgNode);
         });
     });
+    //特殊接
+    app.post("/mcp-filter/getPrintTicket.htm", function(req, res){
+        self.handleNew(req, function(backMsgNode){
+            res.json(backMsgNode)
+            log.info(backMsgNode);
+        });
+    });
 
     log.info("程序在端口" + prop.gtPort + "启动.........");
     httpServer.listen(prop.gtPort);
 };
+Gateway.prototype.handleNew = function(req, cb){
+    var self = this;
+    log.info("给梁峥增加的特殊接口"+req.request);
+    try {
+        log.info("message out:" + req.request);
+        if(message == undefined){
+           log.error("参数错误！");
+            return;
+        }
+        //var msgNode = JSON.parse(message);
+
+        var request = req.request;
+        var data = req.data;
+        var start = new Date().getTime();
+        cmdFac.handleNew(request,function(err, body){
+            var backHeadNode = {code:"10000", message:"处理成功", data:body};
+            if(err){
+                backHeadNode.code = "9999";
+                backHeadNode.message = "处理失败！";
+            }
+            var end = new Date().getTime();
+            log.info(request + ":" +data+ ":,用时:" + (end - start) + "ms");
+            cb(backHeadNode);
+        });
+    }
+    catch (err)
+    {
+        log.error("处理失败，失败原因：" + err);
+        cb({code:99999,message:"处理失败"});
+        return;
+    }
+}
 
 Gateway.prototype.handle = function(message, cb)
 {

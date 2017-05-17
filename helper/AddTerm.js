@@ -207,9 +207,9 @@ var initTermT01 = function()
             var gameCode = 'T01';
             // var rst = [];
             var write = fs.createWriteStream("/data/app/issue/test.txt");
-            var startCode  = 15062; //今天的场次
+            var startCode  = 16071; //今天的场次
             var now = moment();
-            var end = moment("20160101", "YYYYMMDD");
+            var end = moment("20170101", "YYYYMMDD");
             var today = now.weekday();
             var count = 0;
             for(var currDate = now; currDate < end; currDate.add(1,'day')){
@@ -871,4 +871,4 @@ var initTermT05HB = function()
 
 };
 
-initTermT05HB();
+initTermT01();
